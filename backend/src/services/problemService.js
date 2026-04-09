@@ -6,10 +6,27 @@ import Problem from "../models/Problems.js";
  * Add a new problem
  */
 export const addProblem = async (problemData) => {
-    const problem = await Problem.create(problemData);
+    const { title, description, difficulty, round, input, expectedOutput } = problemData;
+
+    if (!Array.isArray(input) || !Array.isArray(expectedOutput)) {
+        throw new Error("Input and ExpectedOutput must be arrays");
+    }
+
+    if (input.length !== expectedOutput.length) {
+        throw new Error("Input and Output arrays must be of same length");
+    }
+
+    const problem = await Problem.create({
+        title,
+        description,
+        difficulty,
+        round,
+        input,
+        expectedOutput
+    });
+
     return problem;
 };
-
 /*
  * Get all problems
  */

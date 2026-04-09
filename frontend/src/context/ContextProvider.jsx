@@ -1,90 +1,116 @@
 // @ts-nocheck
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const RoundContext = createContext({});
 
 const ContextProvider = ({ children }) => {
-  const [roundAccess, setRoundAccess] = useState({
-    round11: false,
-    round12: false,
-    round2: true,
-    round3: false,
+  const api = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
   });
 
-  const [currentRound, setCurrentRound] = useState(roundAccess["round1"]);
+  // 🔐 Token attach
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  });
+
+  // 🚫 Handle auth fail
+  api.interceptors.response.use(
+    (res) => res,
+    (err) => {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+      return Promise.reject(err);
+    },
+  );
+
+  // 🧠 STATES
+  const [rounds, setRounds] = useState([]);
+  const [currentRound, setCurrentRound] = useState(null);
+  const [problem, setProblem] = useState(null);
+
   const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
 
-  const rounds = [
-    {
-      id: 1,
-      name: "Round 1.1",
-      description: "Warm-Up – Simple Problems",
-      access: roundAccess.round11,
-    },
-    {
-      id: 2,
-      name: "Round 1.2",
-      description: "Warm-Up – Simple Problems",
-      access: roundAccess.round12,
-    },
-    {
-      id: 3,
-      name: "Round 2",
-      description: roundAccess["round2"]
-        ? "Core Problem – Medium Difficulty"
-        : "Locked",
-      access: roundAccess.round2,
-    },
-    {
-      id: 4,
-      name: "Round 3",
-      description: roundAccess["round3"]
-        ? "Final Challenge – Hard Problem"
-        : "Locked",
-      access: roundAccess.round3,
-    },
-  ];
+  const [executionCount, setExecutionCount] = useState(0);
 
-  const exampleProblem = {
-    id: 1,
-    title: "Sum of Two Numbers",
-    difficulty: "Easy",
-    description: `Write a function that takes two integers and returns their sum. 
-You should handle negative numbers as well.
+  // 🚀 Fetch rounds from backend
+  useEffect(() => {
+    const fetchRounds = async () => {
+      try {
+        const res = await api.get("/api/rounds");
 
-Input:
-Two integers a and b separated by a space.
+        const backendRounds = res.data.map((r, index) => ({
+          ...r,
+          unlocked: index === 0, // only first unlocked initially
+        }));
 
-Output:
-A single integer representing the sum of a and b.
+        setRounds(backendRounds);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-Constraints:
--1000 <= a, b <= 1000`,
-    sampleInput: `3 5`,
-    sampleOutput: `8`,
-    tags: ["math", "addition", "beginner"],
-    timeLimit: "1s",
-    memoryLimit: "256MB",
+    fetchRounds();
+  }, []);
+
+  // 🔓 Unlock NEXT ROUND (IMPORTANT CHANGE)
+  const unlockNextRound = (roundNumber) => {
+    setRounds((prev) =>
+      prev.map((r) => {
+        if (r.roundNumber === roundNumber + 1) {
+          return { ...r, unlocked: true };
+        }
+        return r;
+      }),
+    );
   };
 
-  const [executionCount, setExecutionCount] = useState(2);
+  // 🎯 Fetch problem for selected round
+  const fetchProblem = async (roundNumber) => {
+    try {
+      const res = await api.get(`/api/problem/${roundNumber}`);
+      setProblem(res.data);
 
-  const v = {
-    roundAccess,
-    setRoundAccess,
+      // execution control
+      if (roundNumber === 1.1 || roundNumber === 1.2) {
+        setExecutionCount(1);
+      } else if (roundNumber === 3) {
+        setExecutionCount(1);
+      } else {
+        setExecutionCount(0);
+      }
+
+      setCurrentRound(roundNumber);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const value = {
+    api,
     rounds,
+    setRounds,
     currentRound,
     setCurrentRound,
-    output,
-    setOutput,
+    problem,
+    fetchProblem,
+    unlockNextRound,
     code,
     setCode,
-    exampleProblem,
+    output,
+    setOutput,
     executionCount,
     setExecutionCount,
   };
-  return <RoundContext.Provider value={v}>{children}</RoundContext.Provider>;
+
+  return (
+    <RoundContext.Provider value={value}>{children}</RoundContext.Provider>
+  );
 };
 
 export { ContextProvider, RoundContext };

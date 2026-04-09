@@ -8,21 +8,21 @@ import {
     updateSubmissionResultController
 } from "../controllers/submissionController.js";
 
-const router = express.Router();
+const submissionRrouter = express.Router();
 
 // Submit a new solution
-router.post("/", submitSolutionController);
+submissionRrouter.post("/", submitSolutionController);
 
 // Get all submissions
-router.get("/", getAllSubmissionsController);
+submissionRrouter.get("/", getAllSubmissionsController);
 
 // Get submissions by participant
-router.get("/participant/:participantId", getSubmissionsByParticipantController);
+submissionRrouter.get("/participant/:participantId", getSubmissionsByParticipantController);
 
 // Get submissions by problem
-router.get("/problem/:problemId", getSubmissionsByProblemController);
+submissionRrouter.get("/problem/:problemId", getSubmissionsByProblemController);
 
 // Update submission result (isCorrect + scoreAwarded)
-router.put("/update/:submissionId", updateSubmissionResultController);
+submissionRrouter.put("/update/:submissionId", updateSubmissionResultController);
 
-export default router;
+export default submissionRrouter;

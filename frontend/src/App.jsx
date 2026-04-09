@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
@@ -9,6 +10,7 @@ import NavBar from "./components/NavBar";
 import Rules from "./components/Rules";
 import Rounds from "./components/Rounds";
 import CodenSubmit from "./pages/CodenSubmit";
+import Auth from "./pages/Auth";
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
         <Route path="/rules" element={<Rules />} />
         <Route path="/rounds" element={<Rounds />} />
         <Route path="/code-n-submit" element={<CodenSubmit />} />
+        <Route path="/login" element={<Auth />} />
       </Routes>
       <Footer />
     </>

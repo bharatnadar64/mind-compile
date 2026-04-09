@@ -24,6 +24,11 @@ const SubmissionSchema = new mongoose.Schema({
         required: true
     },
 
+    output: {
+        type: String,
+        required: true
+    },
+
     isCorrect: {
         type: Boolean,
         default: false
@@ -34,9 +39,9 @@ const SubmissionSchema = new mongoose.Schema({
         default: 0
     },
 
-    executionUsed: {
-        type: Boolean,
-        default: false
+    startedAt: {
+        type: Date,
+        default: Date.now
     },
 
     submittedAt: {

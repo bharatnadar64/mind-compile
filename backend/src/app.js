@@ -6,6 +6,7 @@ import problemRouter from './routes/problemRoutes.js';
 import roundRouter from './routes/roundRoutes.js';
 import leaderbRouter from './routes/leaderboardRoutes.js';
 import { protect } from './middleware/auth.js';
+import submissionRrouter from './routes/submissionRoutes.js';
 const app = express();
 
 // Middleware
@@ -23,8 +24,8 @@ app.get('/', (req, res) => {
 });
 app.use("/api/code", protect, codeRouter)
 app.use("/api/user", participantRouter)
-app.use("/api/problem", protect, problemRouter)
-app.use("/api/rounds", protect, roundRouter);
+app.use("/api/problem", problemRouter) // app.use("/api/problem", protect, problemRouter)
+app.use("/api/rounds", roundRouter); // app.use("/api/rounds", protect, roundRouter);
 app.use("/api/leader-board", leaderbRouter)
-
+app.use("/api/submission", submissionRrouter)
 export default app;

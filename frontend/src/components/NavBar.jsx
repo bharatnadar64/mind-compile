@@ -1,112 +1,88 @@
-import { useState, useEffect } from "react";
+// @ts-nocheck
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const NavBar = () => {
-  const [time, setTime] = useState(new Date());
-  const [blink, setBlink] = useState(true);
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(new Date());
-      setBlink((prev) => !prev);
-    }, 1000);
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, [location]);
 
-    return () => clearInterval(interval);
-  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+
+  const linkStyle = (path) =>
+    `px-3 py-2 transition-all duration-300 ${
+      location.pathname === path
+        ? "text-green-300 drop-shadow-[0_0_8px_#00ff00]"
+        : "text-green-400 hover:text-green-300"
+    }`;
 
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 
-      bg-black/85 backdrop-blur-md 
-      border-b border-green-500/20 
-      shadow-[0_0_20px_rgba(0,255,0,0.15)] overflow-hidden"
-    >
-      {/* Scanline overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-10"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
-        }}
-      />
+    <nav className="bg-black border-b border-green-500/20 font-mono">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="text-green-400 text-lg tracking-widest font-bold drop-shadow-[0_0_10px_#00ff00]"
+        >
+          MINDCOMPILE_
+        </Link>
 
-      <div
-        className="max-w-6xl mx-auto 
-        flex flex-col sm:flex-row 
-        items-start sm:items-center 
-        justify-between 
-        px-4 py-2 gap-2 sm:gap-0
-        font-mono text-xs md:text-sm text-green-400 relative"
-      >
-        {/* Left */}
-        <div className="flex items-center gap-3">
-          <span
-            className="font-bold tracking-widest 
-            text-green-400 
-            drop-shadow-[0_0_8px_#00ff00]"
-          >
-            ▶ MINDCOMPILE
-            <span
-              className={`ml-1 ${
-                blink ? "opacity-100" : "opacity-0"
-              } transition-opacity`}
+        {/* Links */}
+        <div className="flex items-center gap-4">
+          <Link to="/" className={linkStyle("/")}>
+            HOME
+          </Link>
+
+          <Link to="/rounds" className={linkStyle("/rounds")}>
+            ROUNDS
+          </Link>
+
+          <Link to="/rules" className={linkStyle("/rules")}>
+            RULES
+          </Link>
+
+          {/* 🔒 Protected Route */}
+          {isLoggedIn && (
+            <Link to="/code-n-submit" className={linkStyle("/code-n-submit")}>
+              CODE
+            </Link>
+          )}
+
+          {/* 🔥 Auth Button */}
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="
+                px-4 py-2 border border-red-500
+                text-red-400 hover:bg-red-500 hover:text-black
+                transition-all duration-300
+                shadow-[0_0_10px_rgba(255,0,0,0.3)]
+              "
             >
-              _
-            </span>
-          </span>
-
-          <span className="hidden md:inline text-green-500/50">
-            // UNAUTHORIZED SESSION
-          </span>
-        </div>
-
-        {/* Right */}
-        <div className="flex items-center flex-wrap gap-3 sm:gap-5 w-full sm:w-auto justify-between sm:justify-end">
-          {/* Status */}
-          <span className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
-            </span>
-            <span className="tracking-wider text-green-300">CONNECTED</span>
-          </span>
-
-          {/* Time */}
-          <span className="text-green-500/70 whitespace-nowrap">
-            [{time.toLocaleTimeString("en-GB")}]
-          </span>
-
-          {/* Date */}
-          <span className="hidden sm:inline text-green-500/50">
-            {time.toLocaleDateString("en-GB")}
-          </span>
-
-          {/* Recording */}
-          <span className="text-red-500 flex items-center gap-1">
-            <span className="animate-pulse">●</span>
-            <span className="hidden md:inline">REC</span>
-          </span>
+              LOGOUT
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="
+                px-4 py-2 border border-green-400
+                text-green-400 hover:bg-green-400 hover:text-black
+                transition-all duration-300
+                shadow-[0_0_10px_rgba(0,255,0,0.3)]
+              "
+            >
+              LOGIN
+            </Link>
+          )}
         </div>
       </div>
-
-      {/* Moving scan bar (inline animation, no config) */}
-      <div className="relative h-[2px] w-full overflow-hidden">
-        <div
-          className="absolute h-full w-1/3 bg-green-400/40 blur-sm"
-          style={{
-            animation: "scanMove 4s linear infinite",
-          }}
-        />
-      </div>
-
-      {/* Inline keyframes (no tailwind config needed) */}
-      <style>
-        {`
-          @keyframes scanMove {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-          }
-        `}
-      </style>
     </nav>
   );
 };

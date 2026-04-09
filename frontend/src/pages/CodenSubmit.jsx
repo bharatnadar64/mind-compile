@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Problem from "../components/Problem.jsx";
 import CodeScreen from "../components/CodeScreen.jsx";
 import Output from "../components/Output.jsx";
@@ -7,121 +7,153 @@ import { RoundContext } from "../context/ContextProvider.jsx";
 
 const CodenSubmit = () => {
   const [language, setLanguage] = useState("python-3.14");
+  const [loading, setLoading] = useState(false);
+  const [startedAt, setStartedAt] = useState(null);
+
   const {
+    api,
+    problem,
+    currentRound,
     code,
     setCode,
     output,
     setOutput,
-    exampleProblem,
-    roundAccess,
     executionCount,
     setExecutionCount,
+    unlockNextRound,
   } = useContext(RoundContext);
-  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (problem) {
+      setStartedAt(new Date());
+    }
+  }, [problem]);
+
+  const isExecutionAllowed = executionCount > 0;
+
+  // ▶️ RUN (OPTIONAL TEST RUN — ONLY FOR UI PREVIEW)
   const handleRun = async () => {
+    if (!isExecutionAllowed) return;
+
     setLoading(true);
     setOutput("");
 
     try {
-      const res = await fetch("http://localhost:5000/code/run", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language, code, input: "" }),
+      // ⚠️ OPTIONAL: only preview using first input
+      const res = await api.post("/api/submission", {
+        problemId: problem._id,
+        round: currentRound,
+        code,
+        language,
+        testRun: true, // 🔥 flag (you can ignore in backend if not needed)
       });
 
-      const data = await res.json();
+      setOutput(res.data.output || "No output");
 
-      if (data.error) {
-        setOutput(
-          typeof data.error === "string"
-            ? data.error
-            : JSON.stringify(data.error, null, 2),
-        );
-      } else if (data.output) {
-        setOutput(
-          typeof data.output === "string"
-            ? data.output
-            : JSON.stringify(data.output, null, 2),
-        );
-      } else {
-        setOutput("No output returned");
-      }
+      setExecutionCount((prev) => prev - 1);
     } catch (err) {
-      setOutput("Error connecting to server");
+      setOutput("Execution failed ❌");
     }
-    setExecutionCount((prev) => prev - 1);
+
     setLoading(false);
   };
 
-  const handleSubmit = () => {
-    setOutput(`Submitting code in ${language}...\n${code}`);
+  // 🚀 FINAL SUBMIT (MAIN LOGIC)
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    try {
+      const res = await api.post("/api/submission", {
+        problemId: problem._id,
+        round: currentRound,
+        code,
+        language,
+        startedAt, // ✅ REQUIRED
+      });
+
+      unlockNextRound(currentRound);
+
+      if (res.data.submission?.isCorrect) {
+        setOutput("✅ All test cases passed");
+      } else {
+        setOutput("❌ Some test cases failed");
+      }
+    } catch (err) {
+      setOutput(err.response?.data?.error || "Submission failed ❌");
+    }
+
+    setLoading(false);
   };
 
-  const isRound1 = roundAccess.round11 || roundAccess.round12;
+  if (!problem) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-green-400 font-mono">
+        Loading problem...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row gap-4 min-h-[95vh] pt-24 px-4 bg-black text-green-400 font-mono">
-      {/* Left: Problem Statement */}
+      {/* LEFT: PROBLEM */}
       <div className="flex-1 h-[95vh] overflow-y-auto">
         <Problem
-          {...exampleProblem}
-          className="h-full bg-black/90 border border-green-500/50 rounded shadow-[0_0_25px_rgba(0,255,0,0.3)] p-6 flex flex-col"
+          title={problem.title}
+          difficulty={problem.difficulty}
+          description={problem.description}
+          sampleInput={problem.inputs?.[0]}
+          sampleOutput={problem.expectedOutput?.[0]}
         />
       </div>
 
-      {/* Right: Code Editor + optional Output */}
+      {/* RIGHT: EDITOR */}
       <div className="flex-1 flex flex-col gap-4 h-[95vh]">
-        {/* Toolbar */}
-        <div className="flex items-center gap-2 mb-2 bg-black/80 border border-green-500/50 rounded px-3 py-2 shadow-[0_0_20px_rgba(0,255,0,0.4)]">
+        {/* TOOLBAR */}
+        <div className="flex items-center gap-3 bg-black/80 border border-green-500/50 rounded px-3 py-2">
+          {/* LANGUAGE */}
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="bg-black text-green-400 border border-green-500/50 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="bg-black border border-green-500 px-3 py-2"
           >
             <option value="c">C</option>
             <option value="cpp">C++</option>
             <option value="python-3.14">Python</option>
             <option value="java">Java</option>
           </select>
-          {isRound1 && (
-            <button
-              onClick={handleRun}
-              disabled={loading || executionCount < 1}
-              className={`px-6 py-2 text-base font-semibold rounded transition-all ${
-                loading
-                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                  : "bg-green-400 text-black hover:bg-green-500 hover:shadow-[0_0_20px_rgba(0,255,0,0.6)]"
-              }`}
-            >
-              {loading ? "Running..." : executionCount < 1 ? "Disabled" : "Run"}
-            </button>
-          )}
+
+          {/* RUN BUTTON */}
+          <button
+            onClick={handleRun}
+            disabled={!isExecutionAllowed || loading}
+            className={`px-4 py-2 border ${
+              isExecutionAllowed
+                ? "border-green-400 hover:bg-green-400 hover:text-black"
+                : "border-gray-600 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            {loading ? "Running..." : `Run (${executionCount})`}
+          </button>
+
+          {/* SUBMIT BUTTON */}
           <button
             onClick={handleSubmit}
-            className="px-6 py-2 text-base bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 hover:shadow-[0_0_20px_rgba(0,150,255,0.6)] transition-all"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600"
           >
-            Submit
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </div>
 
-        {/* Code Editor */}
-        <div
-          className={`flex-1 bg-black/90 border border-green-500/50 rounded shadow-[0_0_30px_rgba(0,255,0,0.3)] p-3`}
-        >
-          <CodeScreen
-            code={code}
-            setCode={setCode}
-            className="bg-black/90 text-green-400 font-mono w-full h-full"
-          />
+        {/* CODE EDITOR */}
+        <div className="flex-1 border border-green-500 p-2">
+          <CodeScreen code={code} setCode={setCode} />
         </div>
 
-        {/* Output only for Round 1 */}
-        {isRound1 && (
-          <div className="flex-1 bg-black/90 border border-green-500/50 rounded shadow-[0_0_30px_rgba(0,255,0,0.3)] p-4 overflow-y-auto font-mono text-green-400 text-base">
-            <Output output={output} />
-          </div>
-        )}
+        {/* OUTPUT */}
+        <div className="flex-1 border border-green-500 p-2 overflow-y-auto">
+          <Output output={output} />
+        </div>
       </div>
     </div>
   );
