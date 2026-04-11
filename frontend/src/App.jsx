@@ -11,6 +11,10 @@ import Rules from "./components/Rules";
 import Rounds from "./components/Rounds";
 import CodenSubmit from "./pages/CodenSubmit";
 import Auth from "./pages/Auth";
+import AdminRoute from "./admin/routes/AdminRoute";
+import AdminDashboard from "./admin/pages/AdminDashboard";
+import Leaderboard from "./admin/pages/Leaderboard";
+import Submissions from "./admin/pages/Submissions";
 
 function App() {
   return (
@@ -25,6 +29,11 @@ function App() {
         <Route path="/rounds" element={<Rounds />} />
         <Route path="/code-n-submit" element={<CodenSubmit />} />
         <Route path="/login" element={<Auth />} />
+        <Route path="/admin" element={<AdminRoute />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="submissions" element={<Submissions />} />
+        </Route>
       </Routes>
       <Footer />
     </>

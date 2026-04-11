@@ -7,6 +7,7 @@ import roundRouter from './routes/roundRoutes.js';
 import leaderbRouter from './routes/leaderboardRoutes.js';
 import { protect } from './middleware/auth.js';
 import submissionRrouter from './routes/submissionRoutes.js';
+import adminRouter from './routes/adminRoutes.js';
 const app = express();
 
 // Middleware
@@ -28,4 +29,5 @@ app.use("/api/problem", protect, problemRouter) // app.use("/api/problem", prote
 app.use("/api/rounds", protect, roundRouter); // app.use("/api/rounds", protect, roundRouter);
 app.use("/api/leader-board", protect, leaderbRouter)
 app.use("/api/submission", protect, submissionRrouter)
+app.use("/api/admin", adminRouter);
 export default app;
