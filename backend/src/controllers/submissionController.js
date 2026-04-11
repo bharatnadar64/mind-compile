@@ -13,27 +13,13 @@ import {
  */
 export const submitSolutionController = async (req, res) => {
     try {
-        const { participantId, problemId, round, code, output } = req.body;
-
-        if (!participantId || !problemId || !round || !code || !output)
-            return res.status(400).json({ error: "All fields are required" });
-
-        const submission = await submitSolution(
-            participantId,
-            problemId,
-            round,
-            code,
-            output
-        );
-
-        res.status(201).json({
-            message: submission.isCorrect
-                ? "Correct solution 🎉"
-                : "Wrong output ❌",
-            submission
+        const submission = await submitSolution({
+            ...req.body,
+            participantId: req.user.id // ✅ FROM TOKEN
         });
+        res.status(201).json({ submission });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 /**

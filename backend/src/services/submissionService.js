@@ -26,35 +26,72 @@ const calculateScore = (round, isCorrect) => {
 /**
  * 🚀 Submit Solution (MAIN LOGIC)
  */
-export const submitSolutionController = async (req, res) => {
-    try {
-        const participantId = req.user.id; // ✅ from JWT
-        const { problemId, round, code, language, startedAt } = req.body;
+export const submitSolution = async ({
+    participantId,
+    problemId,
+    round,
+    code,
+    language,
+    startedAt,
+    submittedAt
+}) => {
 
-        if (!problemId || !round || !code || !language) {
-            return res.status(400).json({ error: "Missing required fields" });
+    if (!participantId || !problemId || !round || !code || !language) {
+        throw new Error("Missing required fields");
+    }
+
+    const problem = await Problem.findById(problemId);
+    if (!problem) throw new Error("Problem not found");
+
+    const inputs = problem.input;
+    const expectedOutputs = problem.expectedOutput;
+
+    if (!inputs || !expectedOutputs || inputs.length !== expectedOutputs.length) {
+        throw new Error("Invalid test cases");
+    }
+
+    let isCorrect = true;
+    let outputs = [];
+
+    const isMatch = (user, expected) =>
+        user.trim().replace(/\s+/g, " ") ===
+        expected.trim().replace(/\s+/g, " ");
+
+    for (let i = 0; i < inputs.length; i++) {
+
+        const res = await executeCode(code, language, inputs[i]);
+
+        if (!res || res.status !== "success") {
+            isCorrect = false;
+            outputs.push("ERROR");
+            break;
         }
 
-        const submission = await submitSolution({
-            participantId,
-            problemId,
-            round,
-            code,
-            language,
-            startedAt,
-            submittedAt: new Date()
-        });
+        const userOutput = res.output?.trim() || "";
+        outputs.push(userOutput);
 
-        res.status(201).json({
-            message: "Submission successful",
-            submission
-        });
-
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        if (!isMatch(userOutput, expectedOutputs[i])) {
+            isCorrect = false;
+            break;
+        }
     }
-};
 
+    const score = calculateScore(round, isCorrect);
+
+    const submission = await Submission.create({
+        participantId,
+        problemId,
+        round,
+        code,
+        output: JSON.stringify(outputs),
+        isCorrect,
+        scoreAwarded: score,
+        startedAt: startedAt ? new Date(startedAt) : new Date(),
+        submittedAt: submittedAt ? new Date(submittedAt) : new Date()
+    });
+
+    return submission;
+};
 /**
  * 📥 Get all submissions
  */

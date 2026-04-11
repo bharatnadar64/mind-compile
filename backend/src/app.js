@@ -22,10 +22,10 @@ app.use(json());
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
-app.use("/api/code", protect, codeRouter)
+app.use("/api/code", protect, codeRouter)// app.use("/api/code", protect, codeRouter)
 app.use("/api/user", participantRouter)
-app.use("/api/problem", problemRouter) // app.use("/api/problem", protect, problemRouter)
-app.use("/api/rounds", roundRouter); // app.use("/api/rounds", protect, roundRouter);
-app.use("/api/leader-board", leaderbRouter)
-app.use("/api/submission", submissionRrouter)
+app.use("/api/problem", protect, problemRouter) // app.use("/api/problem", protect, problemRouter)
+app.use("/api/rounds", protect, roundRouter); // app.use("/api/rounds", protect, roundRouter);
+app.use("/api/leader-board", protect, leaderbRouter)
+app.use("/api/submission", protect, submissionRrouter)
 export default app;

@@ -17,3 +17,11 @@ export const protect = (req, res, next) => {
         res.status(401).json({ message: "Invalid token" });
     }
 };
+
+// middleware/isAdmin.js
+export const isAdmin = (req, res, next) => {
+    if (!req.user || !req.user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+};
