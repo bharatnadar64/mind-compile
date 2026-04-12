@@ -10,9 +10,9 @@ const LeaderboardSchema = new mongoose.Schema({
     rank: Number,
 
     roundScores: {
-        round1: Number,
-        round2: Number,
-        round3: Number
+        round1: { type: Number, default: 0 },
+        round2: { type: Number, default: 0 },
+        round3: { type: Number, default: 0 }
     },
 
     lastUpdated: {
@@ -21,4 +21,5 @@ const LeaderboardSchema = new mongoose.Schema({
     }
 });
 
-export default mongoose.model("Leaderboard", LeaderboardSchema);
+export default mongoose.models.Leaderboard ||
+    mongoose.model("Leaderboard", LeaderboardSchema);

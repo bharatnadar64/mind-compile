@@ -41,7 +41,13 @@ const Auth = () => {
         });
 
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.participant)); // ✅ IMPORTANT
         setMessage("Access Granted 🎉");
+        if (res.data.participant.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/rounds");
+        }
 
         setTimeout(() => navigate("/rounds"), 1000);
       } else {

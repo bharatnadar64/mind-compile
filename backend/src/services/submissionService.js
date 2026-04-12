@@ -2,6 +2,7 @@
 import Submission from "../models/Submission.js";
 import Problem from "../models/Problems.js";
 import { executeCode } from "./codeService.js"
+import Leaderboard from "../models/Leaderboard.js";
 
 /**
  * 🔍 Compare outputs safely
@@ -26,6 +27,7 @@ const calculateScore = (round, isCorrect) => {
 /**
  * 🚀 Submit Solution (MAIN LOGIC)
  */
+
 export const submitSolution = async ({
     participantId,
     problemId,
@@ -40,6 +42,7 @@ export const submitSolution = async ({
         throw new Error("Missing required fields");
     }
 
+    // 1️⃣ Fetch problem
     const problem = await Problem.findById(problemId);
     if (!problem) throw new Error("Problem not found");
 
@@ -57,6 +60,7 @@ export const submitSolution = async ({
         user.trim().replace(/\s+/g, " ") ===
         expected.trim().replace(/\s+/g, " ");
 
+    // 2️⃣ Execute code
     for (let i = 0; i < inputs.length; i++) {
 
         const res = await executeCode(code, language, inputs[i]);
@@ -76,8 +80,10 @@ export const submitSolution = async ({
         }
     }
 
+    // 3️⃣ Calculate score
     const score = calculateScore(round, isCorrect);
 
+    // 4️⃣ Save submission
     const submission = await Submission.create({
         participantId,
         problemId,
@@ -89,6 +95,44 @@ export const submitSolution = async ({
         startedAt: startedAt ? new Date(startedAt) : new Date(),
         submittedAt: submittedAt ? new Date(submittedAt) : new Date()
     });
+
+    // ============================
+    // 🏆 5️⃣ LEADERBOARD LOGIC
+    // ============================
+
+    let leaderboard = await Leaderboard.findOne({ participantId });
+
+    // 👉 If not exists → create entry
+    if (!leaderboard) {
+        leaderboard = await Leaderboard.create({
+            participantId,
+            totalScore: score,
+            roundScores: {
+                round1: 0,
+                round2: 0,
+                round3: 0
+            }
+        });
+    }
+
+    // 👉 Update round-wise score
+    if (round === 1.1 || round === 1.2) {
+        leaderboard.roundScores.round1 += score;
+    } else if (round === 2) {
+        leaderboard.roundScores.round2 += score;
+    } else if (round === 3) {
+        leaderboard.roundScores.round3 += score;
+    }
+
+    // 👉 Update total score
+    leaderboard.totalScore =
+        (leaderboard.roundScores.round1 || 0) +
+        (leaderboard.roundScores.round2 || 0) +
+        (leaderboard.roundScores.round3 || 0);
+
+    leaderboard.lastUpdated = new Date();
+
+    await leaderboard.save();
 
     return submission;
 };
