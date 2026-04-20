@@ -13,7 +13,7 @@ const CodeScreen = ({ code, setCode }) => {
       <textarea
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        onPaste={(e) => e.preventDefault()}
+        // onPaste={(e) => e.preventDefault()}
         spellCheck={false}
         className="
           relative z-10

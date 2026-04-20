@@ -235,10 +235,10 @@ const CodenSubmit = () => {
             onChange={(e) => setLanguage(e.target.value)}
             className="relative bg-black border border-green-500 px-3 py-1 text-sm focus:outline-none"
           >
-            <option value="c">C</option>
-            <option value="cpp">C++</option>
+            <option value="g++-15">C</option>
+            <option value="g++-15">C++</option>
             <option value="python-3.14">Python</option>
-            <option value="java">Java</option>
+            <option value="openjdk-25">Java</option>
           </select>
 
           {/* run */}
