@@ -27,7 +27,7 @@ const Leaderboard = () => {
 
       {data.map((user, i) => (
         <div key={i} className="border p-3 mb-2">
-          Rank {i + 1} | User: {user._id} | Score: {user.totalScore}
+          Rank {i + 1} | User: {user.name} | Score: {user.totalScore}
         </div>
       ))}
     </div>

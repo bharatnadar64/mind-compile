@@ -18,42 +18,57 @@ const Auth = () => {
     college: "",
   });
 
+  // ================= HANDLE INPUT =================
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ================= TOGGLE LOGIN/REGISTER =================
   const toggleMode = () => {
-    setIsLogin(!isLogin);
+    setIsLogin((prev) => !prev);
     setMessage("");
   };
 
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
-    console.log(import.meta.env);
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
       if (isLogin) {
+        // 🔐 LOGIN
         const res = await api.post("/api/user/login", {
           email: form.email,
           password: form.password,
         });
 
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.participant)); // ✅ IMPORTANT
-        setMessage("Access Granted 🎉");
-        if (res.data.participant.isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/rounds");
-        }
+        const { token, participant } = res.data;
 
-        setTimeout(() => navigate("/rounds"), 1000);
+        // ✅ STORE DATA
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(participant));
+        localStorage.setItem("participantId", participant._id);
+
+        setMessage("Access Granted 🎉");
+
+        // ✅ SINGLE CLEAN NAVIGATION
+        setTimeout(() => {
+          if (participant.isAdmin) {
+            navigate("/admin", { replace: true });
+          } else {
+            navigate("/rounds", { replace: true });
+          }
+        }, 800);
       } else {
+        // 📝 REGISTER
         await api.post("/api/user/register", form);
+
         setMessage("Registration Successful ✅ Switch to Login");
         setIsLogin(true);
+
+        // Optional: clear password after register
+        setForm((prev) => ({ ...prev, password: "" }));
       }
     } catch (err) {
       setMessage(err.response?.data?.error || "Something went wrong ❌");
@@ -62,6 +77,7 @@ const Auth = () => {
     }
   };
 
+  // ================= UI =================
   return (
     <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center px-4 relative overflow-hidden">
       {/* Scanlines */}
@@ -78,13 +94,14 @@ const Auth = () => {
 
       {/* Terminal Box */}
       <div className="relative z-10 w-full max-w-md border border-green-500/30 bg-black/70 backdrop-blur-md p-6 shadow-[0_0_40px_rgba(0,255,0,0.2)]">
-        {/* Header */}
+        {/* Header dots */}
         <div className="flex items-center gap-2 mb-4">
           <span className="w-3 h-3 bg-red-500 rounded-full" />
           <span className="w-3 h-3 bg-yellow-500 rounded-full" />
           <span className="w-3 h-3 bg-green-500 rounded-full" />
         </div>
 
+        {/* Terminal prompt */}
         <p className="text-green-500/60 text-sm mb-2">
           {isLogin ? "> login mindcompile.sys" : "> register mindcompile.sys"}
         </p>
@@ -93,7 +110,7 @@ const Auth = () => {
           {isLogin ? "AUTHENTICATION REQUIRED_" : "CREATE ACCOUNT_"}
         </h2>
 
-        {/* Form */}
+        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <>
@@ -138,7 +155,7 @@ const Auth = () => {
             className="w-full bg-black border border-green-500/30 px-3 py-2 text-green-400 outline-none focus:border-green-400"
           />
 
-          {/* Button */}
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={loading}
@@ -148,14 +165,14 @@ const Auth = () => {
           </button>
         </form>
 
-        {/* Message */}
+        {/* MESSAGE */}
         {message && (
           <p className="mt-4 text-sm text-green-400">
             {"> "} {message}
           </p>
         )}
 
-        {/* Toggle */}
+        {/* TOGGLE */}
         <p
           onClick={toggleMode}
           className="mt-6 text-green-500/70 text-sm cursor-pointer hover:text-green-400"
@@ -165,7 +182,7 @@ const Auth = () => {
             : "Already registered? Login →"}
         </p>
 
-        {/* Warning */}
+        {/* WARNING */}
         <p className="mt-4 text-red-500 text-xs animate-pulse">
           ⚠ Vibecoders will be eliminated.
         </p>

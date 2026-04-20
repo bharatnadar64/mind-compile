@@ -10,7 +10,19 @@ const Problem = ({
 }) => {
   return (
     <div
-      className={`h-[90vh] w-full bg-black/80 border border-green-500/40 rounded shadow-[0_0_25px_rgba(0,255,0,0.2)] p-6 flex flex-col gap-4 text-green-400 font-mono ${className}`}
+      className={`h-[90vh] w-full bg-black/80 border border-green-500/40 rounded shadow-[0_0_25px_rgba(0,255,0,0.2)] p-6 flex flex-col gap-4 text-green-400 font-mono select-none ${className}`}
+      style={{ userSelect: "none" }}
+      onCopy={(e) => e.preventDefault()}
+      onCut={(e) => e.preventDefault()}
+      onContextMenu={(e) => e.preventDefault()}
+      onKeyDown={(e) => {
+        if (
+          (e.ctrlKey && ["c", "x", "u", "s"].includes(e.key.toLowerCase())) ||
+          (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i")
+        ) {
+          e.preventDefault();
+        }
+      }}
     >
       {/* Problem Title & Difficulty */}
       <div className="flex items-center justify-between">

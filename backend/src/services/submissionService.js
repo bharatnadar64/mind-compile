@@ -1,6 +1,7 @@
 // @ts-nocheck
 import Submission from "../models/Submission.js";
 import Problem from "../models/Problems.js";
+import Participant from "../models/Participant.js";
 import { executeCode } from "./codeService.js"
 import Leaderboard from "../models/Leaderboard.js";
 
@@ -42,6 +43,10 @@ export const submitSolution = async ({
         throw new Error("Missing required fields");
     }
 
+    // Check if participant exists
+    const participant = await Participant.findById(participantId);
+    if (!participant) throw new Error("Participant not found");
+
     // 1️⃣ Fetch problem
     const problem = await Problem.findById(problemId);
     if (!problem) throw new Error("Problem not found");
@@ -49,7 +54,7 @@ export const submitSolution = async ({
     const inputs = problem.input;
     const expectedOutputs = problem.expectedOutput;
 
-    if (!inputs || !expectedOutputs || inputs.length !== expectedOutputs.length) {
+    if (!Array.isArray(inputs) || !Array.isArray(expectedOutputs) || inputs.length !== expectedOutputs.length) {
         throw new Error("Invalid test cases");
     }
 

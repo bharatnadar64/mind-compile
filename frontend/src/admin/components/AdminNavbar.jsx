@@ -16,7 +16,10 @@ const AdminNavbar = () => {
       <Link to="/admin/leaderboard">Leaderboard</Link>
       <Link to="/admin/submissions">Submissions</Link>
       <Link to="/admin/users">Users</Link> {/* ✅ NEW */}
-      <button onClick={handleLogout}>Exit Admin</button>
+      <Link to="/admin/rounds">Rounds</Link>
+      <button onClick={handleLogout} className="cursor-pointer underline">
+        Exit Admin
+      </button>
     </div>
   );
 };

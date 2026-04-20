@@ -2,36 +2,38 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
-const RoundContext = createContext({});
+export const RoundContext = createContext({});
 
-const ContextProvider = ({ children }) => {
-  // 🌐 AXIOS INSTANCE
-  const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-  });
+// ================= AXIOS INSTANCE =================
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
 
-  // 🔐 Attach token
-  api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  });
+// 🔐 Attach token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-  // 🚫 Handle auth fail
-  api.interceptors.response.use(
-    (res) => res,
-    (err) => {
-      if (err.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("participantId");
-        window.location.href = "/login";
-      }
-      return Promise.reject(err);
-    },
-  );
+// 🚫 Handle 401 (NO redirect loop)
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("participantId");
+      localStorage.removeItem("user");
+    }
+    return Promise.reject(err);
+  },
+);
 
-  // 🧠 STATES
+export const ContextProvider = ({ children }) => {
+  // ================= STATES =================
   const [rounds, setRounds] = useState([]);
+  const [loadingRounds, setLoadingRounds] = useState(true);
+
   const [currentRound, setCurrentRound] = useState(null);
   const [problem, setProblem] = useState(null);
 
@@ -39,71 +41,73 @@ const ContextProvider = ({ children }) => {
   const [output, setOutput] = useState("");
   const [executionCount, setExecutionCount] = useState(0);
 
-  // 🆔 USER KEY
-  const getStorageKey = () => {
-    const userId = localStorage.getItem("participantId");
-    return userId ? `rounds_${userId}` : "rounds_guest";
+  // ================= LOAD ROUNDS =================
+  const loadRounds = async () => {
+    try {
+      setLoadingRounds(true);
+
+      const res = await api.get("/api/rounds");
+
+      // Get unlocked rounds from localStorage
+      const unlockedRounds = JSON.parse(
+        localStorage.getItem("unlockedRounds") || "[]",
+      );
+
+      // If no unlocked, unlock the first
+      if (unlockedRounds.length === 0 && res.data.length > 0) {
+        unlockedRounds.push(res.data[0].roundNumber);
+        localStorage.setItem("unlockedRounds", JSON.stringify(unlockedRounds));
+      }
+
+      // ✅ Correct unlock logic (supports 1.1, 1.2)
+      const formatted = res.data.map((r) => ({
+        ...r,
+        unlocked: unlockedRounds.includes(r.roundNumber),
+      }));
+
+      setRounds(formatted);
+    } catch (err) {
+      console.log("Error loading rounds:", err);
+    } finally {
+      setLoadingRounds(false);
+    }
   };
 
-  // =========================================
-  // 🚀 INIT ROUNDS (USER-SPECIFIC)
-  // =========================================
+  // ================= INIT =================
   useEffect(() => {
-    const initRounds = async () => {
-      try {
-        const key = getStorageKey();
-        const saved = localStorage.getItem(key);
+    const token = localStorage.getItem("token");
 
-        if (saved) {
-          setRounds(JSON.parse(saved));
-        } else {
-          const res = await api.get("/api/rounds");
+    if (!token) {
+      setLoadingRounds(false);
+      return; // ⛔ prevent 401
+    }
 
-          const backendRounds = res.data.map((r, index) => ({
-            ...r,
-            unlocked: index === 0, // only first unlocked
-          }));
-
-          setRounds(backendRounds);
-          localStorage.setItem(key, JSON.stringify(backendRounds));
-        }
-      } catch (err) {
-        console.log("Error loading rounds:", err);
-      }
-    };
-
-    initRounds();
+    loadRounds();
   }, []);
 
-  // =========================================
-  // 💾 AUTO SAVE (USER-SPECIFIC)
-  // =========================================
-  useEffect(() => {
-    if (rounds.length > 0) {
-      const key = getStorageKey();
-      localStorage.setItem(key, JSON.stringify(rounds));
-    }
-  }, [rounds]);
-
-  // =========================================
-  // 🔓 UNLOCK NEXT ROUND (LOCK CURRENT)
-  // =========================================
+  // ================= UNLOCK NEXT ROUND =================
   const unlockNextRound = (roundNumber) => {
     setRounds((prev) => {
       const index = prev.findIndex((r) => r.roundNumber === roundNumber);
       if (index === -1) return prev;
 
-      return prev.map((r, i) => {
-        if (i === index) return { ...r, unlocked: false }; // 🔒 lock current
-        if (i === index + 1) return { ...r, unlocked: true }; // 🔓 unlock next
+      const updated = prev.map((r, i) => {
+        if (i === index) return { ...r, unlocked: false }; // lock current
+        if (i === index + 1) return { ...r, unlocked: true }; // unlock next
         return r;
       });
+
+      // Update localStorage
+      const unlockedRounds = updated
+        .filter((r) => r.unlocked)
+        .map((r) => r.roundNumber);
+      localStorage.setItem("unlockedRounds", JSON.stringify(unlockedRounds));
+
+      return updated;
     });
   };
 
-  // =========================================
-  // 🎯 FETCH PROBLEM
-  // =========================================
+  // ================= FETCH PROBLEM =================
   const fetchProblem = async (roundNumber) => {
     try {
       const res = await api.get(`/api/problem/${roundNumber}`);
@@ -111,16 +115,13 @@ const ContextProvider = ({ children }) => {
       setProblem(res.data);
       setCurrentRound(roundNumber);
 
-      // 🧪 Execution control
-      if (roundNumber === 1.1 || roundNumber === 1.2) {
-        setExecutionCount(1);
-      } else if (roundNumber === 3) {
+      // 🧪 Execution rules
+      if (roundNumber === 1.1 || roundNumber === 1.2 || roundNumber === 3) {
         setExecutionCount(1);
       } else {
         setExecutionCount(0);
       }
 
-      // 🧹 Reset editor
       setCode("");
       setOutput("");
     } catch (err) {
@@ -128,14 +129,30 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  // =========================================
-  // 📦 CONTEXT VALUE
-  // =========================================
+  // ================= REFRESH ROUNDS =================
+  const refreshRounds = async () => {
+    try {
+      const res = await api.get("/api/rounds");
+
+      const updated = res.data.map((r, index) => ({
+        ...r,
+        unlocked: index === 0, // ✅ always keep first unlocked
+      }));
+
+      setRounds(updated);
+    } catch (err) {
+      console.log("Error refreshing rounds:", err);
+    }
+  };
+
+  // ================= CONTEXT VALUE =================
   const value = {
     api,
 
     rounds,
     setRounds,
+    loadingRounds,
+    refreshRounds,
 
     currentRound,
     setCurrentRound,
@@ -159,5 +176,3 @@ const ContextProvider = ({ children }) => {
     <RoundContext.Provider value={value}>{children}</RoundContext.Provider>
   );
 };
-
-export { ContextProvider, RoundContext };

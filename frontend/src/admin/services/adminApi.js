@@ -2,7 +2,7 @@
 // admin/services/adminApi.js
 
 export const getLeaderboard = async (api) => {
-    const res = await api.get("/api/admin/leader-board");
+    const res = await api.get("/api/admin/leaderboard");
     return res.data;
 };
 
