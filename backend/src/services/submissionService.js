@@ -56,9 +56,39 @@ export const submitSolution = async ({
     let isCorrect = true;
     let outputs = [];
 
-    const isMatch = (user, expected) =>
-        user.trim().replace(/\s+/g, " ") ===
-        expected.trim().replace(/\s+/g, " ");
+    // ============================
+    // ✅ NORMALIZATION
+    // ============================
+    const normalize = (s) =>
+        (s ?? "")
+            .replace(/\r/g, "")
+            .trim();
+
+    // ============================
+    // ✅ SMART COMPARATOR
+    // ============================
+    const isMatch = (user, expected) => {
+
+        const u = normalize(user);
+        const e = normalize(expected);
+
+        // 🔹 Case 1: single-line output (numbers like this problem)
+        if (!u.includes("\n") && !e.includes("\n")) {
+            return u === e;
+        }
+
+        // 🔹 Case 2: multi-line output (patterns / matrices)
+        const uLines = u.split("\n").map(x => x.trim());
+        const eLines = e.split("\n").map(x => x.trim());
+
+        if (uLines.length !== eLines.length) return false;
+
+        for (let i = 0; i < uLines.length; i++) {
+            if (uLines[i] !== eLines[i]) return false;
+        }
+
+        return true;
+    };
 
     // 2️⃣ Execute code
     for (let i = 0; i < inputs.length; i++) {
@@ -71,7 +101,7 @@ export const submitSolution = async ({
             break;
         }
 
-        const userOutput = res.output?.trim() || "";
+        const userOutput = res.output ?? "";
         outputs.push(userOutput);
 
         if (!isMatch(userOutput, expectedOutputs[i])) {
@@ -80,7 +110,7 @@ export const submitSolution = async ({
         }
     }
 
-    // 3️⃣ Calculate score
+    // 3️⃣ Score
     const score = calculateScore(round, isCorrect);
 
     // 4️⃣ Save submission
@@ -97,12 +127,11 @@ export const submitSolution = async ({
     });
 
     // ============================
-    // 🏆 5️⃣ LEADERBOARD LOGIC
+    // 🏆 LEADERBOARD LOGIC
     // ============================
 
     let leaderboard = await Leaderboard.findOne({ participantId });
 
-    // 👉 If not exists → create entry
     if (!leaderboard) {
         leaderboard = await Leaderboard.create({
             participantId,
@@ -115,7 +144,6 @@ export const submitSolution = async ({
         });
     }
 
-    // 👉 Update round-wise score
     if (round === 1.1 || round === 1.2) {
         leaderboard.roundScores.round1 += score;
     } else if (round === 2) {
@@ -124,7 +152,6 @@ export const submitSolution = async ({
         leaderboard.roundScores.round3 += score;
     }
 
-    // 👉 Update total score
     leaderboard.totalScore =
         (leaderboard.roundScores.round1 || 0) +
         (leaderboard.roundScores.round2 || 0) +
