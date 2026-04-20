@@ -25,6 +25,19 @@ import AdminNavbar from "./admin/components/AdminNavbar";
 
 function App() {
   const location = useLocation();
+  document.addEventListener("keydown", function (e) {
+    if (
+      e.key === "F12" ||
+      (e.ctrlKey && e.shiftKey && e.key === "I") ||
+      (e.ctrlKey && e.shiftKey && e.key === "J") ||
+      (e.ctrlKey && e.key === "U")
+    ) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+  });
 
   // ✅ Safe user parsing
   const user = JSON.parse(localStorage.getItem("user") || "null");
