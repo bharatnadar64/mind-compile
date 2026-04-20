@@ -71,7 +71,9 @@ const Auth = () => {
         setForm((prev) => ({ ...prev, password: "" }));
       }
     } catch (err) {
-      setMessage(err.response?.data?.error || "Something went wrong ❌");
+      setMessage(
+        err.message || err.response?.data?.error || "Something went wrong ❌",
+      );
     } finally {
       setLoading(false);
     }
