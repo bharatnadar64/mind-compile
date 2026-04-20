@@ -59,8 +59,16 @@ const CodenSubmit = () => {
   useEffect(() => {
     if (!problem) return;
 
-    const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
+    // ✅ Check if round is unlocked
+    const unlockedRounds = JSON.parse(
+      localStorage.getItem("unlockedRounds") || "[]",
+    );
+    if (!unlockedRounds.includes(problem.round)) {
+      navigate("/rounds");
+      return;
+    }
 
+    const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
     const saved = localStorage.getItem(key);
 
     if (saved) {
@@ -73,7 +81,7 @@ const CodenSubmit = () => {
     }
 
     autoSubmitted.current = false;
-  }, [problem]);
+  }, [problem, navigate]);
 
   // =========================================
   // ⏳ TIMER LOOP
@@ -199,8 +207,11 @@ const CodenSubmit = () => {
   // UI
   // =========================================
   return (
-    <div className="flex flex-col md:flex-row gap-4 min-h-[95vh] pt-24 px-4 bg-black text-green-400 font-mono">
-      {/* LEFT */}
+    <div className="relative flex flex-col md:flex-row gap-4 min-h-[95vh] pt-24 px-4 bg-black text-green-400 font-mono overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 bg-green-500/5 blur-2xl opacity-20 pointer-events-none" />
+
+      {/* LEFT — PROBLEM */}
       <div className="flex-1 h-[95vh] overflow-y-auto">
         <Problem
           title={problem.title}
@@ -211,14 +222,18 @@ const CodenSubmit = () => {
         />
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT — EXECUTION PANEL */}
       <div className="flex-1 flex flex-col gap-4 h-[95vh]">
-        {/* TOOLBAR */}
-        <div className="flex items-center gap-3 bg-black border border-green-500 px-3 py-2">
+        {/* 🔥 TOOLBAR */}
+        <div className="relative flex items-center gap-3 bg-black/80 backdrop-blur-md border border-green-500/30 px-4 py-3 rounded">
+          {/* scanlines */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none bg-[linear-gradient(rgba(0,255,0,0.05)_1px,transparent_1px)] bg-[size:100%_3px]" />
+
+          {/* language */}
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="bg-black border border-green-500 px-2 py-1"
+            className="relative bg-black border border-green-500 px-3 py-1 text-sm focus:outline-none"
           >
             <option value="c">C</option>
             <option value="cpp">C++</option>
@@ -226,38 +241,72 @@ const CodenSubmit = () => {
             <option value="java">Java</option>
           </select>
 
+          {/* run */}
           <button
             onClick={handleRun}
             disabled={executionCount <= 0 || running}
-            className="px-4 py-1 border border-green-400"
+            className={`
+            relative px-4 py-1 border text-sm transition-all duration-200
+            ${
+              executionCount > 0
+                ? "border-green-400 text-green-400 hover:bg-green-400 hover:text-black shadow-[0_0_10px_rgba(0,255,0,0.3)]"
+                : "border-green-500/20 text-green-500/40 cursor-not-allowed"
+            }
+          `}
           >
-            Run ({executionCount})
+            {running ? "> running..." : `> run (${executionCount})`}
           </button>
 
+          {/* submit */}
           <button
             onClick={() => handleSubmit(false)}
             disabled={submitting || !code.trim()}
-            className="px-4 py-1 bg-blue-500 disabled:opacity-50"
+            className={`
+            relative px-4 py-1 text-sm transition-all duration-200
+            ${
+              submitting
+                ? "bg-blue-500/50"
+                : "bg-blue-500 hover:bg-blue-400 text-black shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+            }
+          `}
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {submitting ? "> submitting..." : "> submit"}
           </button>
 
-          {/* TIMER */}
-          <div className="ml-auto text-red-400 font-bold text-lg">
-            ⏳ {roundConfig ? formatTime(timeLeft) : "Loading..."}
+          {/* TIMER — 🔥 IMPORTANT */}
+          <div className="ml-auto text-red-400 font-bold text-lg sm:text-xl tracking-wider animate-pulse">
+            ⏳ {roundConfig ? formatTime(timeLeft) : "loading..."}
           </div>
         </div>
 
         {/* CODE */}
-        <div className="flex-1 border border-green-500">
+        <div className="flex-1 border border-green-500/30 rounded overflow-hidden">
           <CodeScreen code={code} setCode={setCode} />
         </div>
 
         {/* OUTPUT */}
-        <div className="flex-1 border border-green-500">
+        <div className="flex-1 border border-green-500/30 rounded overflow-hidden">
           <Output output={output} />
         </div>
       </div>
+
+      {/* 🔥 GLOBAL SCAN BAR */}
+      <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
+        <div
+          className="h-full w-1/3 bg-green-400/40 blur-sm"
+          style={{ animation: "scanMove 5s linear infinite" }}
+        />
+      </div>
+
+      {/* Animations */}
+      <style>
+        {`
+        @keyframes scanMove {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(300%); }
+        }
+      `}
+      </style>
     </div>
   );
 };

@@ -31,10 +31,6 @@ const AdminRounds = () => {
     fetchRounds();
   };
 
-  const handleEdit = (round) => {
-    setEditingRound({ ...round });
-  };
-
   const handleUpdate = async () => {
     await api.put(`/api/rounds/${editingRound._id}`, editingRound);
     setEditingRound(null);
@@ -49,15 +45,36 @@ const AdminRounds = () => {
 
   if (loading)
     return (
-      <div className="bg-black text-green-400 min-h-screen p-6 font-mono">
-        <p>$ loading rounds...</p>
+      <div className="min-h-screen bg-black text-green-400 font-mono p-6">
+        <p className="animate-pulse">{"> loading system.rounds ..."}</p>
       </div>
     );
 
   return (
-    <div className="bg-black text-green-400 min-h-screen p-6 font-mono">
-      <h1 className="text-xl mb-6">$ admin.rounds --manage</h1>
+    <div className="relative min-h-screen bg-black text-green-400 font-mono p-6 overflow-hidden">
+      {/* glow */}
+      <div className="absolute inset-0 bg-green-500/5 blur-2xl opacity-20 pointer-events-none" />
 
+      {/* scanlines */}
+      <div
+        className="absolute inset-0 opacity-10 pointer-events-none"
+        style={{
+          background:
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.12) 3px)",
+        }}
+      />
+
+      {/* HEADER */}
+      <div className="relative z-10 mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-widest text-green-300 drop-shadow-[0_0_12px_#00ff00]">
+          {"> ROUND CONFIGURATION TERMINAL"}
+        </h1>
+        <p className="text-green-500/60 text-sm mt-2">
+          modify system rules carefully
+        </p>
+      </div>
+
+      {/* CREATE BUTTON */}
       <button
         onClick={() =>
           setCreatingRound({
@@ -71,38 +88,56 @@ const AdminRounds = () => {
             bonusCleanCode: "",
           })
         }
-        className="mb-4 hover:text-green-300"
+        className="mb-6 border border-green-400 px-3 py-1 hover:bg-green-400 hover:text-black transition"
       >
-        [create new round]
+        + create.round
       </button>
 
-      {/* LIST */}
-      <div className="space-y-4">
+      {/* ROUND LIST */}
+      <div className="relative z-10 space-y-4">
         {rounds.map((r) => (
-          <div key={r._id} className="border border-green-500 p-4">
-            <p>{`> Round ${r.roundNumber} : ${r.name}`}</p>
-            <p>{`  time_limit = ${r.timeLimit} min`}</p>
-            <p>{`  base_score = ${r.baseScore}`}</p>
-            <p>
-              {`  execution = ${
-                r.executionAllowed ? `${r.maxExecutions} allowed` : "disabled"
-              }`}
-            </p>
+          <div
+            key={r._id}
+            className="border border-green-500/30 bg-black/70 p-4 rounded"
+          >
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <p className="text-green-300">
+                  {"> round."}
+                  {r.roundNumber} :: {r.name}
+                </p>
 
-            <div className="mt-2 flex gap-4">
-              <button
-                onClick={() => handleEdit(r)}
-                className="hover:text-yellow-400"
-              >
-                [edit]
-              </button>
+                <p className="text-sm text-green-500/70">
+                  time_limit = {r.timeLimit} min
+                </p>
 
-              <button
-                onClick={() => handleDelete(r._id)}
-                className="hover:text-red-500"
-              >
-                [delete]
-              </button>
+                <p className="text-sm text-green-500/70">
+                  base_score = {r.baseScore}
+                </p>
+
+                <p className="text-sm text-green-500/70">
+                  execution ={" "}
+                  {r.executionAllowed
+                    ? `${r.maxExecutions} allowed`
+                    : "disabled"}
+                </p>
+              </div>
+
+              <div className="flex gap-4 text-sm">
+                <button
+                  onClick={() => setEditingRound({ ...r })}
+                  className="text-yellow-400 hover:text-yellow-300"
+                >
+                  [edit]
+                </button>
+
+                <button
+                  onClick={() => handleDelete(r._id)}
+                  className="text-red-400 hover:text-red-300"
+                >
+                  [delete]
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -110,81 +145,52 @@ const AdminRounds = () => {
 
       {/* EDIT PANEL */}
       {editingRound && (
-        <div className="mt-8 border border-green-500 p-4">
-          <p className="mb-4">{`$ editing round ${editingRound.roundNumber}`}</p>
+        <div className="relative z-10 mt-10 border border-yellow-500/40 bg-black/80 p-5 rounded">
+          <h2 className="text-yellow-300 mb-4">
+            {"> editing.round."}
+            {editingRound.roundNumber}
+          </h2>
 
-          <div className="space-y-3">
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              value={editingRound.name}
-              onChange={(e) =>
-                setEditingRound({ ...editingRound, name: e.target.value })
-              }
-              placeholder="name"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={editingRound.timeLimit}
-              onChange={(e) =>
-                setEditingRound({
-                  ...editingRound,
-                  timeLimit: Number(e.target.value),
-                })
-              }
-              placeholder="time limit"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={editingRound.baseScore}
-              onChange={(e) =>
-                setEditingRound({
-                  ...editingRound,
-                  baseScore: Number(e.target.value),
-                })
-              }
-              placeholder="base score"
-            />
-
-            <label>
-              <input
-                type="checkbox"
-                checked={editingRound.executionAllowed}
-                onChange={(e) =>
-                  setEditingRound({
-                    ...editingRound,
-                    executionAllowed: e.target.checked,
-                  })
-                }
-              />{" "}
-              execution_allowed
-            </label>
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={editingRound.maxExecutions}
-              onChange={(e) =>
-                setEditingRound({
-                  ...editingRound,
-                  maxExecutions: Number(e.target.value),
-                })
-              }
-              placeholder="max executions"
-            />
+          <div className="grid md:grid-cols-2 gap-3">
+            {["name", "timeLimit", "baseScore", "maxExecutions"].map(
+              (field) => (
+                <input
+                  key={field}
+                  className="bg-black border border-green-500/40 p-2"
+                  value={editingRound[field]}
+                  onChange={(e) =>
+                    setEditingRound({
+                      ...editingRound,
+                      [field]: Number(e.target.value) || e.target.value,
+                    })
+                  }
+                  placeholder={field}
+                />
+              ),
+            )}
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button onClick={handleUpdate} className="hover:text-green-300">
+          <label className="block mt-3 text-sm">
+            <input
+              type="checkbox"
+              checked={editingRound.executionAllowed}
+              onChange={(e) =>
+                setEditingRound({
+                  ...editingRound,
+                  executionAllowed: e.target.checked,
+                })
+              }
+            />{" "}
+            execution_allowed
+          </label>
+
+          <div className="flex gap-4 mt-4">
+            <button onClick={handleUpdate} className="text-green-400">
               [save]
             </button>
-
             <button
               onClick={() => setEditingRound(null)}
-              className="hover:text-gray-400"
+              className="text-gray-400"
             >
               [cancel]
             </button>
@@ -194,121 +200,35 @@ const AdminRounds = () => {
 
       {/* CREATE PANEL */}
       {creatingRound && (
-        <div className="mt-8 border border-green-500 p-4">
-          <p className="mb-4">$ creating new round</p>
+        <div className="relative z-10 mt-10 border border-green-500/40 bg-black/80 p-5 rounded">
+          <h2 className="mb-4 text-green-300">{"> creating.new.round"}</h2>
 
-          <div className="space-y-3">
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              step="0.1"
-              value={creatingRound.roundNumber}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  roundNumber: Number(e.target.value),
-                })
-              }
-              placeholder="round number (e.g. 2)"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              value={creatingRound.name}
-              onChange={(e) =>
-                setCreatingRound({ ...creatingRound, name: e.target.value })
-              }
-              placeholder="name"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={creatingRound.timeLimit}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  timeLimit: Number(e.target.value),
-                })
-              }
-              placeholder="time limit"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={creatingRound.baseScore}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  baseScore: Number(e.target.value),
-                })
-              }
-              placeholder="base score"
-            />
-
-            <label>
+          <div className="grid md:grid-cols-2 gap-3">
+            {Object.keys(creatingRound).map((field) => (
               <input
-                type="checkbox"
-                checked={creatingRound.executionAllowed}
+                key={field}
+                className="bg-black border border-green-500/40 p-2"
+                placeholder={field}
+                value={creatingRound[field]}
                 onChange={(e) =>
                   setCreatingRound({
                     ...creatingRound,
-                    executionAllowed: e.target.checked,
+                    [field]: isNaN(e.target.value)
+                      ? e.target.value
+                      : Number(e.target.value),
                   })
                 }
-              />{" "}
-              execution_allowed
-            </label>
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={creatingRound.maxExecutions}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  maxExecutions: Number(e.target.value),
-                })
-              }
-              placeholder="max executions"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={creatingRound.bonusFirst}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  bonusFirst: Number(e.target.value),
-                })
-              }
-              placeholder="bonus first"
-            />
-
-            <input
-              className="bg-black border border-green-500 p-2 w-full"
-              type="number"
-              value={creatingRound.bonusCleanCode}
-              onChange={(e) =>
-                setCreatingRound({
-                  ...creatingRound,
-                  bonusCleanCode: Number(e.target.value),
-                })
-              }
-              placeholder="bonus clean code"
-            />
+              />
+            ))}
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button onClick={handleCreate} className="hover:text-green-300">
+          <div className="flex gap-4 mt-4">
+            <button onClick={handleCreate} className="text-green-400">
               [create]
             </button>
-
             <button
               onClick={() => setCreatingRound(null)}
-              className="hover:text-gray-400"
+              className="text-gray-400"
             >
               [cancel]
             </button>

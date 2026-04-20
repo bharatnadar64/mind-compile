@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React from "react";
+
 const Problem = ({
   title,
   difficulty,
@@ -10,7 +11,7 @@ const Problem = ({
 }) => {
   return (
     <div
-      className={`h-[90vh] w-full bg-black/80 border border-green-500/40 rounded shadow-[0_0_25px_rgba(0,255,0,0.2)] p-6 flex flex-col gap-4 text-green-400 font-mono select-none ${className}`}
+      className={`relative h-[90vh] w-full font-mono text-green-400 overflow-hidden ${className}`}
       style={{ userSelect: "none" }}
       onCopy={(e) => e.preventDefault()}
       onCut={(e) => e.preventDefault()}
@@ -24,43 +25,83 @@ const Problem = ({
         }
       }}
     >
-      {/* Problem Title & Difficulty */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl sm:text-3xl font-bold drop-shadow-[0_0_10px_#00ff00]">
-          {title || "Problem Title"}
-        </h2>
-        <span
-          className={`px-2 py-1 rounded text-sm font-semibold ${
-            difficulty === "Easy"
-              ? "bg-green-600/30 text-green-200"
-              : difficulty === "Medium"
-                ? "bg-yellow-600/30 text-yellow-200"
-                : "bg-red-600/30 text-red-400"
-          }`}
-        >
-          {difficulty || "Medium"}
-        </span>
-      </div>
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-green-500/5 blur-2xl opacity-20 pointer-events-none" />
 
-      {/* Problem Description */}
-      <div className="text-green-400/80 text-sm sm:text-base flex-1 overflow-y-auto leading-relaxed">
-        {description ||
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet."}
-      </div>
+      <div
+        className="absolute inset-0 opacity-10 pointer-events-none"
+        style={{
+          background:
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
+        }}
+      />
 
-      {/* Sample Input & Output */}
-      {sampleInput && (
-        <div className="bg-black/70 border border-green-500/30 rounded p-3">
-          <span className="font-semibold text-green-300">Sample Input:</span>
-          <pre className="whitespace-pre-wrap">{sampleInput}</pre>
+      {/* MAIN PANEL */}
+      <div className="relative z-10 h-full w-full bg-black/90 backdrop-blur-md border border-green-500/30 rounded-lg shadow-[0_0_40px_rgba(0,255,0,0.15)] p-6 flex flex-col gap-6">
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide drop-shadow-[0_0_12px_#00ff00]">
+            {"> "}
+            {title || "Problem_Title.sys"}
+          </h2>
+
+          <span
+            className={`px-3 py-1 text-sm sm:text-base rounded border ${
+              difficulty === "Easy"
+                ? "border-green-400 text-green-300"
+                : difficulty === "Medium"
+                  ? "border-yellow-400 text-yellow-300"
+                  : "border-red-500 text-red-400"
+            }`}
+          >
+            {difficulty || "MEDIUM"}
+          </span>
         </div>
-      )}
-      {sampleOutput && (
-        <div className="bg-black/70 border border-green-500/30 rounded p-3">
-          <span className="font-semibold text-green-300">Sample Output:</span>
-          <pre className="whitespace-pre-wrap">{sampleOutput}</pre>
+
+        {/* SECURITY NOTICE */}
+        <div className="text-sm text-red-400/80">
+          ⚠ copying, external execution, or debugging attempts are monitored
         </div>
-      )}
+
+        {/* DESCRIPTION */}
+        <div className="flex-1 overflow-y-auto text-green-300 text-base sm:text-lg leading-relaxed pr-2">
+          <p className="mb-3 text-green-200 text-lg sm:text-xl">
+            {"> problem.description"}
+          </p>
+          {description || "System failed to load description..."}
+        </div>
+
+        {/* IO SECTION */}
+        <div className="grid sm:grid-cols-2 gap-5">
+          {sampleInput && (
+            <div className="bg-black/70 border border-green-500/20 rounded p-4">
+              <p className="text-green-200 mb-2 text-base sm:text-lg">
+                {"> input.stream"}
+              </p>
+              <pre className="whitespace-pre-wrap text-green-300 text-sm sm:text-base">
+                {sampleInput}
+              </pre>
+            </div>
+          )}
+
+          {sampleOutput && (
+            <div className="bg-black/70 border border-green-500/20 rounded p-4">
+              <p className="text-green-200 mb-2 text-base sm:text-lg">
+                {"> expected.output"}
+              </p>
+              <pre className="whitespace-pre-wrap text-green-300 text-sm sm:text-base">
+                {sampleOutput}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER */}
+        <div className="flex justify-between text-sm text-green-500/70 border-t border-green-500/10 pt-3">
+          <span>{"> access: read-only"}</span>
+          <span>{"> integrity: verified"}</span>
+        </div>
+      </div>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import Rules from "./components/Rules";
 import Rounds from "./components/Rounds";
 import CodenSubmit from "./pages/CodenSubmit";
 import Auth from "./pages/Auth";
+import UserLeaderboard from "./pages/UserLeaderboard";
 
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
@@ -19,6 +20,7 @@ import Leaderboard from "./admin/pages/Leaderboard";
 import Submissions from "./admin/pages/Submissions";
 import Users from "./admin/pages/Users";
 import AdminRounds from "./admin/pages/AdminRounds";
+import AdminProblems from "./admin/pages/AdminProblems";
 import AdminNavbar from "./admin/components/AdminNavbar";
 
 function App() {
@@ -54,6 +56,13 @@ function App() {
         />
 
         <Route
+          path="/leaderboard"
+          element={
+            isLoggedIn ? <UserLeaderboard /> : <Navigate to="/login" replace />
+          }
+        />
+
+        <Route
           path="/code-n-submit"
           element={
             isLoggedIn ? <CodenSubmit /> : <Navigate to="/login" replace />
@@ -83,6 +92,7 @@ function App() {
           <Route path="submissions" element={<Submissions />} />
           <Route path="users" element={<Users />} />
           <Route path="rounds" element={<AdminRounds />} />
+          <Route path="problems" element={<AdminProblems />} />
         </Route>
 
         {/* ================= FALLBACK ================= */}

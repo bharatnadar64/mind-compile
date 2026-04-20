@@ -27,6 +27,7 @@ app.use("/api/code", protect, codeRouter)// app.use("/api/code", protect, codeRo
 app.use("/api/user", participantRouter)
 app.use("/api/problem", protect, problemRouter) // app.use("/api/problem", protect, problemRouter)
 app.use("/api/rounds", protect, roundRouter); // app.use("/api/rounds", protect, roundRouter);
+app.use("/api/leaderboard", protect, leaderbRouter) // public leaderboard for users
 app.use("/api/leader-board", protect, leaderbRouter)
 app.use("/api/submission", protect, submissionRrouter)
 app.use("/api/admin", adminRouter);
