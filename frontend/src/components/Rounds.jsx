@@ -97,8 +97,8 @@ const Rounds = () => {
               {/* button */}
               <button
                 disabled={!round.unlocked}
-                onClick={() => {
-                  fetchProblem(round.roundNumber);
+                onClick={async () => {
+                  await fetchProblem(round.roundNumber);
                   navigate("/code-n-submit");
                 }}
                 className={`

@@ -152,6 +152,7 @@ export const ContextProvider = ({ children }) => {
     rounds,
     setRounds,
     loadingRounds,
+    loadRounds,
     refreshRounds,
 
     currentRound,

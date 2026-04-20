@@ -4,7 +4,7 @@ import { RoundContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
-  const { api } = useContext(RoundContext);
+  const { api, loadRounds } = useContext(RoundContext);
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
@@ -49,6 +49,9 @@ const Auth = () => {
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(participant));
         localStorage.setItem("participantId", participant._id);
+
+        // Load rounds after authentication
+        await loadRounds();
 
         setMessage("Access Granted 🎉");
 
