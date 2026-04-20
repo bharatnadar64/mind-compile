@@ -3,7 +3,7 @@ import Submission from "../models/Submission.js";
 import Problem from "../models/Problems.js";
 import Participant from "../models/Participant.js";
 import { executeCode } from "./codeService.js"
-import Leaderboard from "../models/Leaderboard.js";
+import LeaderBoard from "../models/LeaderBoard.js";
 
 /**
  * 🔍 Compare outputs safely
