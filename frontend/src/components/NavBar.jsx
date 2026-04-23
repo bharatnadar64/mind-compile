@@ -25,119 +25,166 @@ const NavBar = () => {
 
   return (
     <nav className="relative bg-black border-b border-green-500/20 font-mono overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute inset-0 bg-green-500/5 blur-xl opacity-20 animate-pulse pointer-events-none" />
+      {/* ===== BACKGROUND ENGINE ===== */}
+      <div className="absolute inset-0 bg-green-500/5 blur-3xl opacity-20 pointer-events-none" />
 
-      {/* Scanlines */}
       <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
+        className="absolute inset-0 opacity-[0.08] pointer-events-none"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,0,0.12) 4px)",
         }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
+      {/* subtle energy drift */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.10),transparent_60%)] pointer-events-none" />
+
+      {/* ===== MAIN ROW ===== */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+        {/* ===== LOGO ===== */}
         <Link
           to="/"
-          className="text-green-400 text-lg tracking-widest font-bold drop-shadow-[0_0_12px_#00ff00] animate-flicker"
+          className="
+          text-green-300
+          font-bold
+          tracking-[0.35em]
+          text-lg sm:text-xl
+          drop-shadow-[0_0_14px_#00ff00]
+        "
         >
-          {"> MINDCOMPILE_"}
+          &gt; MINDCOMPILE
         </Link>
 
-        {/* Links */}
-        <div className="flex items-center gap-5">
+        {/* ===== NAV LINKS (BIG UPGRADE HERE) ===== */}
+        <div className="hidden md:flex items-center gap-10">
           {[
             { to: "/", label: "HOME" },
             { to: "/rounds", label: "ROUNDS" },
-            { to: "/leaderboard", label: "LEADERBOARD" },
+            { to: "/leaderboard", label: "RANKS" },
             { to: "/rules", label: "RULES" },
           ].map((item) => (
-            <Link key={item.to} to={item.to} className={linkStyle(item.to)}>
-              <span className="mr-1">{">"}</span>
+            <Link
+              key={item.to}
+              to={item.to}
+              className="
+              relative group
+              text-green-400/70
+              hover:text-green-200
+              transition-all duration-200
+
+              text-lg sm:text-xl   /* 👈 BIGGER LINKS */
+              tracking-[0.25em]
+            "
+            >
+              <span className="text-green-400/50 group-hover:text-green-300 mr-2">
+                &gt;
+              </span>
+
               {item.label}
 
-              {/* hover glitch */}
-              <span className="absolute left-0 top-0 opacity-0 hover:opacity-30 text-green-300 blur-[1px] translate-x-[1px]">
-                {item.label}
-              </span>
+              {/* underline system pulse */}
+              <span
+                className="
+              absolute left-0 -bottom-2
+              h-[2px] w-0
+              bg-green-400/60
+              group-hover:w-full
+              transition-all duration-300
+            "
+              />
             </Link>
           ))}
 
-          {/* Protected */}
+          {/* protected link */}
           {isLoggedIn && (
-            <Link to="/code-n-submit" className={linkStyle("/code-n-submit")}>
-              <span className="mr-1">{">"}</span>
-              CODE
+            <Link
+              to="/code-n-submit"
+              className="
+              text-green-300
+              text-lg sm:text-xl
+              tracking-[0.25em]
+              hover:text-green-200
+              transition
+            "
+            >
+              &gt; CODE
             </Link>
           )}
+        </div>
 
-          {/* Auth */}
+        {/* ===== AUTH BUTTON ===== */}
+        <div className="flex items-center gap-3">
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
               className="
-                relative px-4 py-2 border border-red-500
-                text-red-400 hover:bg-red-500 hover:text-black
-                transition-all duration-300
-                shadow-[0_0_12px_rgba(255,0,0,0.4)]
-                overflow-hidden
-              "
+              px-4 py-2
+              border border-red-500/60
+              text-red-400
+              hover:bg-red-500 hover:text-black
+              transition-all duration-300
+              text-sm sm:text-base
+              tracking-[0.25em]
+              active:scale-95
+              shadow-[0_0_12px_rgba(255,0,0,0.3)]
+            "
             >
               LOGOUT
-              {/* subtle glitch */}
-              <span className="absolute inset-0 opacity-0 hover:opacity-30 bg-red-400 blur-sm"></span>
             </button>
           ) : (
             <Link
               to="/login"
               className="
-                relative px-4 py-2 border border-green-400
-                text-green-400 hover:bg-green-400 hover:text-black
-                transition-all duration-300
-                shadow-[0_0_12px_rgba(0,255,0,0.4)]
-                overflow-hidden
-              "
+              px-4 py-2
+              border border-green-400/60
+              text-green-300
+              hover:bg-green-400 hover:text-black
+              transition-all duration-300
+              text-sm sm:text-base
+              tracking-[0.25em]
+              active:scale-95
+              shadow-[0_0_12px_rgba(0,255,0,0.3)]
+            "
             >
               LOGIN
-              <span className="absolute inset-0 opacity-0 hover:opacity-30 bg-green-300 blur-sm"></span>
             </Link>
           )}
         </div>
       </div>
 
-      {/* Bottom scan bar */}
+      {/* ===== MOBILE STRIP (cleaner, not childish labels) ===== */}
+      <div className="md:hidden flex justify-center gap-6 text-xs tracking-[0.3em] text-green-500/70 pb-3">
+        <span>HOME</span>
+        <span>ROUNDS</span>
+        <span>RANKS</span>
+        <span>RULES</span>
+      </div>
+
+      {/* ===== SYSTEM STATUS BAR ===== */}
+      <div className="text-[10px] sm:text-xs text-green-500/60 px-4 py-1 border-t border-green-500/10 flex justify-between">
+        <span>{"> user.status: " + (isLoggedIn ? "AUTHORIZED" : "GUEST")}</span>
+
+        <span className="text-green-400 animate-pulse">
+          {"> system.stability: NOMINAL"}
+        </span>
+      </div>
+
+      {/* ===== SCANLINE ===== */}
       <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
         <div
-          className="h-full w-1/3 bg-green-400/40 blur-sm"
-          style={{ animation: "scanMove 4s linear infinite" }}
+          className="h-full w-1/4 bg-green-400/30 blur-sm"
+          style={{ animation: "scanMove 5s linear infinite" }}
         />
       </div>
 
-      {/* Status strip (this is the killer detail) */}
-      <div className="text-[10px] sm:text-xs text-green-500/60 px-4 py-1 border-t border-green-500/10 flex justify-between">
-        <span>{"> user.status: " + (isLoggedIn ? "AUTHORIZED" : "GUEST")}</span>
-        <span className="animate-flicker">{"> system.latency: 12ms"}</span>
-      </div>
-
-      {/* Animations */}
+      {/* ===== ANIMATION ===== */}
       <style>
         {`
-          @keyframes scanMove {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-          }
-
-          @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-            20%, 24%, 55% { opacity: 0.3; }
-          }
-
-          .animate-flicker {
-            animation: flicker 2.5s infinite;
-          }
-        `}
+        @keyframes scanMove {
+          0% { transform: translateX(-120%); }
+          100% { transform: translateX(320%); }
+        }
+      `}
       </style>
     </nav>
   );

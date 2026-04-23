@@ -34,11 +34,43 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="relative min-h-screen bg-black text-green-400 font-mono p-6 overflow-hidden">
-      {/* ambient glow */}
+    <div className="relative min-h-screen bg-black text-green-400 font-mono p-4 sm:p-6 overflow-hidden">
+      {/* ===== INLINE FX ===== */}
+      <style>{`
+      @keyframes blink { 50% { opacity: 0; } }
+
+      @keyframes scanMove {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+      }
+
+      @keyframes barLoad {
+        from { width: 0%; }
+        to { width: 100%; }
+      }
+
+      .blink { animation: blink 1s step-end infinite; }
+
+      .scanline-move {
+        animation: scanMove 6s linear infinite;
+      }
+
+      .bar-load {
+        animation: barLoad 1.2s ease-out;
+      }
+    `}</style>
+
+      {/* ===== BACKGROUND ===== */}
+
+      {/* subtle red glow (system layer) */}
       <div className="absolute inset-0 bg-red-500/5 blur-2xl opacity-20 pointer-events-none" />
 
-      {/* scanlines */}
+      {/* moving scan beam */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="scanline-move h-20 bg-gradient-to-b from-transparent via-red-500/10 to-transparent" />
+      </div>
+
+      {/* static scanlines */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
@@ -47,18 +79,24 @@ const AdminDashboard = () => {
         }}
       />
 
-      {/* HEADER */}
+      {/* ===== HEADER ===== */}
       <div className="relative z-10 mb-8">
-        <h1 className="text-4xl font-bold tracking-widest text-red-400 drop-shadow-[0_0_15px_rgba(255,0,0,0.7)]">
-          {"> CONTROL ROOM DASHBOARD"}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-widest text-red-400 flex items-center gap-2">
+          <span>{">"}</span>
+          <span>CONTROL_ROOM</span>
+          <span className="text-green-400">::DASHBOARD</span>
+          <span className="blink">_</span>
         </h1>
-        <p className="text-red-500/60 mt-2 text-sm">
-          live system monitoring active
-        </p>
+
+        <div className="mt-2 text-xs sm:text-sm text-green-500/70 flex flex-wrap gap-4">
+          <span>{"> uptime: 72h"}</span>
+          <span>{"> nodes: active"}</span>
+          <span className="text-red-500/70">{"> threat.level: low"}</span>
+        </div>
       </div>
 
-      {/* SYSTEM METRICS */}
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+      {/* ===== METRICS ===== */}
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
         {[
           { label: "participants.online", value: totalUsers },
           { label: "submissions.stream", value: totalSubmissions },
@@ -66,79 +104,95 @@ const AdminDashboard = () => {
         ].map((item, i) => (
           <div
             key={i}
-            className="border border-red-500/30 bg-black/70 p-5 rounded shadow-[0_0_20px_rgba(255,0,0,0.1)]"
+            className="border border-green-500/20 bg-black/60 p-4 rounded backdrop-blur-sm"
           >
-            <p className="text-red-400/70 text-sm">
+            <p className="text-green-400/60 text-xs">
               {"> "}
               {item.label}
             </p>
-            <h2 className="text-3xl font-bold text-red-300 mt-2">
+
+            <h2 className="text-2xl sm:text-3xl font-bold mt-1 text-green-300">
               {item.value}
             </h2>
+
+            {/* progress style bar (unique feel vs pulse) */}
+            <div className="mt-3 h-[3px] bg-green-500/10 overflow-hidden">
+              <div className="h-full bg-green-400 bar-load" />
+            </div>
           </div>
         ))}
       </div>
 
-      {/* GRID SECTION */}
+      {/* ===== MAIN GRID ===== */}
       <div className="relative z-10 grid md:grid-cols-2 gap-6">
         {/* LEADERBOARD */}
-        <div className="border border-red-500/30 bg-black/70 p-5 rounded">
-          <div className="flex justify-between mb-4">
-            <h2 className="text-xl text-red-300">{"> live.rankings"}</h2>
+        <div className="border border-green-500/20 bg-black/60 p-5 rounded">
+          <div className="flex justify-between mb-4 items-center">
+            <h2 className="text-lg text-green-300">{"> live.rankings"}</h2>
+
             <button
               onClick={() => navigate("/admin/leaderboard")}
-              className="text-red-400 text-sm hover:text-red-300"
+              className="text-xs text-green-400 hover:text-green-200"
             >
-              expand →
+              view_all →
             </button>
           </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+          <div className="space-y-2 text-xs sm:text-sm">
             {leaderboard.slice(0, 5).map((user, i) => (
               <div
                 key={i}
-                className="flex justify-between border-b border-red-500/10 pb-1"
+                className="flex justify-between items-center border-b border-green-500/10 pb-1"
               >
-                <span>
-                  #{i + 1} {user.participantId?.name || "Unknown"}
+                <span className="flex gap-2">
+                  <span className="text-green-500/50">[{i + 1}]</span>
+                  {user.participantId?.name || "Unknown"}
                 </span>
-                <span className="text-red-300">{user.totalScore}</span>
+
+                <span className="text-green-300">{user.totalScore}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* SUBMISSIONS LOG */}
-        <div className="border border-red-500/30 bg-black/70 p-5 rounded">
-          <div className="flex justify-between mb-4">
-            <h2 className="text-xl text-red-300">{"> event.stream"}</h2>
+        {/* SUBMISSION STREAM */}
+        <div className="border border-green-500/20 bg-black/60 p-5 rounded">
+          <div className="flex justify-between mb-4 items-center">
+            <h2 className="text-lg text-green-300">{"> event.stream"}</h2>
+
             <button
               onClick={() => navigate("/admin/submissions")}
-              className="text-red-400 text-sm hover:text-red-300"
+              className="text-xs text-green-400 hover:text-green-200"
             >
-              expand →
+              view_all →
             </button>
           </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto text-sm">
+          <div className="space-y-2 text-xs sm:text-sm max-h-[300px] overflow-y-auto pr-1">
             {submissions.slice(0, 5).map((s) => (
-              <div key={s._id} className="border-b border-red-500/10 pb-2">
+              <div key={s._id} className="border-b border-green-500/10 pb-2">
                 <p>
-                  {"> "}
-                  {s.name || s.participantId?.name} →{" "}
-                  {s.problemTitle || s.problemId?.title}
+                  <span className="text-green-500/50">{">"}</span>{" "}
+                  {s.name || s.participantId?.name}
                 </p>
-                <p className="text-red-300/70">score: {s.scoreAwarded}</p>
+
+                <p className="text-green-300/80">
+                  ↳ {s.problemTitle || s.problemId?.title}
+                </p>
+
+                <p className="text-green-500/60 text-[11px]">
+                  score: {s.scoreAwarded}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* SYSTEM FOOTER STATUS */}
-      <div className="relative z-10 mt-10 text-xs text-red-500/60 flex justify-between border-t border-red-500/10 pt-3">
+      {/* ===== FOOTER ===== */}
+      <div className="relative z-10 mt-10 text-[10px] sm:text-xs text-green-500/60 flex justify-between border-t border-green-500/10 pt-3">
         <span>{"> system.status: ONLINE"}</span>
-        <span className="animate-pulse">{"> monitoring.active: TRUE"}</span>
+        <span className="text-green-400">{"> packets: stable"}</span>
       </div>
     </div>
   );

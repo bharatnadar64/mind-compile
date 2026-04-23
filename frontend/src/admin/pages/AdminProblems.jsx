@@ -98,9 +98,28 @@ const AdminProblems = () => {
     );
 
   return (
-    <div className="bg-black text-green-400 min-h-screen p-6 font-mono">
-      <h1 className="text-xl mb-6">$ admin.problems --manage</h1>
+    <div className="relative bg-black text-green-400 min-h-screen p-4 sm:p-6 font-mono overflow-hidden">
+      {/* ===== SUBTLE FX ===== */}
+      <style>{`
+      @keyframes caret { 50% { opacity: 0; } }
+      .caret::after {
+        content: "_";
+        animation: caret 1s step-end infinite;
+      }
+    `}</style>
 
+      {/* soft grid */}
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[linear-gradient(#22c55e_1px,transparent_1px),linear-gradient(90deg,#22c55e_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+      {/* ===== HEADER ===== */}
+      <div className="mb-6">
+        <h1 className="text-lg sm:text-xl caret">Problem Manager</h1>
+        <p className="text-green-500/60 text-xs mt-1">
+          manage problems, test cases, and difficulty levels
+        </p>
+      </div>
+
+      {/* CREATE BUTTON */}
       <button
         onClick={() =>
           setCreatingProblem({
@@ -111,56 +130,86 @@ const AdminProblems = () => {
             testCases: [{ input: "", expectedOutput: "" }],
           })
         }
-        className="mb-4 hover:text-green-300"
+        className="mb-6 border border-green-500/30 px-3 py-1 hover:bg-green-500/10 transition text-sm"
       >
-        [create new problem]
+        + Create Problem
       </button>
 
-      {/* LIST */}
+      {/* ===== LIST ===== */}
       <div className="space-y-4">
-        {problems.map((p) => (
-          <div key={p._id} className="border border-green-500 p-4">
-            <p>{`> Round ${p.round} : ${p.title}`}</p>
-            <p>{`  difficulty = ${p.difficulty}`}</p>
-            <p>{`  description = ${p.description.substring(0, 50)}...`}</p>
-            <p>{`  test_cases = ${p.input?.length || 0}`}</p>
+        {problems.map((p, idx) => (
+          <div
+            key={p._id}
+            className="border border-green-500/20 bg-black/60 p-4 rounded"
+          >
+            {/* header */}
+            <div className="flex justify-between items-center flex-wrap gap-2">
+              <p className="text-green-300 text-sm sm:text-base">
+                {idx + 1}. {p.title}
+              </p>
 
-            <div className="mt-2 flex gap-4">
+              <span
+                className={`text-[10px] px-2 py-[2px] border rounded ${
+                  p.difficulty === "easy"
+                    ? "border-green-500/40 text-green-400"
+                    : p.difficulty === "medium"
+                      ? "border-yellow-500/40 text-yellow-400"
+                      : "border-red-500/40 text-red-400"
+                }`}
+              >
+                {p.difficulty}
+              </span>
+            </div>
+
+            {/* meta */}
+            <div className="mt-2 text-xs sm:text-sm text-green-500/70 space-y-1">
+              <p>Round: {p.round}</p>
+              <p>
+                {p.description.substring(0, 80)}
+                {p.description.length > 80 && "..."}
+              </p>
+              <p>Test Cases: {p.input?.length || 0}</p>
+            </div>
+
+            {/* actions */}
+            <div className="mt-3 flex gap-4 text-sm">
               <button
                 onClick={() => handleEdit(p)}
-                className="hover:text-yellow-400"
+                className="text-yellow-400 hover:text-yellow-300"
               >
-                [edit]
+                Edit
               </button>
 
               <button
                 onClick={() => handleDelete(p.round)}
-                className="hover:text-red-500"
+                className="text-red-400 hover:text-red-300"
               >
-                [delete]
+                Delete
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* EDIT PANEL */}
+      {/* ===== EDIT PANEL ===== */}
       {editingProblem && (
-        <div className="mt-8 border border-green-500 p-4">
-          <p className="mb-4">{`$ editing problem for round ${editingProblem.round}`}</p>
+        <div className="mt-10 border border-yellow-500/30 bg-black/70 p-4 rounded">
+          <p className="text-yellow-400 mb-4 text-sm">
+            Editing Problem (Round {editingProblem.round})
+          </p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 text-sm">
             <input
-              className="bg-black border border-green-500 p-2 w-full"
+              className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
               value={editingProblem.title}
               onChange={(e) =>
                 setEditingProblem({ ...editingProblem, title: e.target.value })
               }
-              placeholder="title"
+              placeholder="Title"
             />
 
             <textarea
-              className="bg-black border border-green-500 p-2 w-full h-20"
+              className="bg-black border border-green-500/30 p-2 w-full h-20 focus:outline-none focus:ring-1 focus:ring-green-400"
               value={editingProblem.description}
               onChange={(e) =>
                 setEditingProblem({
@@ -168,11 +217,11 @@ const AdminProblems = () => {
                   description: e.target.value,
                 })
               }
-              placeholder="description"
+              placeholder="Description"
             />
 
             <select
-              className="bg-black border border-green-500 p-2 w-full"
+              className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
               value={editingProblem.difficulty}
               onChange={(e) =>
                 setEditingProblem({
@@ -181,19 +230,24 @@ const AdminProblems = () => {
                 })
               }
             >
-              <option value="easy">easy</option>
-              <option value="medium">medium</option>
-              <option value="hard">hard</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
             </select>
 
             {/* TEST CASES */}
-            <div className="border border-green-500/50 p-3 mt-4">
-              <p className="mb-3">Test Cases:</p>
+            <div className="border border-green-500/20 p-3 mt-4">
+              <p className="mb-3 text-green-400/80 text-sm">Test Cases</p>
+
               {editingProblem.testCases?.map((tc, i) => (
-                <div key={i} className="border border-green-500/30 p-2 mb-2">
-                  <p className="text-sm mb-2">Case {i + 1}</p>
+                <div
+                  key={i}
+                  className="border border-green-500/10 p-2 mb-2 rounded"
+                >
+                  <p className="text-xs mb-2 text-green-500/70">Case {i + 1}</p>
+
                   <input
-                    className="bg-black border border-green-500 p-2 w-full mb-2"
+                    className="bg-black border border-green-500/30 p-2 w-full mb-2 focus:outline-none focus:ring-1 focus:ring-green-400"
                     value={tc.input}
                     onChange={(e) => {
                       const updated = [...editingProblem.testCases];
@@ -203,10 +257,11 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    placeholder="input"
+                    placeholder="Input"
                   />
+
                   <input
-                    className="bg-black border border-green-500 p-2 w-full"
+                    className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
                     value={tc.expectedOutput}
                     onChange={(e) => {
                       const updated = [...editingProblem.testCases];
@@ -216,8 +271,9 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    placeholder="expected output"
+                    placeholder="Expected Output"
                   />
+
                   <button
                     onClick={() => {
                       const updated = editingProblem.testCases.filter(
@@ -228,12 +284,13 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    className="mt-2 text-red-400 hover:text-red-300 text-sm"
+                    className="mt-2 text-red-400 hover:text-red-300 text-xs"
                   >
-                    [remove case]
+                    Remove
                   </button>
                 </div>
               ))}
+
               <button
                 onClick={() => {
                   const updated = [
@@ -244,34 +301,37 @@ const AdminProblems = () => {
                 }}
                 className="mt-2 text-green-400 hover:text-green-300 text-sm"
               >
-                [add test case]
+                + Add Test Case
               </button>
             </div>
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button onClick={handleUpdate} className="hover:text-green-300">
-              [save]
+          <div className="mt-4 flex gap-4 text-sm">
+            <button
+              onClick={handleUpdate}
+              className="text-green-400 hover:text-green-300"
+            >
+              Save Changes
             </button>
 
             <button
               onClick={() => setEditingProblem(null)}
-              className="hover:text-gray-400"
+              className="text-gray-400 hover:text-gray-300"
             >
-              [cancel]
+              Cancel
             </button>
           </div>
         </div>
       )}
 
-      {/* CREATE PANEL */}
+      {/* ===== CREATE PANEL ===== */}
       {creatingProblem && (
-        <div className="mt-8 border border-green-500 p-4">
-          <p className="mb-4">$ creating new problem</p>
+        <div className="mt-10 border border-green-500/30 bg-black/70 p-4 rounded">
+          <p className="mb-4 text-sm">Create New Problem</p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 text-sm">
             <input
-              className="bg-black border border-green-500 p-2 w-full"
+              className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
               type="number"
               step="0.1"
               value={creatingProblem.round}
@@ -281,11 +341,11 @@ const AdminProblems = () => {
                   round: Number(e.target.value),
                 })
               }
-              placeholder="round number (e.g. 1.1)"
+              placeholder="Round"
             />
 
             <input
-              className="bg-black border border-green-500 p-2 w-full"
+              className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
               value={creatingProblem.title}
               onChange={(e) =>
                 setCreatingProblem({
@@ -293,11 +353,11 @@ const AdminProblems = () => {
                   title: e.target.value,
                 })
               }
-              placeholder="title"
+              placeholder="Title"
             />
 
             <textarea
-              className="bg-black border border-green-500 p-2 w-full h-20"
+              className="bg-black border border-green-500/30 p-2 w-full h-20 focus:outline-none focus:ring-1 focus:ring-green-400"
               value={creatingProblem.description}
               onChange={(e) =>
                 setCreatingProblem({
@@ -305,11 +365,11 @@ const AdminProblems = () => {
                   description: e.target.value,
                 })
               }
-              placeholder="description"
+              placeholder="Description"
             />
 
             <select
-              className="bg-black border border-green-500 p-2 w-full"
+              className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
               value={creatingProblem.difficulty}
               onChange={(e) =>
                 setCreatingProblem({
@@ -318,19 +378,24 @@ const AdminProblems = () => {
                 })
               }
             >
-              <option value="easy">easy</option>
-              <option value="medium">medium</option>
-              <option value="hard">hard</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
             </select>
 
             {/* TEST CASES */}
-            <div className="border border-green-500/50 p-3 mt-4">
-              <p className="mb-3">Test Cases:</p>
+            <div className="border border-green-500/20 p-3 mt-4">
+              <p className="mb-3 text-green-400/80 text-sm">Test Cases</p>
+
               {creatingProblem.testCases?.map((tc, i) => (
-                <div key={i} className="border border-green-500/30 p-2 mb-2">
-                  <p className="text-sm mb-2">Case {i + 1}</p>
+                <div
+                  key={i}
+                  className="border border-green-500/10 p-2 mb-2 rounded"
+                >
+                  <p className="text-xs mb-2 text-green-500/70">Case {i + 1}</p>
+
                   <input
-                    className="bg-black border border-green-500 p-2 w-full mb-2"
+                    className="bg-black border border-green-500/30 p-2 w-full mb-2 focus:outline-none focus:ring-1 focus:ring-green-400"
                     value={tc.input}
                     onChange={(e) => {
                       const updated = [...creatingProblem.testCases];
@@ -340,10 +405,11 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    placeholder="input"
+                    placeholder="Input"
                   />
+
                   <input
-                    className="bg-black border border-green-500 p-2 w-full"
+                    className="bg-black border border-green-500/30 p-2 w-full focus:outline-none focus:ring-1 focus:ring-green-400"
                     value={tc.expectedOutput}
                     onChange={(e) => {
                       const updated = [...creatingProblem.testCases];
@@ -353,8 +419,9 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    placeholder="expected output"
+                    placeholder="Expected Output"
                   />
+
                   <button
                     onClick={() => {
                       const updated = creatingProblem.testCases.filter(
@@ -365,12 +432,13 @@ const AdminProblems = () => {
                         testCases: updated,
                       });
                     }}
-                    className="mt-2 text-red-400 hover:text-red-300 text-sm"
+                    className="mt-2 text-red-400 hover:text-red-300 text-xs"
                   >
-                    [remove case]
+                    Remove
                   </button>
                 </div>
               ))}
+
               <button
                 onClick={() => {
                   const updated = [
@@ -384,21 +452,24 @@ const AdminProblems = () => {
                 }}
                 className="mt-2 text-green-400 hover:text-green-300 text-sm"
               >
-                [add test case]
+                + Add Test Case
               </button>
             </div>
           </div>
 
-          <div className="mt-4 flex gap-4">
-            <button onClick={handleCreate} className="hover:text-green-300">
-              [create]
+          <div className="mt-4 flex gap-4 text-sm">
+            <button
+              onClick={handleCreate}
+              className="text-green-400 hover:text-green-300"
+            >
+              Create
             </button>
 
             <button
               onClick={() => setCreatingProblem(null)}
-              className="hover:text-gray-400"
+              className="text-gray-400 hover:text-gray-300"
             >
-              [cancel]
+              Cancel
             </button>
           </div>
         </div>

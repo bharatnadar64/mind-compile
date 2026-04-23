@@ -2,63 +2,81 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="pt-3.5 relative bg-black text-green-400 font-mono overflow-hidden">
-      {/* Ambient Glow Pulse */}
-      <div className="absolute inset-0 bg-green-500/5 blur-2xl opacity-20 animate-pulse pointer-events-none" />
+    <footer className="relative bg-black text-green-300 font-mono overflow-hidden">
+      {/* ===== BACKGROUND ENGINE ===== */}
+      <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 via-black to-black opacity-80 pointer-events-none" />
 
-      {/* Scanlines */}
       <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.10) 3px)",
         }}
       />
 
-      {/* Top glow border */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-40" />
+      {/* soft ambient node glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,255,0,0.12),transparent_55%)] pointer-events-none animate-pulse" />
 
-      {/* MAIN */}
-      <div className="w-full px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24 relative z-10">
-        {/* GRID */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-20">
-          {/* BRAND */}
-          <div className="space-y-6">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-widest text-green-400 drop-shadow-[0_0_12px_#00ff00] animate-pulse">
+      {/* top border signal line */}
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-30" />
+
+      {/* ===== MAIN ===== */}
+      <div className="relative z-10 px-4 sm:px-10 lg:px-24 py-12 sm:py-16 lg:py-20">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-16">
+          {/* ===== BRAND ===== */}
+          <div className="space-y-5">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[0.25em] text-green-200">
               MINDCOMPILE
             </h2>
 
-            <p className="text-green-500/70 text-sm sm:text-base lg:text-lg leading-relaxed max-w-md">
-              A blind coding battleground where execution is forbidden and only
-              real programmers survive under pressure.
+            <p className="text-green-500/70 text-sm sm:text-base leading-relaxed max-w-sm">
+              A blind coding arena where execution is disabled and logic is the
+              only weapon.
             </p>
 
-            <p className="text-green-500/50 text-xs sm:text-sm animate-flicker">
-              {"> system.status: ACTIVE"}
+            <p className="text-xs text-green-500/50 tracking-widest animate-pulse">
+              system.status :: ACTIVE
             </p>
           </div>
 
-          {/* NAV */}
-          <div className="space-y-6">
-            <h3 className="text-green-300 tracking-wider text-sm sm:text-base">
+          {/* ===== NAVIGATION ===== */}
+          <div className="space-y-5">
+            <h3 className="text-green-300 text-sm tracking-[0.3em]">
               NAVIGATION
             </h3>
-            <ul className="space-y-3 text-sm sm:text-base text-green-500/70">
+
+            <ul className="space-y-3 text-sm sm:text-base">
               {["/", "/about", "/rounds", "/rules"].map((path, i) => {
                 const labels = ["Home", "About", "Rounds", "Rules"];
+
                 return (
                   <li key={path}>
                     <Link
                       to={path}
-                      className="group relative inline-block hover:text-green-300 transition-all duration-200"
+                      className="
+                      group inline-flex items-center gap-2
+                      text-green-500/70
+                      hover:text-green-200
+                      transition
+                      relative
+                    "
                     >
-                      <span className="mr-2">{">"}</span>
-                      {labels[i]}
-
-                      {/* Hover glitch */}
-                      <span className="absolute left-0 top-0 opacity-0 group-hover:opacity-40 text-green-300 blur-[1px] translate-x-[1px]">
-                        {labels[i]}
+                      <span className="text-green-400/60 group-hover:text-green-300">
+                        &gt;
                       </span>
+
+                      <span>{labels[i]}</span>
+
+                      {/* hover glow line */}
+                      <span
+                        className="
+                      absolute left-0 -bottom-1
+                      w-0 h-[1px]
+                      bg-green-400/60
+                      group-hover:w-full
+                      transition-all duration-300
+                    "
+                      />
                     </Link>
                   </li>
                 );
@@ -66,76 +84,63 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* SYSTEM */}
-          <div className="space-y-6">
-            <h3 className="text-green-300 tracking-wider text-sm sm:text-base">
-              SYSTEM INFO
-            </h3>
+          {/* ===== SYSTEM INFO ===== */}
+          <div className="space-y-5">
+            <h3 className="text-green-300 text-sm tracking-[0.3em]">SYSTEM</h3>
 
-            <div className="text-sm sm:text-base text-green-500/70 space-y-3">
-              <p>{"> event: SIESCOMS MindCompile"}</p>
-              <p>{"> mode: Blind Coding"}</p>
-              <p>{"> rounds: 3"}</p>
+            <div className="space-y-3 text-sm text-green-500/70">
+              <p>event :: SIESCOMS MindCompile</p>
+              <p>mode :: Blind Coding Arena</p>
+              <p>rounds :: 3 stages</p>
 
-              <p className="text-red-500 animate-pulse">
-                {"> warning: No Debugging Allowed"}
+              <p className="text-red-400/80 animate-pulse">
+                WARNING :: Debugging Disabled
               </p>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="my-12 h-[1px] bg-green-500/20" />
+        {/* ===== DIVIDER ===== */}
+        <div className="my-10 h-[1px] bg-green-500/20" />
 
-        {/* BOTTOM */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 text-sm sm:text-base text-green-500/60">
-          <p className="text-center lg:text-left">
-            © {new Date().getFullYear()} MINDCOMPILE // SIESCOMS
+        {/* ===== BOTTOM BAR ===== */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-6 text-xs sm:text-sm text-green-500/60">
+          <p className="tracking-wide text-center sm:text-left">
+            © {new Date().getFullYear()} MINDCOMPILE // SYSTEM CORE
           </p>
 
           <div className="flex items-center gap-3">
-            {/* Live indicator */}
+            {/* live indicator */}
             <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-400"></span>
+              <span className="absolute h-full w-full rounded-full bg-green-400 opacity-70 animate-ping" />
+              <span className="relative h-3 w-3 rounded-full bg-green-400" />
             </span>
 
-            <span className="tracking-wider animate-flicker">
-              SYSTEM ONLINE
-            </span>
+            <span className="tracking-widest text-green-400/70">ONLINE</span>
           </div>
         </div>
       </div>
 
-      {/* Side structure lines */}
-      <div className="hidden lg:block absolute left-0 top-0 h-full w-[2px] bg-green-500/20" />
-      <div className="hidden lg:block absolute right-0 top-0 h-full w-[2px] bg-green-500/20" />
+      {/* ===== EDGE STRUCTURE ===== */}
+      <div className="hidden lg:block absolute left-0 top-0 h-full w-[1px] bg-green-500/20" />
+      <div className="hidden lg:block absolute right-0 top-0 h-full w-[1px] bg-green-500/20" />
 
-      {/* Moving scan bar */}
+      {/* ===== SCAN LINE (subtle) ===== */}
       <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
         <div
-          className="h-full w-1/3 bg-green-400/40 blur-sm"
-          style={{ animation: "scanMove 6s linear infinite" }}
+          className="h-full w-1/4 bg-green-400/30 blur-sm"
+          style={{ animation: "scanMove 7s linear infinite" }}
         />
       </div>
 
-      {/* Styles */}
+      {/* ===== ANIMATION ===== */}
       <style>
         {`
-          @keyframes scanMove {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-          }
-
-          @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-            20%, 24%, 55% { opacity: 0.3; }
-          }
-
-          .animate-flicker {
-            animation: flicker 3s infinite;
-          }
-        `}
+        @keyframes scanMove {
+          0% { transform: translateX(-120%); }
+          100% { transform: translateX(320%); }
+        }
+      `}
       </style>
     </footer>
   );
