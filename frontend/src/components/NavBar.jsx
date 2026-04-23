@@ -154,10 +154,10 @@ const NavBar = () => {
 
       {/* ===== MOBILE STRIP (cleaner, not childish labels) ===== */}
       <div className="md:hidden flex justify-center gap-6 text-xs tracking-[0.3em] text-green-500/70 pb-3">
-        <span>HOME</span>
-        <span>ROUNDS</span>
-        <span>RANKS</span>
-        <span>RULES</span>
+        <Link to="/">HOME</Link>
+        <Link to="/rounds">ROUNDS</Link>
+        <Link to="/leaderboard">RANKS</Link>
+        <Link to="/rules">RULES</Link>
       </div>
 
       {/* ===== SYSTEM STATUS BAR ===== */}
