@@ -21,12 +21,12 @@ const SubmissionSchema = new mongoose.Schema({
 
     code: {
         type: String,
-        required: true
+        default: ""
     },
 
     output: {
         type: String,
-        required: true
+        default: ""
     },
 
     isCorrect: {

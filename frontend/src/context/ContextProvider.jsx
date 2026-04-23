@@ -48,24 +48,7 @@ export const ContextProvider = ({ children }) => {
 
       const res = await api.get("/api/rounds");
 
-      // Get unlocked rounds from localStorage
-      const unlockedRounds = JSON.parse(
-        localStorage.getItem("unlockedRounds") || "[]",
-      );
-
-      // If no unlocked, unlock the first
-      if (unlockedRounds.length === 0 && res.data.length > 0) {
-        unlockedRounds.push(res.data[0].roundNumber);
-        localStorage.setItem("unlockedRounds", JSON.stringify(unlockedRounds));
-      }
-
-      // ✅ Correct unlock logic (supports 1.1, 1.2)
-      const formatted = res.data.map((r) => ({
-        ...r,
-        unlocked: unlockedRounds.includes(r.roundNumber),
-      }));
-
-      setRounds(formatted);
+      setRounds(res.data);
     } catch (err) {
       console.log("Error loading rounds:", err);
     } finally {
@@ -86,44 +69,59 @@ export const ContextProvider = ({ children }) => {
   }, []);
 
   // ================= UNLOCK NEXT ROUND =================
-  const unlockNextRound = (roundNumber) => {
-    setRounds((prev) => {
-      const index = prev.findIndex((r) => r.roundNumber === roundNumber);
-      if (index === -1) return prev;
+  const unlockNextRound = async (roundNumber) => {
+    try {
+      await api.post("/api/rounds/unlock", { currentRound: roundNumber });
+      // Reload rounds to get updated unlocked status
+      await loadRounds();
+    } catch (err) {
+      console.log("Error unlocking next round:", err);
+    }
+  };
 
-      const updated = prev.map((r, i) => {
-        if (i === index) return { ...r, unlocked: false }; // lock current
-        if (i === index + 1) return { ...r, unlocked: true }; // unlock next
-        return r;
-      });
+  const getExecutionStorageKey = (roundNumber) => {
+    const participantId = localStorage.getItem("participantId") || "guest";
+    return `run_remaining_${participantId}_${roundNumber}`;
+  };
 
-      // Update localStorage
-      const unlockedRounds = updated
-        .filter((r) => r.unlocked)
-        .map((r) => r.roundNumber);
-      localStorage.setItem("unlockedRounds", JSON.stringify(unlockedRounds));
-
-      return updated;
-    });
+  const getSavedExecutionCount = (roundNumber, maxExecutions) => {
+    const key = getExecutionStorageKey(roundNumber);
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
+      const value = Number(saved);
+      if (!Number.isNaN(value)) {
+        return Math.min(Math.max(value, 0), maxExecutions);
+      }
+    }
+    return maxExecutions;
   };
 
   // ================= FETCH PROBLEM =================
   const fetchProblem = async (roundNumber) => {
     try {
-      const res = await api.get(`/api/problem/${roundNumber}`);
+      const [problemRes, roundRes] = await Promise.all([
+        api.get(`/api/problem/${roundNumber}`),
+        api.get(`/api/rounds/number/${roundNumber}`),
+      ]);
 
-      setProblem(res.data);
+      const roundConfig = roundRes.data;
+      const maxExecutions =
+        roundConfig.executionAllowed &&
+        Number.isFinite(roundConfig.maxExecutions)
+          ? Number(roundConfig.maxExecutions)
+          : 0;
+
+      setProblem(problemRes.data);
       setCurrentRound(roundNumber);
-
-      // 🧪 Execution rules
-      if (roundNumber === 1.1 || roundNumber === 1.2 || roundNumber === 3) {
-        setExecutionCount(1);
-      } else {
-        setExecutionCount(0);
-      }
-
       setCode("");
       setOutput("");
+
+      const remainingCount = getSavedExecutionCount(roundNumber, maxExecutions);
+      setExecutionCount(remainingCount);
+      localStorage.setItem(
+        getExecutionStorageKey(roundNumber),
+        String(remainingCount),
+      );
     } catch (err) {
       console.log("Error fetching problem:", err);
     }
@@ -131,18 +129,7 @@ export const ContextProvider = ({ children }) => {
 
   // ================= REFRESH ROUNDS =================
   const refreshRounds = async () => {
-    try {
-      const res = await api.get("/api/rounds");
-
-      const updated = res.data.map((r, index) => ({
-        ...r,
-        unlocked: index === 0, // ✅ always keep first unlocked
-      }));
-
-      setRounds(updated);
-    } catch (err) {
-      console.log("Error refreshing rounds:", err);
-    }
+    await loadRounds();
   };
 
   // ================= CONTEXT VALUE =================

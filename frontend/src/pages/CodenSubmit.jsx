@@ -12,6 +12,7 @@ const CodenSubmit = () => {
   const [language, setLanguage] = useState("python-3.14");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [navigationAttempted, setNavigationAttempted] = useState(false);
 
   const [startTime, setStartTime] = useState(null); // timestamp (number)
   const [timeLeft, setTimeLeft] = useState(0);
@@ -23,6 +24,8 @@ const CodenSubmit = () => {
 
   const {
     api,
+    rounds,
+    loadRounds,
     problem,
     code,
     setCode,
@@ -31,6 +34,7 @@ const CodenSubmit = () => {
     executionCount,
     setExecutionCount,
     unlockNextRound,
+    currentRound,
   } = useContext(RoundContext);
 
   // =========================================
@@ -54,19 +58,110 @@ const CodenSubmit = () => {
   }, [problem?.round]);
 
   // =========================================
+  // � REDIRECT IF ROUND IS NO LONGER ACCESSIBLE
+  // =========================================
+  useEffect(() => {
+    const verifyRoundAccess = async () => {
+      if (!currentRound) {
+        navigate("/rounds");
+        return;
+      }
+
+      if (rounds.length === 0) {
+        await loadRounds();
+        return;
+      }
+
+      const roundNumber = Number(currentRound);
+      const activeRound = rounds.find(
+        (r) => Number(r.roundNumber) === roundNumber,
+      );
+
+      if (!activeRound || !activeRound.unlocked) {
+        navigate("/rounds");
+      }
+    };
+
+    verifyRoundAccess();
+  }, [currentRound, rounds, loadRounds, navigate]);
+
+  // =========================================
+  // �🔙 HANDLE BROWSER BACK NAVIGATION
+  // =========================================
+  useEffect(() => {
+    const handlePopState = (e) => {
+      // Prevent default back navigation
+      e.preventDefault();
+      window.history.forward();
+
+      // Show confirmation dialog only if there's unsaved code
+      if (code && code.trim() && !autoSubmitted.current) {
+        const confirmed = window.confirm(
+          "You have unsaved code. Do you want to submit and go back?",
+        );
+
+        if (confirmed) {
+          setNavigationAttempted(true); // Trigger submission
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [code]);
+
+  // =========================================
+  // 🔄 TRIGGER SUBMISSION ON NAVIGATION ATTEMPT
+  // =========================================
+  useEffect(() => {
+    if (!navigationAttempted) return;
+
+    const submitAndNavigate = async () => {
+      if (submitting) return;
+      setSubmitting(true);
+
+      try {
+        const submissionData = {
+          problemId: problem._id,
+          round: problem.round,
+          code,
+          language,
+          startedAt: new Date(startTime),
+          submittedAt: new Date(),
+          autoSubmitted: true,
+        };
+
+        const res = await api.post("/api/submission", submissionData);
+
+        if (res.status === 201) {
+          autoSubmitted.current = true;
+          await unlockNextRound(problem.round);
+
+          const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
+          localStorage.removeItem(key);
+
+          setCode("");
+          setOutput("");
+          setNavigationAttempted(false);
+
+          navigate("/rounds");
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+        setOutput(err.response?.data?.error || "Submission failed ❌");
+        setNavigationAttempted(false);
+        setSubmitting(false);
+      }
+    };
+
+    submitAndNavigate();
+  }, [navigationAttempted]);
+
+  // =========================================
   // ⏱️ INIT TIMER (PERSISTENT FIXED)
   // =========================================
   useEffect(() => {
     if (!problem) return;
-
-    // ✅ Check if round is unlocked
-    const unlockedRounds = JSON.parse(
-      localStorage.getItem("unlockedRounds") || "[]",
-    );
-    if (!unlockedRounds.includes(problem.round)) {
-      navigate("/rounds");
-      return;
-    }
 
     const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
     const saved = localStorage.getItem(key);
@@ -81,7 +176,20 @@ const CodenSubmit = () => {
     }
 
     autoSubmitted.current = false;
-  }, [problem, navigate]);
+
+    // ✅ CONFIRMATION POPUP WHEN LEAVING PAGE
+    const handleBeforeUnload = (e) => {
+      if (code && code.trim() && !autoSubmitted.current) {
+        e.preventDefault();
+        e.returnValue =
+          "You have unsaved code. If you leave, it will be auto-submitted.";
+        return "You have unsaved code. If you leave, it will be auto-submitted.";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [problem, navigate, code]);
 
   // =========================================
   // ⏳ TIMER LOOP
@@ -135,6 +243,11 @@ const CodenSubmit = () => {
   // =========================================
   // ▶️ RUN
   // =========================================
+  const getExecutionStorageKey = () => {
+    const participantId = localStorage.getItem("participantId") || "guest";
+    return `run_remaining_${participantId}_${problem?.round}`;
+  };
+
   const handleRun = async () => {
     if (executionCount <= 0) return;
 
@@ -149,7 +262,11 @@ const CodenSubmit = () => {
       });
 
       setOutput(res.data.output || "No output");
-      setExecutionCount((p) => p - 1);
+      setExecutionCount((prev) => {
+        const next = Math.max(prev - 1, 0);
+        localStorage.setItem(getExecutionStorageKey(), String(next));
+        return next;
+      });
     } catch {
       setOutput("Execution failed ❌");
     }
@@ -166,7 +283,7 @@ const CodenSubmit = () => {
     setSubmitting(true);
 
     try {
-      await api.post("/api/submission", {
+      const submissionData = {
         problemId: problem._id,
         round: problem.round,
         code,
@@ -174,22 +291,34 @@ const CodenSubmit = () => {
         startedAt: new Date(startTime),
         submittedAt: new Date(),
         autoSubmitted: auto,
-      });
+      };
 
-      unlockNextRound(problem.round);
+      console.log("Submitting:", submissionData);
 
-      const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
-      localStorage.removeItem(key);
+      const res = await api.post("/api/submission", submissionData);
 
-      setCode("");
-      setOutput("");
+      console.log("Submission response:", res);
 
-      navigate("/rounds");
+      if (res.status === 201) {
+        console.log("Submission successful!");
+        autoSubmitted.current = true;
+        await unlockNextRound(problem.round);
+
+        const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
+        localStorage.removeItem(key);
+
+        setCode("");
+        setOutput("");
+
+        navigate("/rounds");
+      }
     } catch (err) {
-      setOutput(err.response?.data?.error || "Submission failed ❌");
+      console.error("Submit error:", err);
+      console.error("Error response:", err.response?.data);
+      const errorMsg = err.response?.data?.error || "Submission failed ❌";
+      setOutput(errorMsg);
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   // =========================================

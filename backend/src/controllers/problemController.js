@@ -7,6 +7,8 @@ import {
     updateProblemByRound,
     deleteProblemByRound,
 } from "../services/problemService.js";
+import Participant from "../models/Participant.js";
+import Submission from "../models/Submission.js";
 
 // Add a new problem
 export const createProblem = async (req, res) => {
@@ -31,6 +33,25 @@ export const listProblems = async (req, res) => {
 // Get problem by ID
 export const getProblem = async (req, res) => {
     try {
+        const roundNumber = Number(req.params.round);
+        const participant = await Participant.findById(req.user.id);
+        if (!participant) {
+            return res.status(404).json({ error: "Participant not found" });
+        }
+
+        const hasUnlockedRound = participant.unlockedRounds.includes(roundNumber);
+        if (!hasUnlockedRound) {
+            const submissionCount = await Submission.countDocuments({ participantId: participant._id });
+            const isFirstRoundAllowed =
+                participant.unlockedRounds.length === 0 &&
+                submissionCount === 0 &&
+                roundNumber === 1;
+
+            if (!isFirstRoundAllowed) {
+                return res.status(403).json({ error: "Round is not accessible" });
+            }
+        }
+
         const problem = await getProblemByRound(req.params.round);
         res.json(problem);
     } catch (error) {

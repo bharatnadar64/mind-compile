@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Submission from "../models/Submission.js";
+import Participant from "../models/Participant.js";
 import Problem from "../models/Problems.js";
 import { executeCode } from "./codeService.js"
 import Leaderboard from "../models/LeaderBoard.js";
@@ -38,8 +39,27 @@ export const submitSolution = async ({
     submittedAt
 }) => {
 
-    if (!participantId || !problemId || !round || !code || !language) {
+    // ✅ Check required fields (code can be empty, but others are required)
+    if (!participantId || !problemId || !round || !language) {
         throw new Error("Missing required fields");
+    }
+
+    const participant = await Participant.findById(participantId);
+    if (!participant) {
+        throw new Error("Participant not found");
+    }
+
+    const hasUnlockedRound = participant.unlockedRounds.includes(round);
+    if (!hasUnlockedRound) {
+        const submissionCount = await Submission.countDocuments({ participantId });
+        const isFirstRoundAllowed =
+            participant.unlockedRounds.length === 0 &&
+            submissionCount === 0 &&
+            round === 1;
+
+        if (!isFirstRoundAllowed) {
+            throw new Error("Round is not accessible");
+        }
     }
 
     // 1️⃣ Fetch problem
@@ -51,6 +71,44 @@ export const submitSolution = async ({
 
     if (!inputs || !expectedOutputs || inputs.length !== expectedOutputs.length) {
         throw new Error("Invalid test cases");
+    }
+
+    // 🔴 If code is empty/whitespace, mark as incorrect and award 0 points
+    const trimmedCode = code?.trim() || "";
+    if (!trimmedCode) {
+        const submission = await Submission.create({
+            participantId,
+            problemId,
+            round,
+            code: "",
+            output: JSON.stringify([]),
+            isCorrect: false,
+            scoreAwarded: 0,
+            startedAt: startedAt ? new Date(startedAt) : new Date(),
+            submittedAt: submittedAt ? new Date(submittedAt) : new Date()
+        });
+
+        // ============================
+        // 🏆 LEADERBOARD LOGIC (0 points)
+        // ============================
+
+        let leaderboard = await Leaderboard.findOne({ participantId });
+
+        if (!leaderboard) {
+            leaderboard = await Leaderboard.create({
+                participantId,
+                totalScore: 0,
+                roundScores: {
+                    round1: 0,
+                    round2: 0,
+                    round3: 0
+                }
+            });
+        }
+
+        await leaderboard.save();
+
+        return submission;
     }
 
     let isCorrect = true;
@@ -93,7 +151,7 @@ export const submitSolution = async ({
     // 2️⃣ Execute code
     for (let i = 0; i < inputs.length; i++) {
 
-        const res = await executeCode(code, language, inputs[i]);
+        const res = await executeCode(trimmedCode, language, inputs[i]);
 
         if (!res || res.status !== "success") {
             isCorrect = false;
@@ -118,7 +176,7 @@ export const submitSolution = async ({
         participantId,
         problemId,
         round,
-        code,
+        code: trimmedCode,
         output: JSON.stringify(outputs),
         isCorrect,
         scoreAwarded: score,

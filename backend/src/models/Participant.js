@@ -25,6 +25,11 @@ const ParticipantSchema = new Schema({
         default: 0
     },
 
+    unlockedRounds: {
+        type: [Number],
+        default: [] // Will be set to first round on first load
+    },
+
     // Optional but useful
     isAdmin: {
         type: Boolean,
