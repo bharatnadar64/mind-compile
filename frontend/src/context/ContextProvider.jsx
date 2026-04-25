@@ -68,6 +68,15 @@ export const ContextProvider = ({ children }) => {
     loadRounds();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const savedRound = localStorage.getItem("currentRound");
+
+    if (!token || !savedRound || currentRound || problem) return;
+
+    fetchProblem(Number(savedRound));
+  }, [currentRound, problem]);
+
   // ================= UNLOCK NEXT ROUND =================
   const unlockNextRound = async (roundNumber) => {
     try {
@@ -113,6 +122,7 @@ export const ContextProvider = ({ children }) => {
 
       setProblem(problemRes.data);
       setCurrentRound(roundNumber);
+      localStorage.setItem("currentRound", String(roundNumber));
       setCode("");
       setOutput("");
 
@@ -124,6 +134,9 @@ export const ContextProvider = ({ children }) => {
       );
     } catch (err) {
       console.log("Error fetching problem:", err);
+      if (err.response?.status === 404) {
+        localStorage.removeItem("currentRound");
+      }
     }
   };
 

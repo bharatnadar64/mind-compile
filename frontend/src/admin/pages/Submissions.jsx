@@ -1,18 +1,23 @@
 // @ts-nocheck
 import { useEffect, useState, useContext } from "react";
 import { RoundContext } from "../../context/ContextProvider";
-import { getSubmissions, giveBonus } from "../services/adminApi";
+import { getSubmissions, getRounds, giveBonus } from "../services/adminApi";
 
 const Submissions = () => {
   const { api } = useContext(RoundContext);
 
   const [submissions, setSubmissions] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [bonusMap, setBonusMap] = useState({});
+  const [roundOptions, setRoundOptions] = useState([
+    { value: "all", label: "All Rounds" },
+  ]);
   const [search, setSearch] = useState("");
   const [roundFilter, setRoundFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchRounds();
     fetchSubmissions();
   }, []);
 
@@ -20,15 +25,58 @@ const Submissions = () => {
     applyFilters();
   }, [search, roundFilter, submissions]);
 
+  const buildBonusMap = (data) => {
+    return data.reduce((map, s) => {
+      if (!s.participantId) return map;
+      const key = `${s.participantId}-${s.round}`;
+      const existing = map[key] || {
+        bonus5Awarded: false,
+        bonus2Awarded: false,
+      };
+      return {
+        ...map,
+        [key]: {
+          bonus5Awarded: existing.bonus5Awarded || Boolean(s.bonus5Awarded),
+          bonus2Awarded: existing.bonus2Awarded || Boolean(s.bonus2Awarded),
+        },
+      };
+    }, {});
+  };
+
+  const fetchRounds = async () => {
+    try {
+      const roundData = await getRounds(api);
+      const sortedRounds = Array.isArray(roundData)
+        ? [...roundData].sort(
+            (a, b) => Number(a.roundNumber) - Number(b.roundNumber),
+          )
+        : [];
+
+      const options = [
+        { value: "all", label: "All Rounds" },
+        ...sortedRounds.map((round) => ({
+          value: String(round.roundNumber),
+          label: round.name
+            ? `Round ${round.roundNumber} — ${round.name}`
+            : `Round ${round.roundNumber}`,
+        })),
+      ];
+
+      setRoundOptions(options);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
       const res = await getSubmissions(api);
 
       const data = res?.submissions || res || [];
-
       setSubmissions(data);
       setFiltered(data);
+      setBonusMap(buildBonusMap(data));
     } catch (err) {
       console.log(err);
     } finally {
@@ -56,9 +104,13 @@ const Submissions = () => {
     setFiltered(data);
   };
 
-  const handleBonus = async (id) => {
-    await giveBonus(api, id, 5);
-    fetchSubmissions();
+  const handleBonus = async (id, points) => {
+    try {
+      await giveBonus(api, id, points);
+      await fetchSubmissions();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const copyCode = (code) => {
@@ -119,11 +171,11 @@ const Submissions = () => {
           focus:outline-none focus:ring-1 focus:ring-green-400
         "
         >
-          <option value="all">All Rounds</option>
-          <option value="1.1">Round 1.1</option>
-          <option value="1.2">Round 1.2</option>
-          <option value="2">Round 2</option>
-          <option value="3">Round 3</option>
+          {roundOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -200,19 +252,47 @@ const Submissions = () => {
 
               {/* ===== ACTIONS ===== */}
               <div className="flex flex-wrap gap-3 mt-3 text-sm">
-                <button
-                  onClick={() => handleBonus(s._id)}
-                  className="
-                  px-3 py-1
-                  border border-green-400/40
-                  hover:bg-green-400/10
-                  active:scale-95
-                  transition
-                  rounded
-                "
-                >
-                  Give Bonus
-                </button>
+                {(() => {
+                  const rowKey = `${s.participantId}-${s.round}`;
+                  const rowBonus = bonusMap[rowKey] || {
+                    bonus5Awarded: false,
+                    bonus2Awarded: false,
+                  };
+                  const canGiveBonus = s.scoreAwarded > 0;
+                  return (
+                    <>
+                      <button
+                        onClick={() => handleBonus(s._id, 5)}
+                        disabled={!canGiveBonus || rowBonus.bonus5Awarded}
+                        className={
+                          `px-3 py-1 border rounded transition active:scale-95 ` +
+                          `border-green-400/40 ${
+                            !canGiveBonus || rowBonus.bonus5Awarded
+                              ? "opacity-40 cursor-not-allowed"
+                              : "hover:bg-green-400/10"
+                          }`
+                        }
+                      >
+                        +5 Clean Code
+                      </button>
+
+                      <button
+                        onClick={() => handleBonus(s._id, 2)}
+                        disabled={!canGiveBonus || rowBonus.bonus2Awarded}
+                        className={
+                          `px-3 py-1 border rounded transition active:scale-95 ` +
+                          `border-green-400/40 ${
+                            !canGiveBonus || rowBonus.bonus2Awarded
+                              ? "opacity-40 cursor-not-allowed"
+                              : "hover:bg-green-400/10"
+                          }`
+                        }
+                      >
+                        +2 Clean Code
+                      </button>
+                    </>
+                  );
+                })()}
 
                 <button
                   onClick={() => copyCode(s.code)}

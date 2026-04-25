@@ -39,6 +39,16 @@ const SubmissionSchema = new mongoose.Schema({
         default: 0
     },
 
+    bonus5Awarded: {
+        type: Boolean,
+        default: false
+    },
+
+    bonus2Awarded: {
+        type: Boolean,
+        default: false
+    },
+
     startedAt: {
         type: Date,
         default: Date.now

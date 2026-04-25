@@ -11,6 +11,11 @@ export const getSubmissions = async (api) => {
     return res.data;
 };
 
+export const getRounds = async (api) => {
+    const res = await api.get("/api/rounds");
+    return res.data;
+};
+
 export const giveBonus = async (api, submissionId, points) => {
     const res = await api.put(`/api/admin/bonus/${submissionId}`, { points });
     return res.data;

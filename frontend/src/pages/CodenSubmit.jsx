@@ -14,14 +14,6 @@ const CodenSubmit = () => {
   const [submitting, setSubmitting] = useState(false);
   const [navigationAttempted, setNavigationAttempted] = useState(false);
 
-  const [startTime, setStartTime] = useState(null); // timestamp (number)
-  const [timeLeft, setTimeLeft] = useState(0);
-
-  // ✅ NEW: store the fetched round config (contains timeLimit)
-  const [roundConfig, setRoundConfig] = useState(null);
-
-  const autoSubmitted = useRef(false);
-
   const {
     api,
     rounds,
@@ -36,6 +28,29 @@ const CodenSubmit = () => {
     unlockNextRound,
     currentRound,
   } = useContext(RoundContext);
+
+  // Load saved language preference
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  const currentCodeRef = useRef(code);
+
+  // Keep ref updated with latest code
+  useEffect(() => {
+    currentCodeRef.current = code;
+  }, [code]);
+
+  const [startTime, setStartTime] = useState(null); // timestamp (number)
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  // ✅ NEW: store the fetched round config (contains timeLimit)
+  const [roundConfig, setRoundConfig] = useState(null);
+
+  const autoSubmitted = useRef(false);
 
   // =========================================
   // ✅ FETCH ROUND CONFIG (to get timeLimit)
@@ -62,7 +77,9 @@ const CodenSubmit = () => {
   // =========================================
   useEffect(() => {
     const verifyRoundAccess = async () => {
-      if (!currentRound) {
+      const savedRound = localStorage.getItem("currentRound");
+
+      if (!currentRound && !savedRound) {
         navigate("/rounds");
         return;
       }
@@ -72,7 +89,7 @@ const CodenSubmit = () => {
         return;
       }
 
-      const roundNumber = Number(currentRound);
+      const roundNumber = Number(currentRound || savedRound);
       const activeRound = rounds.find(
         (r) => Number(r.roundNumber) === roundNumber,
       );
@@ -124,7 +141,7 @@ const CodenSubmit = () => {
         const submissionData = {
           problemId: problem._id,
           round: problem.round,
-          code,
+          code: (currentCodeRef.current || "").trim() || "// empty payload",
           language,
           startedAt: new Date(startTime),
           submittedAt: new Date(),
@@ -139,6 +156,7 @@ const CodenSubmit = () => {
 
           const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
           localStorage.removeItem(key);
+          localStorage.removeItem("currentRound");
 
           setCode("");
           setOutput("");
@@ -286,7 +304,7 @@ const CodenSubmit = () => {
       const submissionData = {
         problemId: problem._id,
         round: problem.round,
-        code,
+        code: (currentCodeRef.current || "").trim() || "// empty payload",
         language,
         startedAt: new Date(startTime),
         submittedAt: new Date(),
@@ -306,6 +324,7 @@ const CodenSubmit = () => {
 
         const key = `timer_${localStorage.getItem("participantId")}_${problem.round}`;
         localStorage.removeItem(key);
+        localStorage.removeItem("currentRound");
 
         setCode("");
         setOutput("");
@@ -361,7 +380,11 @@ const CodenSubmit = () => {
           {/* language */}
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={(e) => {
+              const newLanguage = e.target.value;
+              setLanguage(newLanguage);
+              localStorage.setItem("preferredLanguage", newLanguage);
+            }}
             className="relative bg-black border border-green-500 px-3 py-1 text-sm focus:outline-none"
           >
             <option value="g++-15">C</option>
