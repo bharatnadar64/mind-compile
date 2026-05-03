@@ -18,18 +18,15 @@ const Auth = () => {
     college: "",
   });
 
-  // ================= HANDLE INPUT =================
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ================= TOGGLE LOGIN/REGISTER =================
   const toggleMode = () => {
     setIsLogin((prev) => !prev);
     setMessage("");
   };
 
-  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -37,7 +34,6 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        // 🔐 LOGIN
         const res = await api.post("/api/user/login", {
           email: form.email,
           password: form.password,
@@ -45,17 +41,14 @@ const Auth = () => {
 
         const { token, participant } = res.data;
 
-        // ✅ STORE DATA
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(participant));
         localStorage.setItem("participantId", participant._id);
 
-        // Load rounds after authentication
         await loadRounds();
 
-        setMessage("Access Granted 🎉");
+        setMessage("✓ Access Granted");
 
-        // ✅ SINGLE CLEAN NAVIGATION
         setTimeout(() => {
           if (participant.isAdmin) {
             navigate("/admin", { replace: true });
@@ -64,133 +57,171 @@ const Auth = () => {
           }
         }, 800);
       } else {
-        // 📝 REGISTER
         await api.post("/api/user/register", form);
-
-        setMessage("Registration Successful ✅ Switch to Login");
+        setMessage("✓ Registration Successful - Switch to Login");
         setIsLogin(true);
-
-        // Optional: clear password after register
         setForm((prev) => ({ ...prev, password: "" }));
       }
     } catch (err) {
       setMessage(
-        err.message || err.response?.data?.error || "Something went wrong ❌",
+        err.message || err.response?.data?.error || "✗ Operation Failed",
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= UI =================
   return (
-    <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Scanlines */}
-      <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
-        }}
-      />
+    <div className="min-h-screen bg-slate-950 text-green-400 font-mono flex items-center justify-center px-4 relative overflow-hidden scene-3d">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900/8 via-transparent to-cyan-900/5 pointer-events-none" />
+      <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
 
-      {/* Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(0,255,0,0.08),transparent_60%)]" />
+      {/* Glow centers */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(0,255,0,0.1),transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(0,255,255,0.05),transparent_60%)] pointer-events-none" />
 
       {/* Terminal Box */}
-      <div className="relative z-10 w-full max-w-md border border-green-500/30 bg-black/70 backdrop-blur-md p-6 shadow-[0_0_40px_rgba(0,255,0,0.2)]">
-        {/* Header dots */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="w-3 h-3 bg-red-500 rounded-full" />
-          <span className="w-3 h-3 bg-yellow-500 rounded-full" />
-          <span className="w-3 h-3 bg-green-500 rounded-full" />
+      <div className="relative z-10 w-full max-w-md terminal-window depth-panel card-3d">
+        {/* Header dots with animation */}
+        <div className="terminal-header">
+          <span className="terminal-dot bg-red-500 animate-pulse" />
+          <span
+            className="terminal-dot bg-yellow-500 animate-pulse"
+            style={{ animationDelay: "0.3s" }}
+          />
+          <span
+            className="terminal-dot bg-green-500 animate-pulse"
+            style={{ animationDelay: "0.6s" }}
+          />
+          <span className="ml-3 text-green-600 text-xs">
+            {isLogin ? "login@mindcompile" : "register@mindcompile"}
+          </span>
         </div>
 
-        {/* Terminal prompt */}
-        <p className="text-green-500/60 text-sm mb-2">
-          {isLogin ? "> login mindcompile.sys" : "> register mindcompile.sys"}
-        </p>
+        {/* Content */}
+        <div className="p-7 space-y-6">
+          {/* Terminal prompt */}
+          <p className="text-green-600 text-xs font-mono">
+            <span className="text-cyan-500">root</span>@mindcompile{" "}
+            <span className="text-cyan-500">~</span>#{" "}
+            {isLogin ? "login" : "register"}
+          </p>
 
-        <h2 className="text-xl mb-6 tracking-widest">
-          {isLogin ? "AUTHENTICATION REQUIRED_" : "CREATE ACCOUNT_"}
-        </h2>
+          <h2 className="text-2xl font-bold tracking-widest text-green-300 glow-text">
+            {isLogin ? "ENTER CREDENTIALS" : "CREATE ACCOUNT"}
+          </h2>
 
-        {/* FORM */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <>
+          {/* FORM */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <>
+                <div>
+                  <label className="text-xs text-cyan-400 block mb-2">
+                    $ NAME
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="full_name"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-cyan-400 block mb-2">
+                    $ COLLEGE
+                  </label>
+                  <input
+                    type="text"
+                    name="college"
+                    placeholder="institution_name"
+                    value={form.college}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                </div>
+              </>
+            )}
+
+            <div>
+              <label className="text-xs text-cyan-400 block mb-2">
+                $ EMAIL
+              </label>
               <input
-                type="text"
-                name="name"
-                placeholder="NAME"
-                value={form.name}
+                type="email"
+                name="email"
+                placeholder="user@domain.com"
+                value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-black border border-green-500/30 px-3 py-2 text-green-400 outline-none focus:border-green-400"
+                className="form-input"
               />
+            </div>
 
+            <div>
+              <label className="text-xs text-cyan-400 block mb-2">
+                $ PASSWORD
+              </label>
               <input
-                type="text"
-                name="college"
-                placeholder="COLLEGE"
-                value={form.college}
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={form.password}
                 onChange={handleChange}
-                className="w-full bg-black border border-green-500/30 px-3 py-2 text-green-400 outline-none focus:border-green-400"
+                required
+                className="form-input"
               />
-            </>
+            </div>
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full mt-6"
+            >
+              {loading
+                ? ">>> PROCESSING <<<"
+                : isLogin
+                  ? "→ LOGIN"
+                  : "→ REGISTER"}
+            </button>
+          </form>
+
+          {/* MESSAGE */}
+          {message && (
+            <div
+              className={`text-sm p-3 rounded border ${
+                message.startsWith("✓")
+                  ? "border-green-500/50 text-green-400 bg-green-500/10"
+                  : "border-red-500/50 text-red-400 bg-red-500/10"
+              }`}
+            >
+              {message}
+            </div>
           )}
 
-          <input
-            type="email"
-            name="email"
-            placeholder="EMAIL"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="w-full bg-black border border-green-500/30 px-3 py-2 text-green-400 outline-none focus:border-green-400"
-          />
+          {/* TOGGLE */}
+          <div className="pt-4 border-t border-green-500/20">
+            <p
+              onClick={toggleMode}
+              className="text-green-500/70 text-sm cursor-pointer hover:text-green-300 transition-colors"
+            >
+              <span className="text-cyan-400">&gt;</span>{" "}
+              {isLogin
+                ? "New user? Create account →"
+                : "Already registered? Login →"}
+            </p>
+          </div>
 
-          <input
-            type="password"
-            name="password"
-            placeholder="PASSWORD"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full bg-black border border-green-500/30 px-3 py-2 text-green-400 outline-none focus:border-green-400"
-          />
-
-          {/* BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 border border-green-400 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-300"
-          >
-            {loading ? "Processing..." : isLogin ? "LOGIN" : "REGISTER"}
-          </button>
-        </form>
-
-        {/* MESSAGE */}
-        {message && (
-          <p className="mt-4 text-sm text-green-400">
-            {"> "} {message}
+          {/* WARNING */}
+          <p className="text-red-500/80 text-xs animate-pulse border-t border-red-500/20 pt-4">
+            ⚠ Unauthorized access attempts will be logged
           </p>
-        )}
-
-        {/* TOGGLE */}
-        <p
-          onClick={toggleMode}
-          className="mt-6 text-green-500/70 text-sm cursor-pointer hover:text-green-400"
-        >
-          {isLogin
-            ? "New user? Create account →"
-            : "Already registered? Login →"}
-        </p>
-
-        {/* WARNING */}
-        <p className="mt-4 text-red-500 text-xs animate-pulse">
-          ⚠ Vibecoders will be eliminated.
-        </p>
+        </div>
       </div>
     </div>
   );

@@ -16,176 +16,147 @@ const NavBar = () => {
     window.location.href = "/";
   };
 
-  const linkStyle = (path) =>
-    `relative px-3 py-2 transition-all duration-300 ${
-      location.pathname === path
-        ? "text-green-300 drop-shadow-[0_0_10px_#00ff00]"
-        : "text-green-400 hover:text-green-300"
-    }`;
-
   return (
-    <nav className="relative bg-black border-b border-green-500/20 font-mono overflow-hidden">
-      {/* ===== BACKGROUND ENGINE ===== */}
-      <div className="absolute inset-0 bg-green-500/5 blur-3xl opacity-20 pointer-events-none" />
+    <nav className="bg-slate-950 border-b terminal-border font-mono overflow-hidden sticky top-0 z-50 scene-3d">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-green-900/8 via-transparent to-cyan-900/5 pointer-events-none" />
+      <div className="absolute inset-0 scanlines opacity-3 pointer-events-none" />
 
-      <div
-        className="absolute inset-0 opacity-[0.08] pointer-events-none"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,0,0.12) 4px)",
-        }}
-      />
+      {/* Glow effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.08),transparent_60%)] pointer-events-none" />
 
-      {/* subtle energy drift */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.10),transparent_60%)] pointer-events-none" />
-
-      {/* ===== MAIN ROW ===== */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
-        {/* ===== LOGO ===== */}
+      {/* Main content */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
         <Link
           to="/"
           className="
           text-green-300
           font-bold
           tracking-[0.35em]
-          text-lg sm:text-xl
-          drop-shadow-[0_0_14px_#00ff00]
+          text-lg sm:text-2xl
+          glow-text
+          hover:text-cyan-300 transition-all duration-300
+          flex items-center gap-2
         "
         >
-          &gt; MINDCOMPILE
+          <span className="text-cyan-400">⚡</span>
+          MINDCOMPILE
         </Link>
 
-        {/* ===== NAV LINKS (BIG UPGRADE HERE) ===== */}
-        <div className="hidden md:flex items-center gap-10">
+        {/* Desktop Nav Links */}
+        <div className="hidden md:flex items-center gap-8">
           {[
             { to: "/", label: "HOME" },
             { to: "/rounds", label: "ROUNDS" },
             { to: "/leaderboard", label: "RANKS" },
             { to: "/rules", label: "RULES" },
-          ].map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="
-              relative group
-              text-green-400/70
-              hover:text-green-200
-              transition-all duration-200
+          ].map((item) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`
+                  relative group
+                  text-sm tracking-[0.2em] font-mono font-bold
+                  transition-all duration-300
+                  ${
+                    isActive
+                      ? "text-green-300 glow-text"
+                      : "text-green-400/70 hover:text-green-200"
+                  }
+                `}
+              >
+                <span className="text-cyan-400 mr-1">
+                  {isActive ? "●" : "○"}
+                </span>
+                {item.label}
 
-              text-lg sm:text-xl   /* 👈 BIGGER LINKS */
-              tracking-[0.25em]
-            "
-            >
-              <span className="text-green-400/50 group-hover:text-green-300 mr-2">
-                &gt;
-              </span>
+                {/* Underline animation */}
+                <span
+                  className={`
+                    absolute left-0 -bottom-2 h-[2px]
+                    bg-gradient-to-r from-green-400 to-cyan-400
+                    transition-all duration-300
+                    ${isActive ? "w-full" : "w-0 group-hover:w-full"}
+                  `}
+                />
+              </Link>
+            );
+          })}
 
-              {item.label}
-
-              {/* underline system pulse */}
-              <span
-                className="
-              absolute left-0 -bottom-2
-              h-[2px] w-0
-              bg-green-400/60
-              group-hover:w-full
-              transition-all duration-300
-            "
-              />
-            </Link>
-          ))}
-
-          {/* protected link */}
+          {/* Code submission link */}
           {isLoggedIn && (
             <Link
               to="/code-n-submit"
               className="
-              text-green-300
-              text-lg sm:text-xl
-              tracking-[0.25em]
-              hover:text-green-200
-              transition
-            "
+                relative group
+                text-sm tracking-[0.2em] font-mono font-bold
+                text-cyan-400 hover:text-cyan-300
+                transition-all duration-300
+                border-l border-cyan-500/30 pl-4
+              "
             >
-              &gt; CODE
+              <span className="mr-1">→</span>
+              CODE
+              <span className="text-green-500">_</span>
             </Link>
           )}
         </div>
 
-        {/* ===== AUTH BUTTON ===== */}
+        {/* Auth section */}
         <div className="flex items-center gap-3">
           {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="
-              px-4 py-2
-              border border-red-500/60
-              text-red-400
-              hover:bg-red-500 hover:text-black
-              transition-all duration-300
-              text-sm sm:text-base
-              tracking-[0.25em]
-              active:scale-95
-              shadow-[0_0_12px_rgba(255,0,0,0.3)]
-            "
-            >
+            <button onClick={handleLogout} className="btn-danger">
               LOGOUT
             </button>
           ) : (
-            <Link
-              to="/login"
-              className="
-              px-4 py-2
-              border border-green-400/60
-              text-green-300
-              hover:bg-green-400 hover:text-black
-              transition-all duration-300
-              text-sm sm:text-base
-              tracking-[0.25em]
-              active:scale-95
-              shadow-[0_0_12px_rgba(0,255,0,0.3)]
-            "
-            >
+            <Link to="/login" className="btn-primary">
               LOGIN
             </Link>
           )}
         </div>
       </div>
 
-      {/* ===== MOBILE STRIP (cleaner, not childish labels) ===== */}
-      <div className="md:hidden flex justify-center gap-6 text-xs tracking-[0.3em] text-green-500/70 pb-3">
-        <Link to="/">HOME</Link>
-        <Link to="/rounds">ROUNDS</Link>
-        <Link to="/leaderboard">RANKS</Link>
-        <Link to="/rules">RULES</Link>
+      {/* Mobile nav strip */}
+      <div className="md:hidden flex justify-center gap-4 text-xs tracking-[0.3em] text-green-500/70 pb-3 border-t border-green-500/10">
+        <Link to="/" className="hover:text-green-300">
+          HOME
+        </Link>
+        <span className="text-green-500/40">|</span>
+        <Link to="/rounds" className="hover:text-green-300">
+          ROUNDS
+        </Link>
+        <span className="text-green-500/40">|</span>
+        <Link to="/leaderboard" className="hover:text-green-300">
+          RANKS
+        </Link>
+        <span className="text-green-500/40">|</span>
+        <Link to="/rules" className="hover:text-green-300">
+          RULES
+        </Link>
       </div>
 
-      {/* ===== SYSTEM STATUS BAR ===== */}
-      <div className="text-[10px] sm:text-xs text-green-500/60 px-4 py-1 border-t border-green-500/10 flex justify-between">
-        <span>{"> user.status: " + (isLoggedIn ? "AUTHORIZED" : "GUEST")}</span>
-
-        <span className="text-green-400 animate-pulse">
-          {"> system.stability: NOMINAL"}
+      {/* System status bar */}
+      <div className="text-[10px] sm:text-xs text-green-600/60 px-4 py-2 border-t border-green-500/10 flex justify-between items-center">
+        <span className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          {isLoggedIn ? "AUTHORIZED" : "GUEST"}
         </span>
+        <span className="text-cyan-600 text-center flex-1">
+          <span className="text-green-500">▪</span> MINDCOMPILE v1.0
+        </span>
+        <span className="text-green-600 animate-cyber-pulse">ONLINE</span>
       </div>
 
-      {/* ===== SCANLINE ===== */}
-      <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
+      {/* Scan bar */}
+      <div className="absolute bottom-0 left-0 w-full h-[1px] overflow-hidden">
         <div
-          className="h-full w-1/4 bg-green-400/30 blur-sm"
+          className="h-full w-1/4 bg-green-400/40 blur-sm"
           style={{ animation: "scanMove 5s linear infinite" }}
         />
       </div>
-
-      {/* ===== ANIMATION ===== */}
-      <style>
-        {`
-        @keyframes scanMove {
-          0% { transform: translateX(-120%); }
-          100% { transform: translateX(320%); }
-        }
-      `}
-      </style>
     </nav>
   );
 };

@@ -12,30 +12,28 @@ const Hero = () => {
       const t = setTimeout(() => {
         setOutput((prev) => prev + text[i]);
         setI(i + 1);
-      }, 30);
+      }, 25);
       return () => clearTimeout(t);
     }
   }, [i]);
 
   return (
-    <section className="relative min-h-screen flex items-center bg-black text-green-400 font-mono overflow-hidden px-4 sm:px-6 lg:px-12">
-      {/* Ambient pulse */}
-      <div className="absolute inset-0 bg-green-500/5 blur-2xl opacity-20 animate-pulse pointer-events-none" />
+    <section className="relative min-h-screen flex items-center bg-slate-950 text-green-400 font-mono overflow-hidden px-4 sm:px-6 lg:px-12">
+      {/* Multiple layered background effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-cyan-900/5 pointer-events-none" />
+
+      {/* Radial glow centers */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.08),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(0,255,255,0.05),transparent_50%)] pointer-events-none" />
 
       {/* Scanlines */}
-      <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.15) 3px)",
-        }}
-      />
+      <div className="absolute inset-0 opacity-5 pointer-events-none scanlines" />
 
-      {/* Subtle grid (adds depth) */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[linear-gradient(rgba(0,255,0,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.2)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      {/* Grid pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none grid-pattern" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-24 items-center scene-3d">
         {/* LEFT */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 lg:space-y-8">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-widest text-green-400 drop-shadow-[0_0_20px_#00ff00] animate-flicker">
@@ -57,6 +55,7 @@ const Hero = () => {
               transition-all duration-300
               shadow-[0_0_20px_rgba(0,255,0,0.4)]
               overflow-hidden
+              depth-panel
             "
             >
               START CODING
@@ -70,6 +69,7 @@ const Hero = () => {
               px-8 py-3 border border-green-500/40
               text-green-500/70 hover:text-green-300
               hover:border-green-300 transition-all duration-300
+              depth-panel
             "
             >
               VIEW RULES
@@ -78,8 +78,8 @@ const Hero = () => {
         </div>
 
         {/* RIGHT TERMINAL */}
-        <div className="w-full mt-6 lg:mt-20">
-          <div className="relative border border-green-500/30 bg-black/70 backdrop-blur-md p-5 sm:p-6 lg:p-8 shadow-[0_0_40px_rgba(0,255,0,0.15)]">
+        <div className="w-full mt-6 lg:mt-20 scene-3d">
+          <div className="relative border border-green-500/30 bg-black/70 backdrop-blur-md p-5 sm:p-6 lg:p-8 shadow-[0_0_40px_rgba(0,255,0,0.15)] depth-panel card-3d">
             {/* scan overlay inside terminal */}
             <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(0,255,0,0.05)_1px,transparent_1px)] bg-[size:100%_3px] opacity-20" />
 
