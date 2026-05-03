@@ -315,7 +315,10 @@ input[type="number"] {
 .card-3d {
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
 }
 
 .depth-panel {
@@ -325,7 +328,9 @@ input[type="number"] {
 .depth-panel:hover,
 .card-3d:hover {
   transform: translate3d(0, -10px, 18px) rotateX(0.8deg) rotateY(-0.8deg);
-  box-shadow: 0 35px 90px rgba(0, 255, 150, 0.14), inset 0 0 8px rgba(0, 255, 255, 0.08);
+  box-shadow:
+    0 35px 90px rgba(0, 255, 150, 0.14),
+    inset 0 0 8px rgba(0, 255, 255, 0.08);
 }
 
 .card-3d {
@@ -344,7 +349,10 @@ input[type="number"] {
 
 .btn-primary,
 .btn-danger {
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .btn-primary:hover,
