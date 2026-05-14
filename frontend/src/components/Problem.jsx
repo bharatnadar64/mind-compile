@@ -12,103 +12,86 @@ const Problem = ({
   const getDifficultyStyles = () => {
     switch (difficulty) {
       case "Easy":
-        return "border-green-400 text-green-300 bg-green-500/10";
+        return "border-emerald-500/20 text-emerald-400 bg-emerald-500/5";
       case "Medium":
-        return "border-yellow-400 text-yellow-300 bg-yellow-500/10";
+        return "border-amber-500/20 text-amber-400 bg-amber-500/5";
       case "Hard":
-        return "border-red-500 text-red-400 bg-red-500/10";
+        return "border-rose-500/20 text-rose-400 bg-rose-500/5";
       default:
-        return "border-cyan-400 text-cyan-300 bg-cyan-500/10";
+        return "border-blue-500/20 text-blue-400 bg-blue-500/5";
     }
   };
 
   return (
     <div
-      className={`relative h-[90vh] w-full font-mono text-green-400 overflow-hidden ${className}`}
+      className={`relative h-full w-full font-mono text-slate-300 p-8 flex flex-col gap-8 ${className}`}
       style={{ userSelect: "none" }}
       onCopy={(e) => e.preventDefault()}
       onCut={(e) => e.preventDefault()}
       onContextMenu={(e) => e.preventDefault()}
-      onKeyDown={(e) => {
-        if (
-          (e.ctrlKey && ["c", "x", "u", "s"].includes(e.key.toLowerCase())) ||
-          (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i")
-        ) {
-          e.preventDefault();
-        }
-      }}
     >
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-cyan-900/5 pointer-events-none" />
-      <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
-
-      {/* MAIN PANEL */}
-      <div className="relative z-10 h-full w-full bg-slate-950/90 backdrop-blur-md terminal-border-bright rounded-lg p-6 flex flex-col gap-6 overflow-hidden depth-panel card-3d">
-        {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-green-500/30 pb-4">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-wide text-green-300 glow-text">
-            <span className="text-cyan-400">&gt;_ </span>
+      {/* Header Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-3xl font-black tracking-tighter text-white uppercase">
             {title || "problem_undefined"}
           </h2>
-
-          <span
-            className={`px-4 py-2 text-xs sm:text-sm font-mono border rounded-md transition-all duration-300 ${getDifficultyStyles()}`}
-          >
-            [{difficulty || "MEDIUM"}]
+          <span className={`px-4 py-1 text-[10px] font-black tracking-[0.2em] border rounded-lg uppercase ${getDifficultyStyles()}`}>
+            {difficulty || "MEDIUM"}
           </span>
         </div>
-
-        {/* SECURITY NOTICE */}
-        <div className="text-sm text-red-400/90 bg-red-500/10 border border-red-500/30 rounded px-3 py-2 animate-pulse">
-          ⚠ [SECURITY_PROTOCOL] copying/debugging attempts logged & monitored
+        
+        {/* Security Alert Tag */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-rose-500/5 border border-rose-500/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+          <span className="text-rose-500 text-[8px] font-black tracking-widest uppercase">Encryption_Active: Copy_Restricted</span>
         </div>
+      </div>
 
-        {/* DESCRIPTION */}
-        <div className="flex-1 overflow-y-auto text-green-300/90 text-base sm:text-lg leading-relaxed pr-3 space-y-3">
-          <p className="text-green-200 text-lg font-bold">
-            <span className="text-cyan-400">&gt;</span> PROBLEM DESCRIPTION
-          </p>
-          <div className="text-green-400/80 whitespace-pre-wrap">
-            {description || "System failed to load description..."}
+      {/* Description */}
+      <div className="flex-1 space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-[10px] font-black tracking-[0.4em] text-emerald-500 uppercase">Context_Packet</h3>
+          <div className="text-slate-400 leading-relaxed text-sm font-light whitespace-pre-wrap border-l border-white/5 pl-6">
+            {description || "Awaiting system data transmission..."}
           </div>
         </div>
 
-        {/* IO SECTION */}
-        <div className="grid sm:grid-cols-2 gap-4 border-t border-green-500/20 pt-4">
+        {/* Examples Grid */}
+        <div className="grid gap-6">
           {sampleInput && (
-            <div className="bg-slate-900/60 border border-green-500/30 rounded-lg p-4 hover:border-green-400/50 transition-all duration-300">
-              <p className="text-green-200 mb-3 text-sm sm:text-base font-bold">
-                <span className="text-cyan-400">&gt; </span>INPUT
-              </p>
-              <pre className="whitespace-pre-wrap text-green-300/80 text-xs sm:text-sm font-mono bg-slate-950/40 rounded p-2 border border-green-500/10">
+            <div className="space-y-2">
+              <h3 className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">Input_Sequence</h3>
+              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-xs text-slate-300">
                 {sampleInput}
-              </pre>
+              </div>
             </div>
           )}
 
           {sampleOutput && (
-            <div className="bg-slate-900/60 border border-cyan-500/30 rounded-lg p-4 hover:border-cyan-400/50 transition-all duration-300">
-              <p className="text-cyan-200 mb-3 text-sm sm:text-base font-bold">
-                <span className="text-cyan-400">&gt; </span>EXPECTED OUTPUT
-              </p>
-              <pre className="whitespace-pre-wrap text-cyan-300/80 text-xs sm:text-sm font-mono bg-slate-950/40 rounded p-2 border border-cyan-500/10">
+            <div className="space-y-2">
+              <h3 className="text-[10px] font-black tracking-[0.4em] text-purple-400 uppercase">Return_Value</h3>
+              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-xs text-slate-300">
                 {sampleOutput}
-              </pre>
+              </div>
             </div>
           )}
         </div>
+      </div>
 
-        {/* FOOTER */}
-        <div className="flex justify-between text-xs text-green-500/60 border-t border-green-500/20 pt-3 mt-auto">
-          <span className="flex gap-2">
-            <span className="text-green-500">●</span>
-            <span>read_only: true</span>
+      {/* Verification Footer */}
+      <div className="pt-8 border-t border-white/5 flex items-center justify-between text-[8px] font-mono tracking-[0.3em] text-slate-600 uppercase">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1 h-1 rounded-full bg-emerald-500" />
+            Integrity_Level: 100
           </span>
-          <span className="flex gap-2">
-            <span>integrity: verified</span>
-            <span className="text-green-500">●</span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1 h-1 rounded-full bg-blue-500" />
+            Ref: MC_D_88
           </span>
         </div>
+        <div>System: Authoritative</div>
       </div>
     </div>
   );

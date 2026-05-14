@@ -55,7 +55,7 @@ export const submitSolution = async ({
         const isFirstRoundAllowed =
             participant.unlockedRounds.length === 0 &&
             submissionCount === 0 &&
-            round === 1;
+            Math.floor(round) === 1;
 
         if (!isFirstRoundAllowed) {
             throw new Error("Round is not accessible");
