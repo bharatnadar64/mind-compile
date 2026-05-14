@@ -5,6 +5,7 @@ import Problem from "../components/Problem.jsx";
 import CodeScreen from "../components/CodeScreen.jsx";
 import Output from "../components/Output.jsx";
 import { RoundContext } from "../context/ContextProvider.jsx";
+import useAntiCheat from "../hooks/useAntiCheat.js";
 
 const CodenSubmit = () => {
   const navigate = useNavigate();
@@ -43,6 +44,36 @@ const CodenSubmit = () => {
   useEffect(() => {
     currentCodeRef.current = code;
   }, [code]);
+
+  // ── ANTI-CHEAT INTEGRATION ───────────────────────────────────────────────
+  const {
+    suspicionScore,
+    riskCategory,
+    cheatProbability,
+    trustScore,
+    isFrozen,
+    isDisqualified,
+    executionsRestricted,
+    warningVisible,
+    warningMessage,
+    warningLevel,
+    dismissWarning,
+    stopMonitoring,
+  } = useAntiCheat({
+    active: !!problem,
+    round: problem?.round,
+    api,
+    participantId: localStorage.getItem("participantId"),
+    onDisqualify: () => {
+      console.warn("User disqualified by Anti-Cheat system.");
+    },
+    onAutoSubmit: () => {
+      handleSubmit(true);
+    },
+    onFreeze: () => {
+      // Editor should freeze automatically via the 'isFrozen' prop/state
+    },
+  });
 
   const [startTime, setStartTime] = useState(null); // timestamp (number)
   const [timeLeft, setTimeLeft] = useState(0);
@@ -267,7 +298,12 @@ const CodenSubmit = () => {
   };
 
   const handleRun = async () => {
-    if (executionCount <= 0) return;
+    if (executionCount <= 0 || isFrozen || isDisqualified) return;
+
+    if (executionsRestricted) {
+      setOutput("⚠️ EXECUTION RESTRICTED: Suspicious behavior detected. Execution is temporarily disabled.");
+      return;
+    }
 
     setRunning(true);
     setOutput("");
@@ -297,6 +333,9 @@ const CodenSubmit = () => {
   // =========================================
   const handleSubmit = async (auto = false) => {
     if (submitting) return;
+
+    // Stop anti-cheat monitoring on submission
+    stopMonitoring(auto ? (isDisqualified ? "disqualified" : "timeout") : "submitted");
 
     setSubmitting(true);
 
@@ -399,11 +438,10 @@ const CodenSubmit = () => {
             disabled={executionCount <= 0 || running}
             className={`
             relative px-4 py-1 border text-sm transition-all duration-200
-            ${
-              executionCount > 0
+            ${executionCount > 0
                 ? "border-green-400 text-green-400 hover:bg-green-400 hover:text-black shadow-[0_0_10px_rgba(0,255,0,0.3)]"
                 : "border-green-500/20 text-green-500/40 cursor-not-allowed"
-            }
+              }
           `}
           >
             {running ? "> running..." : `> run (${executionCount})`}
@@ -415,11 +453,10 @@ const CodenSubmit = () => {
             disabled={submitting || !code.trim()}
             className={`
             relative px-4 py-1 text-sm transition-all duration-200
-            ${
-              submitting
+            ${submitting
                 ? "bg-blue-500/50"
                 : "bg-blue-500 hover:bg-blue-400 text-black shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-            }
+              }
           `}
           >
             {submitting ? "> submitting..." : "> submit"}
@@ -432,7 +469,14 @@ const CodenSubmit = () => {
         </div>
 
         {/* CODE */}
-        <div className="flex-1 border border-green-500/30 rounded overflow-hidden">
+        <div className={`flex-1 border border-green-500/30 rounded overflow-hidden relative ${isFrozen ? "opacity-60 pointer-events-none grayscale" : ""}`}>
+          {isFrozen && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="text-red-500 font-bold tracking-tighter text-xl sm:text-2xl animate-pulse">
+                [ ACCESS_DENIED: EDITOR_FROZEN ]
+              </div>
+            </div>
+          )}
           <CodeScreen code={code} setCode={setCode} />
         </div>
 
@@ -459,6 +503,85 @@ const CodenSubmit = () => {
         }
       `}
       </style>
+
+      {/* ── ANTI-CHEAT WARNING OVERLAY ─────────────────────────────────────── */}
+      {warningVisible && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className={`
+            max-w-md w-full border p-6 rounded shadow-2xl transition-all transform scale-100
+            ${warningLevel === "CONFIRMED" ? "border-red-500 bg-red-950/20 shadow-red-500/20" :
+              warningLevel === "DOUBTFUL" ? "border-orange-500 bg-orange-950/20 shadow-orange-500/20" :
+                "border-yellow-500 bg-yellow-950/20 shadow-yellow-500/20"}
+          `}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`text-2xl ${warningLevel === "CONFIRMED" ? "text-red-500" :
+                warningLevel === "DOUBTFUL" ? "text-orange-500" : "text-yellow-500"}`}>
+                {warningLevel === "CONFIRMED" ? "🚨" : warningLevel === "DOUBTFUL" ? "⚠️" : "ℹ️"}
+              </div>
+              <h3 className={`text-lg font-bold tracking-widest ${warningLevel === "CONFIRMED" ? "text-red-400" :
+                warningLevel === "DOUBTFUL" ? "text-orange-400" : "text-yellow-400"}`}>
+                {warningLevel === "CONFIRMED" ? "DISQUALIFIED" :
+                  warningLevel === "DOUBTFUL" ? "CRITICAL WARNING" : "BEHAVIORAL ALERT"}
+              </h3>
+            </div>
+
+            <p className="text-green-300/90 text-sm mb-6 leading-relaxed">
+              {warningMessage}
+            </p>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between text-[10px] text-green-500/40 mb-1">
+                <span>RISK_SCORE: {suspicionScore}</span>
+                <span>CONFIDENCE: {cheatProbability}%</span>
+              </div>
+              <div className="h-1 bg-white/10 rounded overflow-hidden">
+                <div className={`h-full transition-all duration-1000 ${warningLevel === "CONFIRMED" ? "bg-red-500" :
+                  warningLevel === "DOUBTFUL" ? "bg-orange-500" : "bg-yellow-500"}`}
+                  style={{ width: `${Math.min(100, suspicionScore)}%` }} />
+              </div>
+            </div>
+
+            {warningLevel !== "CONFIRMED" && (
+              <button
+                onClick={dismissWarning}
+                className="mt-6 w-full py-2 border border-green-500/40 text-green-400 hover:bg-green-500/10 transition-all text-sm font-bold tracking-widest"
+              >
+                {">"} I UNDERSTAND
+              </button>
+            )}
+
+            {warningLevel === "CONFIRMED" && (
+              <button
+                onClick={() => navigate("/rounds")}
+                className="mt-6 w-full py-2 bg-red-600 text-white hover:bg-red-700 transition-all text-sm font-bold tracking-widest"
+              >
+                {">"} RETURN TO LOBBY
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── LIVE ANTI-CHEAT STATUS BAR ─────────────────────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 py-1 bg-black/60 backdrop-blur-sm border-t border-green-500/10 flex justify-between items-center text-[10px] sm:text-xs">
+        <div className="flex gap-4">
+          <span className="text-green-500/60 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            PROCTORING_ACTIVE
+          </span>
+          <span className={`${riskCategory === "SAFE" ? "text-green-500/40" :
+            riskCategory === "SUSPICIOUS" ? "text-yellow-400" :
+              riskCategory === "DOUBTFUL" ? "text-orange-400" : "text-red-500"}`}>
+            RISK: {riskCategory} ({suspicionScore})
+          </span>
+          <span className="text-green-500/40 hidden sm:inline">
+            TRUST_SCORE: {trustScore}%
+          </span>
+        </div>
+        <div className="text-green-500/30 font-mono">
+          SID: {sessionId?.slice(0, 8)}...
+        </div>
+      </div>
     </div>
   );
 };

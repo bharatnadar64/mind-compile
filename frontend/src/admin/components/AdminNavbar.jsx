@@ -73,6 +73,7 @@ const AdminNavbar = () => {
             { to: "/admin/users", label: "Users" },
             { to: "/admin/rounds", label: "Rounds" },
             { to: "/admin/problems", label: "Problems" },
+            { to: "/admin/anticheat", label: "Anti-Cheat" },
           ].map((item) => (
             <Link
               key={item.to}

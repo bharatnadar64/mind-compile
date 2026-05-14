@@ -51,6 +51,7 @@ const NavBar = () => {
             { to: "/rounds", label: "ROUNDS" },
             { to: "/leaderboard", label: "RANKS" },
             { to: "/rules", label: "RULES" },
+            { to: "/profile", label: "PROFILE" },
           ].map((item) => {
             const isActive = location.pathname === item.to;
             return (
@@ -61,10 +62,9 @@ const NavBar = () => {
                   relative group
                   text-sm tracking-[0.2em] font-mono font-bold
                   transition-all duration-300
-                  ${
-                    isActive
-                      ? "text-green-300 glow-text"
-                      : "text-green-400/70 hover:text-green-200"
+                  ${isActive
+                    ? "text-green-300 glow-text"
+                    : "text-green-400/70 hover:text-green-200"
                   }
                 `}
               >
@@ -136,6 +136,10 @@ const NavBar = () => {
         <Link to="/rules" className="hover:text-green-300">
           RULES
         </Link>
+        <span className="text-green-500/40">|</span>
+        <Link to="/profile" className="hover:text-green-300">
+          PROFILE
+        </Link>
       </div>
 
       {/* System status bar */}
@@ -145,7 +149,7 @@ const NavBar = () => {
           {isLoggedIn ? "AUTHORIZED" : "GUEST"}
         </span>
         <span className="text-cyan-600 text-center flex-1">
-          <span className="text-green-500">▪</span> MINDCOMPILE v1.0
+          <span className="text-green-500">▪</span> MINDCOMPILE v2.0
         </span>
         <span className="text-green-600 animate-cyber-pulse">ONLINE</span>
       </div>

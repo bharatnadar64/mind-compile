@@ -8,6 +8,7 @@ import leaderbRouter from './routes/leaderboardRoutes.js';
 import { protect } from './middleware/auth.js';
 import submissionRrouter from './routes/submissionRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
+import antiCheatRouter from './routes/antiCheatRoutes.js';
 const app = express();
 
 // Middleware
@@ -31,4 +32,5 @@ app.use("/api/leaderboard", protect, leaderbRouter) // public leaderboard for us
 app.use("/api/leader-board", protect, leaderbRouter)
 app.use("/api/submission", protect, submissionRrouter)
 app.use("/api/admin", adminRouter);
+app.use("/api/anticheat", antiCheatRouter);
 export default app;

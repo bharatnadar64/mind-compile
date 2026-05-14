@@ -9,6 +9,7 @@ import Rounds from "./components/Rounds";
 import CodenSubmit from "./pages/CodenSubmit";
 import Auth from "./pages/Auth";
 import UserLeaderboard from "./pages/UserLeaderboard";
+import Profile from "./pages/Profile";
 
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
@@ -22,6 +23,7 @@ import Users from "./admin/pages/Users";
 import AdminRounds from "./admin/pages/AdminRounds";
 import AdminProblems from "./admin/pages/AdminProblems";
 import AdminNavbar from "./admin/components/AdminNavbar";
+import AntiCheatDashboard from "./admin/pages/AntiCheatDashboard";
 
 function App() {
   const location = useLocation();
@@ -74,6 +76,13 @@ function App() {
             isLoggedIn ? <UserLeaderboard /> : <Navigate to="/login" replace />
           }
         />
+        
+        <Route
+          path="/profile"
+          element={
+            isLoggedIn ? <Profile /> : <Navigate to="/login" replace />
+          }
+        />
 
         <Route
           path="/code-n-submit"
@@ -106,6 +115,7 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="rounds" element={<AdminRounds />} />
           <Route path="problems" element={<AdminProblems />} />
+          <Route path="anticheat" element={<AntiCheatDashboard />} />
         </Route>
 
         {/* ================= FALLBACK ================= */}

@@ -36,6 +36,16 @@ const ParticipantSchema = new Schema({
         default: false
     },
 
+    isDisqualified: {
+        type: Boolean,
+        default: false
+    },
+
+    disqualifiedRounds: {
+        type: [Number],
+        default: []
+    },
+
     createdAt: {
         type: Date,
         default: Date.now
