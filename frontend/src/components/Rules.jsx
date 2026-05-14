@@ -1,174 +1,129 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const Rules = () => {
   return (
-    <section className="relative min-h-screen bg-black text-green-300 font-mono overflow-hidden px-4 sm:px-8 lg:px-16 py-14 sm:py-20">
-      {/* Deep ambient system glow (subtle, not noisy) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,255,0,0.12),transparent_55%)] pointer-events-none" />
+    <div className="min-h-screen bg-slate-950 text-slate-300 pb-20 pt-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background glow centers */}
+      <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-emerald-500/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-blue-500/5 rounded-full blur-[120px]" />
 
-      {/* Moving scanline layer */}
-      <div
-        className="absolute inset-0 opacity-[0.07] pointer-events-none animate-[scanFade_8s_linear_infinite]"
-        style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,0,0.18) 4px)",
-        }}
-      />
-
-      {/* Grid depth layer */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[linear-gradient(rgba(0,255,0,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.2)_1px,transparent_1px)] bg-[size:60px_60px]" />
-
-      {/* Content wrapper */}
-      <div className="relative z-10 max-w-6xl mx-auto space-y-10 sm:space-y-14">
-        {/* HEADER */}
-        <header className="space-y-2">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-[0.2em] text-green-300 leading-tight drop-shadow-[0_0_18px_rgba(0,255,0,0.35)]">
-            {"> SYSTEM PROTOCOL"}
-          </h1>
-
-          <p className="text-green-500/70 text-sm sm:text-base tracking-wide">
-            read rules carefully — system enforces strict execution
+      <div className="max-w-4xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <span className="text-emerald-400 text-[10px] font-bold tracking-[0.4em] uppercase">ACCESS_PROTOCOL</span>
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">SYSTEM_RULES</h1>
+          <p className="text-slate-500 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
+            Every byte matters. Understand the constraints of the system before initialization.
           </p>
-        </header>
-
-        {/* GRID CONTENT */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
-          {/* TEAM RULES */}
-          <div className="relative border border-green-500/20 bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-xl shadow-[0_0_25px_rgba(0,255,0,0.08)] hover:shadow-[0_0_30px_rgba(0,255,0,0.12)] transition">
-            <h2 className="text-xl sm:text-2xl font-bold text-green-400 mb-4">
-              {"> team.config"}
-            </h2>
-
-            <ul className="space-y-3 text-sm sm:text-base text-green-400/80 leading-relaxed">
-              <li className="flex gap-2">
-                <span className="text-green-300">{">"}</span>
-                solo participation only
-              </li>
-              <li className="flex gap-2">
-                <span className="text-green-300">{">"}</span>
-                register individually
-              </li>
-              <li className="flex gap-2 text-red-400">
-                <span>⚠</span>
-                collaboration = disqualification
-              </li>
-            </ul>
-          </div>
-
-          {/* PROTOCOL RULES */}
-          <div className="relative border border-green-500/20 bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-xl shadow-[0_0_25px_rgba(0,255,0,0.08)]">
-            <h2 className="text-xl sm:text-2xl font-bold text-green-400 mb-4">
-              {"> execution.protocol"}
-            </h2>
-
-            <div className="space-y-4 text-sm sm:text-base text-green-400/80">
-              <p className="flex gap-2">
-                <span className="text-green-300">{">"}</span>
-                no external tools allowed
-              </p>
-              <p className="flex gap-2">
-                <span className="text-green-300">{">"}</span>
-                focus on logic, not execution
-              </p>
-              <p className="flex gap-2 text-yellow-400">
-                <span>!</span>
-                time pressure increases each round
-              </p>
-            </div>
-          </div>
         </div>
 
-        {/* ROUNDS */}
-        <div className="space-y-6 sm:space-y-8">
+        {/* Core Rules Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="cyber-card border-emerald-500/20"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                👤
+              </div>
+              <h2 className="text-xl font-bold text-white uppercase tracking-wider">team.config</h2>
+            </div>
+            <ul className="space-y-4 font-mono text-xs tracking-widest text-slate-400">
+              <li className="flex gap-3"><span className="text-emerald-500">→</span> SOLO_PARTICIPATION_ONLY</li>
+              <li className="flex gap-3"><span className="text-emerald-500">→</span> UNIQUE_IDENTIFIER_MANDATORY</li>
+              <li className="flex gap-3 text-rose-500"><span className="text-rose-500">⚠</span> COLLABORATION_DETECTED = LOCKOUT</li>
+            </ul>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="cyber-card border-blue-500/20"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                ⚙️
+              </div>
+              <h2 className="text-xl font-bold text-white uppercase tracking-wider">exec.protocol</h2>
+            </div>
+            <ul className="space-y-4 font-mono text-xs tracking-widest text-slate-400">
+              <li className="flex gap-3"><span className="text-blue-500">→</span> NO_COMPILER_ACCESS</li>
+              <li className="flex gap-3"><span className="text-blue-500">→</span> NO_EXTERNAL_LIBRARIES</li>
+              <li className="flex gap-3 text-amber-500"><span className="text-amber-500">!</span> TIME_COMPRESSION_ACTIVE</li>
+            </ul>
+          </motion.div>
+        </div>
+
+        {/* Phase Breakdown */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-white mb-8 px-4 border-l-4 border-emerald-500">COMPETITION_PHASES</h2>
           {[
             {
-              title: "Round 1 — Warm Start",
-              score: "10",
-              lines: [
-                "simple logic problems",
-                "limited time window",
-                "focus: accuracy",
-              ],
+              id: "01",
+              title: "WARM_START",
+              pts: "10",
+              desc: "Simple logical puzzles to calibrate your mental compiler.",
+              color: "text-emerald-400"
             },
             {
-              title: "Round 2 — Core Challenge",
-              score: "20",
-              lines: [
-                "medium difficulty problem",
-                "no execution allowed",
-                "focus: reasoning",
-              ],
+              id: "02",
+              title: "CORE_LOGIC",
+              pts: "20",
+              desc: "Medium difficulty algorithms. No execution permitted.",
+              color: "text-blue-400"
             },
             {
-              title: "Round 3 — Final Lock",
-              score: "30",
-              lines: [
-                "hard problem",
-                "single attempt only",
-                "focus: precision under pressure",
-              ],
-            },
-          ].map((r, i) => (
-            <div
-              key={i}
-              className="group relative border border-green-500/20 bg-black/60 p-5 sm:p-6 rounded-xl transition hover:border-green-400/40 hover:shadow-[0_0_30px_rgba(0,255,0,0.12)]"
+              id: "03",
+              title: "FINAL_SEQUENCE",
+              pts: "30",
+              desc: "Hard problem. Single attempt. Precision is the only survival factor.",
+              color: "text-purple-400"
+            }
+          ].map((phase, idx) => (
+            <motion.div
+              key={phase.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + idx * 0.1 }}
+              className="glass-panel p-8 relative overflow-hidden group hover:border-white/20 transition-all"
             >
-              {/* subtle corner glow */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_top_left,rgba(0,255,0,0.08),transparent_60%)] transition" />
-
-              <div className="relative flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
-                <h3 className="text-lg sm:text-xl font-semibold text-green-300 tracking-wide">
-                  {"> "}
-                  {r.title}
-                </h3>
-
-                <span className="text-green-400/70 text-sm">
-                  score: <span className="text-green-300">{r.score}</span>
-                </span>
+              <div className="absolute top-0 right-0 p-4 text-4xl font-black text-white/5 group-hover:text-white/10 transition-colors">
+                {phase.id}
               </div>
-
-              <ul className="relative space-y-2 text-sm sm:text-base text-green-400/70">
-                {r.lines.map((l, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <span className="text-green-300">{">"}</span>
-                    {l}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                  <h3 className={`text-xl font-bold tracking-widest ${phase.color}`}>{phase.title}</h3>
+                  <p className="text-slate-500 text-sm font-light max-w-md">{phase.desc}</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-3xl font-bold text-white">{phase.pts}</span>
+                  <span className="text-[8px] font-mono tracking-[0.3em] text-slate-600">MAX_PTS_ALLOCATED</span>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* WARNING */}
-        <div className="border-l-2 border-red-500 pl-4 text-red-400 text-sm sm:text-base leading-relaxed">
-          ⚠ system violation (debugging / collaboration / external help) results
-          in immediate disqualification
+        {/* Danger Alert */}
+        <div className="mt-12 p-6 rounded-2xl bg-rose-500/5 border border-rose-500/20 flex items-start gap-4">
+          <div className="text-rose-500 text-xl pt-1">⚠</div>
+          <div className="space-y-1">
+            <h4 className="text-rose-500 font-bold text-sm tracking-widest">DISQUALIFICATION_WARNING</h4>
+            <p className="text-rose-500/70 text-xs leading-relaxed font-mono tracking-tight">
+              Anti-cheat heuristics are active. Attempting to switch tabs, resize windows, or open developer tools will trigger an immediate session lockout. No second chances.
+            </p>
+          </div>
         </div>
+
       </div>
-
-      {/* bottom scan line */}
-      <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
-        <div
-          className="h-full w-1/3 bg-green-400/30 blur-sm"
-          style={{ animation: "scanMove 6s linear infinite" }}
-        />
-      </div>
-
-      <style>
-        {`
-        @keyframes scanMove {
-          0% { transform: translateX(-120%); }
-          100% { transform: translateX(320%); }
-        }
-
-        @keyframes scanFade {
-          0% { opacity: 0.05; }
-          50% { opacity: 0.09; }
-          100% { opacity: 0.05; }
-        }
-      `}
-      </style>
-    </section>
+    </div>
   );
 };
 

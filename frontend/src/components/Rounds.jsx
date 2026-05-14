@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { RoundContext } from "../context/ContextProvider";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Rounds = () => {
   const { rounds, fetchProblem, loadingRounds } = useContext(RoundContext);
@@ -9,141 +10,134 @@ const Rounds = () => {
 
   if (loadingRounds) {
     return (
-      <div className="min-h-screen bg-slate-950 text-green-400 flex items-center justify-center font-mono">
-        <div className="space-y-4 text-center">
-          <div className="animate-pulse text-lg tracking-widest">
-            ⧉ INITIALIZING SYSTEM...
-          </div>
-          <div className="text-xs text-green-600 animate-cyber-pulse">
-            Loading rounds...
-          </div>
-        </div>
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+        <p className="text-emerald-500 font-mono tracking-widest text-xs animate-pulse">BOOTING_ROUND_SELECTOR...</p>
       </div>
     );
   }
 
   if (!rounds || rounds.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-950 text-red-400 flex items-center justify-center font-mono">
-        <div className="text-center">
-          <p className="text-2xl font-bold tracking-widest mb-2">⚠ NO ROUNDS</p>
-          <p className="text-sm text-red-500/70">System unavailable</p>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+        <div className="cyber-card max-w-md w-full border-rose-500/30 text-center">
+          <div className="text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-white mb-2">SYSTEM_OFFLINE</h2>
+          <p className="text-slate-500 text-sm mb-6">No active rounds found in the central database.</p>
+          <button onClick={() => window.location.reload()} className="neon-button w-full">RETRY_CONNECTION</button>
         </div>
       </div>
     );
   }
 
   return (
-    <section className="relative min-h-screen bg-slate-950 text-green-400 font-mono px-6 sm:px-10 py-12 overflow-hidden scene-3d">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-900/8 via-transparent to-cyan-900/5 pointer-events-none" />
-      <div className="absolute inset-0 scanlines opacity-3 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.08),transparent_60%)] pointer-events-none" />
+    <div className="min-h-screen bg-slate-950 text-slate-300 pb-20 pt-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background glow centers */}
+      <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-emerald-500/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-blue-500/5 rounded-full blur-[120px]" />
 
-      {/* Header */}
-      <div className="relative z-10 text-center mb-12">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-widest glow-text mb-2">
-          <span className="text-cyan-400">&gt;</span> SELECT ROUND
-        </h1>
-        <p className="text-green-500/70 text-sm tracking-wide">
-          Execute carefully. No retries allowed.
-        </p>
-      </div>
+      <div className="max-w-4xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <span className="text-emerald-400 text-[10px] font-bold tracking-[0.4em] uppercase">MISSION_PROTOCOL</span>
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">SELECT_PHASE</h1>
+          <p className="text-slate-500 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
+            Choose your deployment zone. Each phase increases in complexity and risk. Precision is mandatory.
+          </p>
+        </div>
 
-      {/* Rounds Grid */}
-      <div className="relative z-10 max-w-3xl mx-auto space-y-5">
-        {rounds.map((round, idx) => (
-          <div
-            key={round._id}
-            className={`
-              relative p-6 rounded-lg transition-all duration-300
-              overflow-hidden group
-              depth-panel card-3d
-              ${
-                round.unlocked
-                  ? "terminal-border-bright hover:shadow-[0_0_30px_rgba(0,255,0,0.3)]"
-                  : "terminal-border border-red-500/40 opacity-50"
-              }
-            `}
-            style={{
-              animationDelay: `${idx * 0.1}s`,
-            }}
-          >
-            {/* Animated glow strip */}
-            {round.unlocked && (
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-green-400 blur-xl transition-opacity duration-300" />
-            )}
+        {/* Rounds List */}
+        <div className="space-y-6">
+          {rounds.map((round, idx) => {
+            const isUnlocked = round.unlocked;
+            
+            return (
+              <motion.div
+                key={round._id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className={`relative group transition-all duration-500 ${!isUnlocked ? "grayscale pointer-events-none opacity-50" : ""}`}
+              >
+                <div className={`cyber-card border-white/5 hover:border-emerald-500/30 group-hover:bg-white/[0.03] transition-all
+                  ${isUnlocked ? "cursor-pointer" : "cursor-not-allowed"}
+                `}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    
+                    <div className="flex items-center gap-6">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border transition-all duration-500
+                        ${isUnlocked ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 group-hover:scale-110" : "bg-white/5 border-white/10 text-slate-600"}
+                      `}>
+                        <span className="text-2xl font-bold">{round.roundNumber}</span>
+                      </div>
+                      
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-3 mb-1">
+                          <h2 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">{round.name}</h2>
+                          {isUnlocked ? (
+                            <span className="text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded font-black tracking-tighter">UNLOCKED</span>
+                          ) : (
+                            <span className="text-[8px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded font-black tracking-tighter">RESTRICTED</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono tracking-widest">
+                          <span>⏱ {round.timeLimit} MINUTES_ALLOCATED</span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="hidden sm:inline">📂 {round.totalProblems || 0} PROBLEMS_DETECTED</span>
+                        </div>
+                      </div>
+                    </div>
 
-            {/* Scanlines */}
-            <div className="absolute inset-0 scanlines-fine opacity-5 pointer-events-none" />
+                    <button
+                      disabled={!isUnlocked}
+                      onClick={async () => {
+                        await fetchProblem(round.roundNumber);
+                        navigate("/code-n-submit");
+                      }}
+                      className={`
+                        w-full md:w-auto px-10 py-3 rounded-full font-bold tracking-widest text-xs transition-all duration-300
+                        ${isUnlocked 
+                          ? "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]" 
+                          : "bg-white/5 text-slate-700 border border-white/10"}
+                      `}
+                    >
+                      {isUnlocked ? "DECODE_ENTRY" : "LOCKED_PROTOCOL"}
+                    </button>
 
-            {/* Content */}
-            <div className="relative z-10 space-y-3">
-              <div className="flex justify-between items-center gap-4">
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-bold tracking-wide text-green-300">
-                    <span className="text-cyan-400">
-                      Round {round.roundNumber}
-                    </span>{" "}
-                    • {round.name}
-                  </h2>
-                  <p className="text-green-600 text-sm mt-1">
-                    ⏱ {round.timeLimit} minutes
-                  </p>
+                  </div>
                 </div>
 
-                <span
-                  className={`
-                    text-xs px-3 py-1 border rounded-md font-bold tracking-widest whitespace-nowrap
-                    transition-all duration-300
-                    ${
-                      round.unlocked
-                        ? "border-green-400/60 text-green-300 bg-green-500/10"
-                        : "border-red-500/50 text-red-400 bg-red-500/10"
-                    }
-                  `}
-                >
-                  {round.unlocked ? "🔓 UNLOCKED" : "🔒 LOCKED"}
-                </span>
-              </div>
+                {/* Decorative progression line */}
+                {idx < rounds.length - 1 && (
+                  <div className="absolute left-8 -bottom-6 w-[1px] h-6 bg-gradient-to-b from-emerald-500/30 to-transparent" />
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
 
-              {/* Problem Count */}
-              <p className="text-xs text-green-600">
-                <span className="text-cyan-400">→</span> Problems in round:{" "}
-                {round.totalProblems || "?"}
-              </p>
-
-              {/* Button */}
-              <button
-                disabled={!round.unlocked}
-                onClick={async () => {
-                  await fetchProblem(round.roundNumber);
-                  navigate("/code-n-submit");
-                }}
-                className={`
-                  mt-4 w-full px-5 py-3 border transition-all duration-300 font-bold tracking-widest rounded-md
-                  ${
-                    round.unlocked
-                      ? "btn-primary w-full"
-                      : "border-red-500/40 text-red-500/50 cursor-not-allowed"
-                  }
-                `}
-              >
-                {round.unlocked ? "→ ENTER TERMINAL ←" : "✗ ACCESS DENIED"}
-              </button>
+        {/* System Info */}
+        <div className="mt-20 glass-panel p-8 flex flex-col md:flex-row items-center justify-between gap-8 border-emerald-500/10">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <span className="text-emerald-500 font-mono text-[10px] tracking-widest uppercase mb-1">Status_Report</span>
+            <p className="text-white font-bold text-lg">System fully operational.</p>
+          </div>
+          <div className="h-[1px] w-full md:h-12 md:w-[1px] bg-white/5" />
+          <div className="text-center md:text-left">
+            <p className="text-slate-500 text-[10px] font-mono tracking-[0.2em] mb-2 uppercase">Integrity_Check</p>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <div key={i} className={`w-3 h-1 rounded-full ${i < 7 ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-white/10"}`} />
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Bottom scan bar */}
-      <div className="absolute bottom-0 left-0 w-full h-[1px] overflow-hidden">
-        <div
-          className="h-full w-1/3 bg-gradient-to-r from-transparent via-green-400/50 to-transparent blur-sm"
-          style={{ animation: "scanMove 5s linear infinite" }}
-        />
       </div>
-    </section>
+    </div>
   );
 };
 
