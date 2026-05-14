@@ -30,9 +30,8 @@ const useAntiCheat = ({
   round,
   api,
   participantId,
-  onDisqualify,
-  onAutoSubmit,
   onFreeze,
+  timeLimit,
 }) => {
   const startedRef = useRef(false);
   const [sessionId, setSessionId] = useState(null);
@@ -107,6 +106,7 @@ const useAntiCheat = ({
     antiCheatMonitor.start({
       sessionId: sessId,
       round: round || 1,
+      timeLimit,
       api,
       onEvent: (eventType, metadata, res) => {
         if (res) {
@@ -139,7 +139,7 @@ const useAntiCheat = ({
     return () => {
       stopMonitoring("unmount");
     };
-  }, [active, api, round, onDisqualify, onAutoSubmit, onFreeze, stopMonitoring]);
+  }, [active, api, round, timeLimit, onDisqualify, onAutoSubmit, onFreeze, stopMonitoring]);
 
   // ── Heartbeat Loop ───────────────────────────────────────────────────────
   useEffect(() => {

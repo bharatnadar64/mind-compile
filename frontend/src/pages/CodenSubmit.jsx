@@ -83,6 +83,7 @@ const CodenSubmit = () => {
     onDisqualify,
     onAutoSubmit,
     onFreeze,
+    timeLimit: roundConfig?.timeLimit,
   });
 
   const [startTime, setStartTime] = useState(null); // timestamp (number)

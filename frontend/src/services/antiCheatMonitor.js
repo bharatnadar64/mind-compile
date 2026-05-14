@@ -57,7 +57,7 @@ class AntiCheatMonitor {
   /**
    * Start monitoring. Call when contestant enters coding round.
    */
-  start({ sessionId, round, api, onEvent }) {
+  start({ sessionId, round, timeLimit, api, onEvent }) {
     // 🛡️ Safeguard: NEVER start for admins
     try {
       const user = JSON.parse(localStorage.getItem("user") || "null");
@@ -72,6 +72,7 @@ class AntiCheatMonitor {
     this._active = true;
     this._sessionId = sessionId;
     this._round = round;
+    this._timeLimitMinutes = timeLimit || 30; 
     this._api = api;
     this._onEvent = onEvent || (() => {});
 
@@ -171,10 +172,36 @@ class AntiCheatMonitor {
     const onVisChange = () => {
       if (!this._active) return;
       if (document.hidden) {
+        this._hiddenAt = Date.now();
         this._dispatchEvent("tab_hidden", {
           visibilityState: document.visibilityState,
           timestamp: Date.now(),
         });
+      } else {
+        if (this._hiddenAt) {
+          const duration = Date.now() - this._hiddenAt;
+          
+          // 1. Extreme Absence Disqualification (1/4th of allotted time)
+          const quarterTimeMs = (this._timeLimitMinutes * 60 * 1000) / 4;
+          if (duration >= quarterTimeMs && quarterTimeMs > 0) {
+            this._dispatchEvent("extreme_absence", {
+              durationMs: duration,
+              allowedQuarterMs: quarterTimeMs,
+              reason: "quarter_time_absence",
+              timestamp: Date.now(),
+            });
+          } 
+          // 2. Focus Loss Warning (Lowered to 20 seconds)
+          else if (duration > 20000) {
+            this._dispatchEvent("excessive_focus_loss", {
+              durationMs: duration,
+              reason: "long_absence",
+              timestamp: Date.now(),
+            });
+          }
+          
+          this._hiddenAt = null;
+        }
       }
     };
     this._addListener(document, "visibilitychange", onVisChange);

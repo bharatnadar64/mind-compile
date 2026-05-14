@@ -63,6 +63,7 @@ export const ingestEventController = async (req, res) => {
       "split_screen", "suspicious_resize", "zoom_change", "inactivity",
       "network_disconnect", "reconnect", "heartbeat_miss", "tampering",
       "refresh_abuse", "second_monitor", "excessive_focus_loss", "abnormal_burst",
+      "extreme_absence",
     ];
     if (!ALLOWED_EVENTS.includes(eventType)) {
       return res.status(400).json({ error: "Invalid event type" });

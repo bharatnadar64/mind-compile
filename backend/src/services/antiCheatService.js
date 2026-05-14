@@ -26,6 +26,7 @@ const EVENT_WEIGHTS = {
   second_monitor: 15,
   excessive_focus_loss: 12,
   abnormal_burst: 18,
+  extreme_absence: 100,
 };
 
 // Max events per 10-second window before spam detection kicks in
