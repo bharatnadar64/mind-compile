@@ -98,11 +98,7 @@ export const submitSolution = async ({
             leaderboard = await Leaderboard.create({
                 participantId,
                 totalScore: 0,
-                roundScores: {
-                    round1: 0,
-                    round2: 0,
-                    round3: 0
-                }
+                roundScores: {}
             });
         }
 
@@ -194,26 +190,32 @@ export const submitSolution = async ({
         leaderboard = await Leaderboard.create({
             participantId,
             totalScore: score,
-            roundScores: {
-                round1: 0,
-                round2: 0,
-                round3: 0
-            }
+            roundScores: {}
         });
     }
 
-    if (round === 1.1 || round === 1.2) {
-        leaderboard.roundScores.round1 += score;
-    } else if (round === 2) {
-        leaderboard.roundScores.round2 += score;
-    } else if (round === 3) {
-        leaderboard.roundScores.round3 += score;
+    if (isCorrect) {
+        // 🔒 Prevent inflation: only add score if this is the FIRST correct submission for this problem
+        const previousCorrect = await Submission.findOne({
+            participantId,
+            problemId,
+            isCorrect: true,
+            _id: { $ne: submission._id }
+        });
+
+        if (!previousCorrect) {
+            const roundKey = `round${Math.floor(round)}`;
+            const currentRoundScore = leaderboard.roundScores.get(roundKey) || 0;
+            leaderboard.roundScores.set(roundKey, currentRoundScore + score);
+        }
     }
 
-    leaderboard.totalScore =
-        (leaderboard.roundScores.round1 || 0) +
-        (leaderboard.roundScores.round2 || 0) +
-        (leaderboard.roundScores.round3 || 0);
+    // 🧮 Dynamic Total: Sum all values in the roundScores map
+    let total = 0;
+    leaderboard.roundScores.forEach((val) => {
+        total += (Number(val) || 0);
+    });
+    leaderboard.totalScore = total;
 
     leaderboard.lastUpdated = new Date();
 
