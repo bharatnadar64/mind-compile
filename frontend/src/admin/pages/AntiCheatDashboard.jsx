@@ -23,7 +23,9 @@ const AntiCheatDashboard = () => {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [disqualifyConfirm, setDisqualifyConfirm] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [activeTab, setActiveTab] = useState("live"); // live | logs | history
+  const [activeTab, setActiveTab] = useState("live"); // live | logs | participants | stats
+  const [participants, setParticipants] = useState([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
   const pollRef = useRef(null);
 
   // ── Fetch live data ────────────────────────────────────────────────────────
@@ -42,6 +44,21 @@ const AntiCheatDashboard = () => {
     pollRef.current = setInterval(fetchLive, POLL_INTERVAL_MS);
     return () => clearInterval(pollRef.current);
   }, [fetchLive]);
+
+  const fetchParticipants = useCallback(async () => {
+    setLoadingParticipants(true);
+    try {
+      const res = await api.get("/api/anticheat/admin/participants");
+      setParticipants(res.data || []);
+    } catch { }
+    setLoadingParticipants(false);
+  }, [api]);
+
+  useEffect(() => {
+    if (activeTab === "participants") {
+      fetchParticipants();
+    }
+  }, [activeTab, fetchParticipants]);
 
   // ── Fetch participant detail ───────────────────────────────────────────────
   const openParticipantDetail = async (participantId) => {
@@ -219,6 +236,7 @@ const AntiCheatDashboard = () => {
       <div className="relative z-10 flex gap-1 border-b border-green-500/20 mb-4">
         {[
           { id: "live", label: "Live Sessions" },
+          { id: "participants", label: "Participants" },
           { id: "events", label: "Event Feed" },
           { id: "stats", label: "Analytics" },
         ].map((t) => (
@@ -313,6 +331,71 @@ const AntiCheatDashboard = () => {
                           </button>
                         ) : (
                           <span className="text-red-500/60 text-xs">Disqualified</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── PARTICIPANTS VIEW ────────────────────────────────────────────── */}
+      {activeTab === "participants" && (
+        <div className="relative z-10">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-green-500/50 text-xs">Total participants: {participants.length}</div>
+            <button onClick={fetchParticipants} className="text-xs text-green-400 hover:underline">
+              {loadingParticipants ? "Syncing..." : "[Refresh List]"}
+            </button>
+          </div>
+          <div className="overflow-x-auto border border-green-500/10 rounded bg-black/40">
+            <table className="w-full text-xs sm:text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-green-500/20 text-green-500/50 text-left">
+                  <th className="py-2 px-3 font-normal">Name / Email</th>
+                  <th className="py-2 px-3 font-normal">College</th>
+                  <th className="py-2 px-3 font-normal">Max Risk</th>
+                  <th className="py-2 px-3 font-normal">Avg Trust</th>
+                  <th className="py-2 px-3 font-normal">Total Events</th>
+                  <th className="py-2 px-3 font-normal">Violations</th>
+                  <th className="py-2 px-3 font-normal">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {participants.length === 0 && !loadingParticipants && (
+                  <tr><td colSpan={7} className="py-8 text-center text-green-500/40">No data found</td></tr>
+                )}
+                {participants.map((p) => {
+                  const stats = p.antiCheat || {};
+                  return (
+                    <tr key={p._id} className="border-b border-green-500/5 hover:bg-green-500/5 cursor-pointer transition-colors"
+                        onClick={() => openParticipantDetail(p._id)}>
+                      <td className="py-2 px-3">
+                        <div className="text-green-300 font-bold">{p.name}</div>
+                        <div className="text-green-500/50 text-[10px]">{p.email}</div>
+                      </td>
+                      <td className="py-2 px-3 text-green-500/80">{p.college || "N/A"}</td>
+                      <td className="py-2 px-3">
+                        <span className={`font-bold ${stats.maxSuspicion >= 80 ? "text-red-400" : stats.maxSuspicion >= 50 ? "text-orange-400" : "text-green-400"}`}>
+                          {stats.maxSuspicion || 0}%
+                        </span>
+                      </td>
+                      <td className="py-2 px-3 text-green-300">{Math.round(stats.avgTrustScore || 100)}%</td>
+                      <td className="py-2 px-3 text-green-500/60">{stats.totalEvents || 0}</td>
+                      <td className="py-2 px-3">
+                        <div className="flex flex-col gap-0.5 text-[10px]">
+                          {stats.multiTabCount > 0 && <span className="text-red-400">multi-tab: {stats.multiTabCount}</span>}
+                          {stats.tamperingCount > 0 && <span className="text-red-500">tamper: {stats.tamperingCount}</span>}
+                        </div>
+                      </td>
+                      <td className="py-2 px-3">
+                        {p.isDisqualified ? (
+                          <span className="text-red-500 font-bold border border-red-500/50 px-1 py-0.5 rounded text-[10px] bg-red-500/5">DISQUALIFIED</span>
+                        ) : (
+                          <span className="text-green-500 text-[10px]">ACTIVE</span>
                         )}
                       </td>
                     </tr>

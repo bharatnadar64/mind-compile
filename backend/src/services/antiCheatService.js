@@ -552,6 +552,45 @@ export const forceDisqualify = async (participantId, round, adminReason) => {
   });
 };
 
+// ════════════════════════════════════════════════════════════════════════════
+// ADMIN: GET ALL PARTICIPANTS ANTI-CHEAT OVERVIEW
+// ════════════════════════════════════════════════════════════════════════════
+export const getParticipantsAntiCheatInfo = async () => {
+  // Get all participants
+  const participants = await Participant.find({}, "name email college isDisqualified disqualifiedRounds").lean();
+  
+  // Get aggregate session data for each
+  const stats = await AntiCheatSession.aggregate([
+    {
+      $group: {
+        _id: "$participantId",
+        totalSessions: { $sum: 1 },
+        maxSuspicion: { $max: "$suspicionScore" },
+        avgTrustScore: { $avg: "$trustScore" },
+        totalEvents: { $sum: "$totalEvents" },
+        multiTabCount: { $sum: { $cond: ["$multiTabDetected", 1, 0] } },
+        tamperingCount: { $sum: { $cond: ["$tamperingDetected", 1, 0] } },
+      }
+    }
+  ]);
+  
+  // Merge
+  const statsMap = {};
+  stats.forEach(s => { statsMap[s._id.toString()] = s; });
+  
+  return participants.map(p => ({
+    ...p,
+    antiCheat: statsMap[p._id.toString()] || {
+      totalSessions: 0,
+      maxSuspicion: 0,
+      avgTrustScore: 100,
+      totalEvents: 0,
+      multiTabCount: 0,
+      tamperingCount: 0
+    }
+  }));
+};
+
 // ─── HELPER ──────────────────────────────────────────────────────────────────
 const getWarningMessage = (category, eventType) => {
   const messages = {

@@ -12,6 +12,7 @@ import {
   getSummaryController,
   forceDisqualifyController,
   getAllSessionsController,
+  getParticipantsInfoController,
 } from "../controllers/antiCheatController.js";
 
 const antiCheatRouter = express.Router();
@@ -29,5 +30,6 @@ antiCheatRouter.get("/admin/logs/:participantId", protect, isAdmin, getParticipa
 antiCheatRouter.get("/admin/summary", protect, isAdmin, getSummaryController);
 antiCheatRouter.get("/admin/sessions/all", protect, isAdmin, getAllSessionsController);
 antiCheatRouter.post("/admin/disqualify", protect, isAdmin, forceDisqualifyController);
+antiCheatRouter.get("/admin/participants", protect, isAdmin, getParticipantsInfoController);
 
 export default antiCheatRouter;

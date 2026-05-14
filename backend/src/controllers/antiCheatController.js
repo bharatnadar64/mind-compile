@@ -9,6 +9,7 @@ import {
   getParticipantLogs,
   getAdminSummary,
   forceDisqualify,
+  getParticipantsAntiCheatInfo,
 } from "../services/antiCheatService.js";
 import AntiCheatSession from "../models/AntiCheatSession.js";
 import CheatLog from "../models/CheatLog.js";
@@ -230,6 +231,18 @@ export const getAllSessionsController = async (req, res) => {
       .limit(200)
       .lean();
     res.json(sessions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+// ════════════════════════════════════════════════════════════════════════════
+// GET /api/anticheat/admin/participants
+// Admin: aggregate info for all participants
+// ════════════════════════════════════════════════════════════════════════════
+export const getParticipantsInfoController = async (req, res) => {
+  try {
+    const data = await getParticipantsAntiCheatInfo();
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
