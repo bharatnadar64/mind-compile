@@ -58,6 +58,15 @@ class AntiCheatMonitor {
    * Start monitoring. Call when contestant enters coding round.
    */
   start({ sessionId, round, api, onEvent }) {
+    // 🛡️ Safeguard: NEVER start for admins
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (user?.role === "admin") {
+        console.warn("[AntiCheat] Admin detected. Monitoring disabled.");
+        return;
+      }
+    } catch {}
+
     if (this._active) this.stop(); // Clean up any prior session
 
     this._active = true;
@@ -450,14 +459,13 @@ class AntiCheatMonitor {
         reportDevTools("firebug");
       }
 
-      // Technique 3: toString override / getter trick
-      // DevTools stringifies objects differently when open
+      // Technique 3: getter trick
       if (!detected) {
         const el = new Image();
-        let devOpen = false;
         Object.defineProperty(el, "id", {
           get() {
-            devOpen = true;
+            detected = true;
+            reportDevTools("getter_trick");
             return "";
           },
           configurable: true,
@@ -465,37 +473,17 @@ class AntiCheatMonitor {
         try {
           console.log(el); // triggers getter only when DevTools console is open
         } catch {}
-        if (devOpen) {
-          detected = true;
-          reportDevTools("getter_trick");
-        }
       }
 
-      // Technique 4: console.profile timing
+      // Technique 4: toString override check (safer than debugger/profile)
       if (!detected) {
-        const start = performance.now();
-        // eslint-disable-next-line no-console
-        console.profile && console.profile("ac_check");
-        // eslint-disable-next-line no-console
-        console.profileEnd && console.profileEnd("ac_check");
-        const elapsed = performance.now() - start;
-        // When DevTools is open, profile calls take significantly longer
-        if (elapsed > 10) {
+        const check = /./;
+        check.toString = function() {
           detected = true;
-          reportDevTools("profile_timing");
-        }
-      }
-
-      // Technique 5: debugger timing trick
-      if (!detected) {
-        const t1 = performance.now();
-        // eslint-disable-next-line no-debugger
-        debugger; // Pauses execution only when DevTools is open; timing jumps
-        const t2 = performance.now();
-        if (t2 - t1 > 100) {
-          detected = true;
-          reportDevTools("debugger_timing");
-        }
+          reportDevTools("toString_check");
+          return "ac";
+        };
+        // Some browsers trigger toString on certain console operations
       }
     };
 

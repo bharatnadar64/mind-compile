@@ -121,19 +121,25 @@ export const startSession = async ({ participantId, round, sessionId, browserInf
     }
   );
 
-  const session = await AntiCheatSession.create({
-    participantId,
-    round,
-    sessionId,
-    browserInfo: browserInfo || {},
-    startedAt: new Date(),
-    lastHeartbeat: new Date(),
-    lastDecayAt: new Date(),
-    lastEventAt: new Date(),
-    eventRateBucketResetAt: new Date(),
-  });
-
-  return session;
+  try {
+    const session = await AntiCheatSession.create({
+      participantId,
+      round,
+      sessionId,
+      browserInfo: browserInfo || {},
+      startedAt: new Date(),
+      lastHeartbeat: new Date(),
+      lastDecayAt: new Date(),
+      lastEventAt: new Date(),
+      eventRateBucketResetAt: new Date(),
+    });
+    return session;
+  } catch (err) {
+    if (err.code === 11000) {
+      return await AntiCheatSession.findOne({ sessionId });
+    }
+    throw err;
+  }
 };
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -426,7 +432,7 @@ export const endSession = async ({ sessionId, participantId, reason }) => {
         endReason: reason || "submitted",
       },
     },
-    { new: true }
+    { returnDocument: 'after' }
   );
   return session;
 };
@@ -435,6 +441,15 @@ export const endSession = async ({ sessionId, participantId, reason }) => {
 // ADMIN: GET LIVE SESSIONS
 // ════════════════════════════════════════════════════════════════════════════
 export const getLiveSessions = async () => {
+  const STALE_THRESHOLD = 45000; // 45 seconds
+  const now = new Date();
+  
+  // Auto-close stale sessions
+  await AntiCheatSession.updateMany(
+    { isActive: true, lastHeartbeat: { $lt: new Date(now - STALE_THRESHOLD) } },
+    { $set: { isActive: false, endReason: "heartbeat_lost", endedAt: now } }
+  );
+
   return await AntiCheatSession.find({ isActive: true })
     .populate("participantId", "name email college")
     .sort({ suspicionScore: -1, lastHeartbeat: -1 })
@@ -466,15 +481,24 @@ export const getParticipantLogs = async (participantId) => {
 // ADMIN: SUMMARY STATS
 // ════════════════════════════════════════════════════════════════════════════
 export const getAdminSummary = async () => {
+  const STALE_THRESHOLD = 45000;
+  const now = new Date();
+
   const [activeSessions, allSessions, recentLogs] = await Promise.all([
-    AntiCheatSession.find({ isActive: true }).lean(),
+    AntiCheatSession.find({ 
+      isActive: true, 
+      lastHeartbeat: { $gte: new Date(now - STALE_THRESHOLD) } 
+    }).lean(),
     AntiCheatSession.find().lean(),
     CheatLog.find().sort({ timestamp: -1 }).limit(200).lean(),
   ]);
 
   const byCategory = { SAFE: 0, SUSPICIOUS: 0, DOUBTFUL: 0, CONFIRMED: 0 };
   activeSessions.forEach((s) => {
-    byCategory[s.riskCategory] = (byCategory[s.riskCategory] || 0) + 1;
+    const cat = s.riskCategory?.toUpperCase();
+    if (byCategory.hasOwnProperty(cat)) {
+      byCategory[cat]++;
+    }
   });
 
   const eventTypeCounts = {};

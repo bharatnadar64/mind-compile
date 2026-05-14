@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Problem from "../components/Problem.jsx";
 import CodeScreen from "../components/CodeScreen.jsx";
@@ -7,6 +7,7 @@ import Output from "../components/Output.jsx";
 import { RoundContext } from "../context/ContextProvider.jsx";
 import useAntiCheat from "../hooks/useAntiCheat.js";
 import AntiCheatWarning from "../components/AntiCheatWarning.jsx";
+
 
 const CodenSubmit = () => {
   const navigate = useNavigate();
@@ -47,6 +48,19 @@ const CodenSubmit = () => {
   }, [code]);
 
   // ── ANTI-CHEAT INTEGRATION ───────────────────────────────────────────────
+  const onDisqualify = useCallback(() => {
+    console.warn("User disqualified by Anti-Cheat system.");
+  }, []);
+
+  const onAutoSubmit = useCallback(() => {
+    handleSubmit(true);
+  }, []);
+
+  const onFreeze = useCallback(() => {
+    // Editor should freeze automatically via the 'isFrozen' prop/state
+  }, []);
+
+  // ── ANTI-CHEAT INTEGRATION ───────────────────────────────────────────────
   const {
     suspicionScore,
     riskCategory,
@@ -66,15 +80,9 @@ const CodenSubmit = () => {
     round: problem?.round,
     api,
     participantId: localStorage.getItem("participantId"),
-    onDisqualify: () => {
-      console.warn("User disqualified by Anti-Cheat system.");
-    },
-    onAutoSubmit: () => {
-      handleSubmit(true);
-    },
-    onFreeze: () => {
-      // Editor should freeze automatically via the 'isFrozen' prop/state
-    },
+    onDisqualify,
+    onAutoSubmit,
+    onFreeze,
   });
 
   const [startTime, setStartTime] = useState(null); // timestamp (number)

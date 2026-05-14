@@ -293,10 +293,11 @@ const AntiCheatDashboard = () => {
                       <td className="py-2 px-3 text-green-500/60">{formatDuration(s.startedAt)}</td>
                       <td className="py-2 px-3">
                         <div className="flex flex-col gap-0.5 text-xs">
+                          {s.isDisqualified && <span className="text-red-500 font-bold underline">🔴 DISQUALIFIED</span>}
+                          {s.isFrozen && <span className="text-red-500">🔒 frozen</span>}
                           {s.multiTabDetected && <span className="text-red-400">⚠ multi-tab</span>}
                           {s.tamperingDetected && <span className="text-red-400">⚠ tamper</span>}
                           {s.executionsRestricted && <span className="text-orange-400">⚠ restricted</span>}
-                          {s.isFrozen && <span className="text-red-500">🔒 frozen</span>}
                         </div>
                       </td>
                       <td className="py-2 px-3" onClick={(e) => e.stopPropagation()}>

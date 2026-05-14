@@ -146,32 +146,25 @@ export const ContextProvider = ({ children }) => {
   };
 
   // ================= CONTEXT VALUE =================
-  const value = {
+  const value = React.useMemo(() => ({
     api,
-
     rounds,
     setRounds,
     loadingRounds,
     loadRounds,
     refreshRounds,
-
     currentRound,
     setCurrentRound,
-
     problem,
     fetchProblem,
-
     unlockNextRound,
-
     code,
     setCode,
-
     output,
     setOutput,
-
     executionCount,
     setExecutionCount,
-  };
+  }), [rounds, loadingRounds, currentRound, problem, code, output, executionCount]);
 
   return (
     <RoundContext.Provider value={value}>{children}</RoundContext.Provider>

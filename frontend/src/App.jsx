@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { useEffect } from "react";
 import "./App.css";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
@@ -27,19 +27,36 @@ import AntiCheatDashboard from "./admin/pages/AntiCheatDashboard";
 
 function App() {
   const location = useLocation();
-  document.addEventListener("keydown", function (e) {
-    if (
-      e.key === "F12" ||
-      (e.ctrlKey && e.shiftKey && e.key === "I") ||
-      (e.ctrlKey && e.shiftKey && e.key === "J") ||
-      (e.ctrlKey && e.key === "U")
-    ) {
-      e.preventDefault();
+  useEffect(() => {
+    // Skip anti-tamper for admins
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (user?.role === "admin" || location.pathname.startsWith("/admin")) {
+      return;
     }
-  });
-  document.addEventListener("contextmenu", function (e) {
-    e.preventDefault();
-  });
+
+    const handleKeydown = (e) => {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "U")
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeydown);
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, [location.pathname]);
 
   // ✅ Safe user parsing
   const user = JSON.parse(localStorage.getItem("user") || "null");

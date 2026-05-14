@@ -24,7 +24,7 @@ export const updateEntry = async (participantId, data) => {
     return await Leaderboard.findOneAndUpdate(
         { participantId },
         { ...data, lastUpdated: new Date() },
-        { new: true }
+        { returnDocument: 'after' }
     );
 };
 
