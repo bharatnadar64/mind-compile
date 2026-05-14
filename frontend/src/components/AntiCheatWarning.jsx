@@ -1,11 +1,13 @@
 // @ts-nocheck
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /**
  * AntiCheatWarning — Modal overlay shown for SUSPICIOUS / DOUBTFUL / CONFIRMED states.
  * CONFIRMED modal cannot be dismissed.
  */
 const AntiCheatWarning = ({ visible, message, level, onDismiss }) => {
+  const navigate = useNavigate();
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -13,7 +15,10 @@ const AntiCheatWarning = ({ visible, message, level, onDismiss }) => {
     setCountdown(5);
     const t = setInterval(() => {
       setCountdown((c) => {
-        if (c <= 1) { clearInterval(t); return 0; }
+        if (c <= 1) {
+          clearInterval(t);
+          return 0;
+        }
         return c - 1;
       });
     }, 1000);
@@ -114,7 +119,7 @@ const AntiCheatWarning = ({ visible, message, level, onDismiss }) => {
               <div key={label} className="border border-green-500/20 bg-black/60 p-2 rounded text-center">
                 <div className="text-green-500/50">{label}</div>
                 <div className={`font-bold mt-1 ${level === "CONFIRMED" ? "text-red-400" :
-                    level === "DOUBTFUL" ? "text-orange-400" : "text-yellow-400"
+                  level === "DOUBTFUL" ? "text-orange-400" : "text-yellow-400"
                   }`}>{value}</div>
               </div>
             ))}
@@ -130,19 +135,28 @@ const AntiCheatWarning = ({ visible, message, level, onDismiss }) => {
               </div>
               <div className="flex items-center gap-2 text-xs text-red-300/60">
                 <div className="h-2 w-2 bg-red-500 rounded-full animate-ping" />
-                Auto-submitting in {countdown}s...
+                {countdown > 0 ? `Auto-submitting in ${countdown}s...` : "Submission complete. Please return to lobby."}
               </div>
             </div>
           )}
 
           {/* Action button */}
-          {c.dismissable && (
+          {level === "CONFIRMED" ? (
             <button
-              onClick={onDismiss}
-              className={`w-full border px-4 py-2.5 text-sm transition-all duration-200 rounded ${c.btnClass}`}
+              onClick={() => navigate("/rounds")}
+              className="w-full bg-red-600 text-white px-4 py-2.5 text-sm font-bold tracking-widest hover:bg-red-700 transition-all duration-200 rounded"
             >
-              {c.btnText}
+              {">"} OK - RETURN TO LOBBY
             </button>
+          ) : (
+            (
+              <button
+                onClick={onDismiss}
+                className={`w-full border px-4 py-2.5 text-sm transition-all duration-200 rounded ${c.btnClass}`}
+              >
+                {c.btnText}
+              </button>
+            )
           )}
         </div>
 

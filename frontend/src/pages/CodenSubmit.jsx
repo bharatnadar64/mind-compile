@@ -6,6 +6,7 @@ import CodeScreen from "../components/CodeScreen.jsx";
 import Output from "../components/Output.jsx";
 import { RoundContext } from "../context/ContextProvider.jsx";
 import useAntiCheat from "../hooks/useAntiCheat.js";
+import AntiCheatWarning from "../components/AntiCheatWarning.jsx";
 
 const CodenSubmit = () => {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ const CodenSubmit = () => {
     warningLevel,
     dismissWarning,
     stopMonitoring,
+    sessionId,
   } = useAntiCheat({
     active: !!problem,
     round: problem?.round,
@@ -193,7 +195,9 @@ const CodenSubmit = () => {
           setOutput("");
           setNavigationAttempted(false);
 
-          navigate("/rounds");
+          if (!isDisqualified) {
+            navigate("/rounds");
+          }
         }
       } catch (err) {
         console.error("Submit error:", err);
@@ -368,7 +372,10 @@ const CodenSubmit = () => {
         setCode("");
         setOutput("");
 
-        navigate("/rounds");
+        // ONLY navigate if NOT disqualified (disqualified users must click OK on the modal)
+        if (!isDisqualified) {
+          navigate("/rounds");
+        }
       }
     } catch (err) {
       console.error("Submit error:", err);
@@ -505,62 +512,12 @@ const CodenSubmit = () => {
       </style>
 
       {/* ── ANTI-CHEAT WARNING OVERLAY ─────────────────────────────────────── */}
-      {warningVisible && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className={`
-            max-w-md w-full border p-6 rounded shadow-2xl transition-all transform scale-100
-            ${warningLevel === "CONFIRMED" ? "border-red-500 bg-red-950/20 shadow-red-500/20" :
-              warningLevel === "DOUBTFUL" ? "border-orange-500 bg-orange-950/20 shadow-orange-500/20" :
-                "border-yellow-500 bg-yellow-950/20 shadow-yellow-500/20"}
-          `}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`text-2xl ${warningLevel === "CONFIRMED" ? "text-red-500" :
-                warningLevel === "DOUBTFUL" ? "text-orange-500" : "text-yellow-500"}`}>
-                {warningLevel === "CONFIRMED" ? "🚨" : warningLevel === "DOUBTFUL" ? "⚠️" : "ℹ️"}
-              </div>
-              <h3 className={`text-lg font-bold tracking-widest ${warningLevel === "CONFIRMED" ? "text-red-400" :
-                warningLevel === "DOUBTFUL" ? "text-orange-400" : "text-yellow-400"}`}>
-                {warningLevel === "CONFIRMED" ? "DISQUALIFIED" :
-                  warningLevel === "DOUBTFUL" ? "CRITICAL WARNING" : "BEHAVIORAL ALERT"}
-              </h3>
-            </div>
-
-            <p className="text-green-300/90 text-sm mb-6 leading-relaxed">
-              {warningMessage}
-            </p>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between text-[10px] text-green-500/40 mb-1">
-                <span>RISK_SCORE: {suspicionScore}</span>
-                <span>CONFIDENCE: {cheatProbability}%</span>
-              </div>
-              <div className="h-1 bg-white/10 rounded overflow-hidden">
-                <div className={`h-full transition-all duration-1000 ${warningLevel === "CONFIRMED" ? "bg-red-500" :
-                  warningLevel === "DOUBTFUL" ? "bg-orange-500" : "bg-yellow-500"}`}
-                  style={{ width: `${Math.min(100, suspicionScore)}%` }} />
-              </div>
-            </div>
-
-            {warningLevel !== "CONFIRMED" && (
-              <button
-                onClick={dismissWarning}
-                className="mt-6 w-full py-2 border border-green-500/40 text-green-400 hover:bg-green-500/10 transition-all text-sm font-bold tracking-widest"
-              >
-                {">"} I UNDERSTAND
-              </button>
-            )}
-
-            {warningLevel === "CONFIRMED" && (
-              <button
-                onClick={() => navigate("/rounds")}
-                className="mt-6 w-full py-2 bg-red-600 text-white hover:bg-red-700 transition-all text-sm font-bold tracking-widest"
-              >
-                {">"} RETURN TO LOBBY
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      <AntiCheatWarning
+        visible={warningVisible}
+        message={warningMessage}
+        level={warningLevel}
+        onDismiss={dismissWarning}
+      />
 
       {/* ── LIVE ANTI-CHEAT STATUS BAR ─────────────────────────────────────── */}
       <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 py-1 bg-black/60 backdrop-blur-sm border-t border-green-500/10 flex justify-between items-center text-[10px] sm:text-xs">
