@@ -5,7 +5,7 @@ const codeRouter = express.Router()
 
 codeRouter.get('/', (req, res) => {
     res.send("Code router working")
-    console.log("done")
+
 })
 codeRouter.post('/run', runCode)
 

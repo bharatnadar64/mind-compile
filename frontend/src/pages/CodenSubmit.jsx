@@ -228,7 +228,7 @@ const CodenSubmit = () => {
     const saved = localStorage.getItem(key);
 
     if (saved) {
-      console.log(saved);
+
       setStartTime(Number(saved)); // 🔥 IMPORTANT
     } else {
       const now = Date.now();
@@ -258,7 +258,7 @@ const CodenSubmit = () => {
   useEffect(() => {
     // ✅ Use roundConfig.timeLimit instead of problem.timeLimit
     const timeLimit = roundConfig?.timeLimit;
-    console.log("timeLimit:", timeLimit, typeof timeLimit);
+
     if (!timeLimit || !startTime) return;
 
     const durationMs = Number(timeLimit) * 60 * 1000;
@@ -268,7 +268,7 @@ const CodenSubmit = () => {
       const elapsed = now - startTime;
       const remaining = durationMs - elapsed;
 
-      console.log("remaining:", remaining);
+
 
       if (remaining <= 0) {
         setTimeLeft(0);
@@ -362,14 +362,14 @@ const CodenSubmit = () => {
         autoSubmitted: auto,
       };
 
-      console.log("Submitting:", submissionData);
+
 
       const res = await api.post("/api/submission", submissionData);
 
-      console.log("Submission response:", res);
+
 
       if (res.status === 201) {
-        console.log("Submission successful!");
+
         autoSubmitted.current = true;
         await unlockNextRound(problem.round);
 

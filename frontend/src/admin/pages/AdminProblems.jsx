@@ -16,7 +16,7 @@ const AdminProblems = () => {
       const res = await api.get("/api/problem");
       setProblems(res.data);
     } catch (err) {
-      console.log(err);
+
     } finally {
       setLoading(false);
     }
@@ -32,7 +32,7 @@ const AdminProblems = () => {
         await api.delete(`/api/problem/${round}`);
         fetchProblems();
       } catch (err) {
-        console.log(err);
+
       }
     }
   };
@@ -66,7 +66,7 @@ const AdminProblems = () => {
       setEditingProblem(null);
       fetchProblems();
     } catch (err) {
-      console.log(err);
+
     }
   };
 
@@ -86,7 +86,7 @@ const AdminProblems = () => {
       setCreatingProblem(null);
       fetchProblems();
     } catch (err) {
-      console.log(err);
+
     }
   };
 

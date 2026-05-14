@@ -57,7 +57,7 @@ const UserLeaderboard = () => {
       );
       if (rank !== -1) setCurrentUserRank(rank);
     } catch (err) {
-      console.log(err);
+
     } finally {
       if (initial) setLoading(false);
       else setRefreshing(false);

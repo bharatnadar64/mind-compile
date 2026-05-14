@@ -16,7 +16,7 @@ const AdminRounds = () => {
       const res = await api.get("/api/rounds");
       setRounds(res.data);
     } catch (err) {
-      console.log(err);
+
     } finally {
       setLoading(false);
     }

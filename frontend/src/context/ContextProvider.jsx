@@ -50,7 +50,7 @@ export const ContextProvider = ({ children }) => {
 
       setRounds(res.data);
     } catch (err) {
-      console.log("Error loading rounds:", err);
+      console.error("Error loading rounds:", err);
     } finally {
       setLoadingRounds(false);
     }
@@ -84,7 +84,7 @@ export const ContextProvider = ({ children }) => {
       // Reload rounds to get updated unlocked status
       await loadRounds();
     } catch (err) {
-      console.log("Error unlocking next round:", err);
+      console.error("Error unlocking next round:", err);
     }
   };
 
@@ -133,7 +133,7 @@ export const ContextProvider = ({ children }) => {
         String(remainingCount),
       );
     } catch (err) {
-      console.log("Error fetching problem:", err);
+      console.error("Error fetching problem:", err);
       if (err.response?.status === 404) {
         localStorage.removeItem("currentRound");
       }

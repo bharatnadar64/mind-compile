@@ -16,7 +16,7 @@ const Leaderboard = () => {
       const res = await getLeaderboard(api);
       setData(res);
     } catch (err) {
-      console.log(err);
+
     }
   };
 

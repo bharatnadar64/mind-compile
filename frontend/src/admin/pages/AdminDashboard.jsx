@@ -22,7 +22,7 @@ const AdminDashboard = () => {
       setLeaderboard(lb.data || []);
       setSubmissions(subs.data || []);
     } catch (err) {
-      console.log("Dashboard fetch error:", err);
+
     }
   };
 

@@ -80,7 +80,7 @@ class AntiCheatMonitor {
     this._startHeartbeat();
     this._startEventFlush();
 
-    console.info("[AntiCheat] Monitoring started — session:", sessionId);
+
   }
 
   /**
@@ -121,7 +121,7 @@ class AntiCheatMonitor {
     // Clear refresh counter for this round
     sessionStorage.removeItem(`ac_refreshes_${this._round}`);
 
-    console.info("[AntiCheat] Monitoring stopped — reason:", reason);
+
   }
 
   // ══════════════════════════════════════════════════════════════════════════

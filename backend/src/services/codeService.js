@@ -26,7 +26,7 @@ export const executeCode = async (code, language, input) => {
         };
 
     } catch (err) {
-        console.log("ERROR DETAILS:", err.response?.data);
+        // console.error("ERROR DETAILS:", err.response?.data);
 
         return {
             output: null,
