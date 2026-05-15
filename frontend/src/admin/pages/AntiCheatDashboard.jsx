@@ -111,6 +111,29 @@ const AntiCheatDashboard = () => {
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{ background: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,0,0.1) 3px)" }} />
 
+      {/* Header with Connection Status */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-green-500/10 pb-6 relative z-10">
+        <div>
+          <h1 className="text-3xl font-black tracking-widest text-white glitch" data-text="ANTI_CHEAT_COMMAND">
+            ANTI_CHEAT_COMMAND
+          </h1>
+          <p className="text-slate-500 text-xs mt-1 font-mono uppercase tracking-widest">NODE_SESSION_MONITORING_ACTIVE</p>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.03] border border-white/5 rounded-sm">
+            <span className={`w-2 h-2 rounded-full ${lastUpdated ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+            <span className="text-[10px] font-mono text-slate-400 tracking-widest uppercase">
+              {lastUpdated ? `LAST_SYNC: ${formatTime(lastUpdated)}` : 'OFFLINE'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-slate-600 tracking-widest uppercase">STATUS:</span>
+            <span className="text-[10px] font-black text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-sm">SECURE</span>
+          </div>
+        </div>
+      </div>
+
       {/* Confirm disqualify modal */}
       {disqualifyConfirm && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center backdrop-blur-sm">
@@ -170,18 +193,18 @@ const AntiCheatDashboard = () => {
               )}
 
               {/* Violation timeline */}
-              <div className="text-green-500/50 text-xs mb-2">{">"} Violation Timeline</div>
+              <div className="text-green-500/50 text-xs mb-2 mt-6">{">"} Violation Timeline</div>
               <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
                 {participantLogs.map((log, i) => (
                   <div key={i} className={`border-l-2 pl-3 py-1 text-xs ${log.riskCategory === "CONFIRMED" ? "border-red-500" :
                       log.riskCategory === "DOUBTFUL" ? "border-orange-400" :
                         log.riskCategory === "SUSPICIOUS" ? "border-yellow-400" : "border-green-500/30"
                     }`}>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-sm">
                       <span className="text-green-300 font-bold">{log.eventType}</span>
                       <span className="text-green-500/50">{formatTime(log.timestamp)}</span>
                     </div>
-                    <div className="text-green-500/60 mt-0.5">
+                    <div className="text-green-500/60 mt-0.5 text-xs">
                       +{log.scoreImpact} pts → score: {log.suspicionScoreAfter}
                       {log.actionTaken !== "none" && (
                         <span className="ml-2 text-orange-400">[{log.actionTaken}]</span>
@@ -298,7 +321,7 @@ const AntiCheatDashboard = () => {
                         </div>
                       </td>
                       <td className="py-2 px-3">
-                        <span className={`px-2 py-0.5 rounded text-xs border ${cc.text} ${cc.border} ${cc.bg}`}>
+                        <span className={`px-2 py-0.5 rounded text-sm border ${cc.text} ${cc.border} ${cc.bg}`}>
                           {s.riskCategory}
                         </span>
                       </td>
@@ -375,7 +398,7 @@ const AntiCheatDashboard = () => {
                         onClick={() => openParticipantDetail(p._id)}>
                       <td className="py-2 px-3">
                         <div className="text-green-300 font-bold">{p.name}</div>
-                        <div className="text-green-500/50 text-[10px]">{p.email}</div>
+                        <div className="text-green-500/50 text-xs">{p.email}</div>
                       </td>
                       <td className="py-2 px-3 text-green-500/80">{p.college || "N/A"}</td>
                       <td className="py-2 px-3">
@@ -386,16 +409,16 @@ const AntiCheatDashboard = () => {
                       <td className="py-2 px-3 text-green-300">{Math.round(stats.avgTrustScore || 100)}%</td>
                       <td className="py-2 px-3 text-green-500/60">{stats.totalEvents || 0}</td>
                       <td className="py-2 px-3">
-                        <div className="flex flex-col gap-0.5 text-[10px]">
+                        <div className="flex flex-col gap-0.5 text-xs">
                           {stats.multiTabCount > 0 && <span className="text-red-400">multi-tab: {stats.multiTabCount}</span>}
                           {stats.tamperingCount > 0 && <span className="text-red-500">tamper: {stats.tamperingCount}</span>}
                         </div>
                       </td>
                       <td className="py-2 px-3">
                         {p.isDisqualified ? (
-                          <span className="text-red-500 font-bold border border-red-500/50 px-1 py-0.5 rounded text-[10px] bg-red-500/5">DISQUALIFIED</span>
+                          <span className="text-red-500 font-bold border border-red-500/50 px-1 py-0.5 rounded text-xs bg-red-500/5">DISQUALIFIED</span>
                         ) : (
-                          <span className="text-green-500 text-[10px]">ACTIVE</span>
+                          <span className="text-green-500 text-xs">ACTIVE</span>
                         )}
                       </td>
                     </tr>

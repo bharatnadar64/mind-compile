@@ -21,20 +21,20 @@ const About = () => {
         <div className="relative z-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
           {/* Event Info */}
           <div className="space-y-6 lg:pr-12">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-widest text-green-400 drop-shadow-[0_0_15px_#00ff00]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-widest text-white glitch" data-text="About MindCompile">
               About MindCompile
             </h1>
 
-            <p className="text-green-500/70 text-sm sm:text-base lg:text-lg leading-relaxed">
+            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed">
               MindCompile is{" "}
-              <strong>SIESCOMS’ flagship blind coding event</strong>, designed
+              <strong className="text-emerald-400">SIESCOMS’ flagship blind coding event</strong>, designed
               to test logic, precision, and problem-solving under pressure.
               Unlike regular coding competitions, participants must write
               error-free code without running or debugging, relying entirely on
               their understanding of concepts and syntax.
             </p>
 
-            <p className="text-green-500/70 text-sm sm:text-base lg:text-lg leading-relaxed">
+            <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed">
               Across three intense rounds, only those with real coding skills
               will succeed. Vibecoders won’t survive. MindCompile is where every
               line of code matters, and only true programmers rise to the
@@ -44,15 +44,15 @@ const About = () => {
 
           {/* Team Lead Info */}
           <div className="space-y-6 lg:pl-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-widest text-green-400 drop-shadow-[0_0_10px_#00ff00]">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-widest text-white glitch" data-text="Event In-Charge">
               Event In-Charge
             </h2>
 
-            <div className="border border-green-500/30 bg-black/60 backdrop-blur-md p-6 shadow-[0_0_25px_rgba(0,255,0,0.15)]">
-              <p className="text-green-400 text-lg sm:text-xl lg:text-2xl tracking-wide mb-2">
+            <div className="cyber-card">
+              <p className="text-emerald-400 text-lg sm:text-xl lg:text-2xl tracking-wide mb-2 font-black">
                 Bharat Nadar
               </p>
-              <p className="text-green-500/60 text-sm sm:text-base lg:text-lg leading-relaxed">
+              <p className="text-slate-500 text-sm sm:text-base lg:text-lg leading-relaxed">
                 Bharat Nadar leads the MindCompile event with meticulous
                 planning and precision. As the head of this flagship blind
                 coding challenge, he ensures every round is intense, fair, and

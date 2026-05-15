@@ -80,119 +80,139 @@ const AdminDashboard = () => {
       />
 
       {/* ===== HEADER ===== */}
-      <div className="relative z-10 mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-widest text-red-400 flex items-center gap-2">
-          <span>{">"}</span>
-          <span>CONTROL_ROOM</span>
-          <span className="text-green-400">::DASHBOARD</span>
-          <span className="blink">_</span>
-        </h1>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8 relative z-10">
+        <div>
+          <h1 className="text-3xl md:text-5xl font-black tracking-widest text-white glitch" data-text="STRATEGIC_OPERATIONS">
+            STRATEGIC_OPERATIONS
+          </h1>
+          <p className="text-rose-500 text-xs mt-1 font-mono uppercase tracking-[0.4em] font-bold">SYSTEM_CORE_LEVEL_01_AUTH</p>
+        </div>
 
-        <div className="mt-2 text-xs sm:text-sm text-green-500/70 flex flex-wrap gap-4">
-          <span>{"> uptime: 72h"}</span>
-          <span>{"> nodes: active"}</span>
-          <span className="text-red-500/70">{"> threat.level: low"}</span>
+        <div className="flex gap-4">
+          <div className="px-4 py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-[10px] tracking-widest uppercase">
+            THREAT: LOW
+          </div>
+          <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] tracking-widest uppercase">
+            NODES: STABLE
+          </div>
         </div>
       </div>
 
       {/* ===== METRICS ===== */}
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
         {[
-          { label: "participants.online", value: totalUsers },
-          { label: "submissions.stream", value: totalSubmissions },
-          { label: "system.score.pool", value: totalScore },
+          { label: "PARTICIPANTS_ONLINE", value: totalUsers, color: "text-emerald-400" },
+          { label: "SUBMISSION_STREAM", value: totalSubmissions, color: "text-blue-400" },
+          { label: "SCORE_POOL_TOTAL", value: totalScore, color: "text-purple-400" },
         ].map((item, i) => (
           <div
             key={i}
-            className="border border-green-500/20 bg-black/60 p-4 rounded backdrop-blur-sm"
+            className="group relative p-8 bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all duration-500"
+            style={{ clipPath: "polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%)" }}
           >
-            <p className="text-green-400/60 text-xs">
-              {"> "}
-              {item.label}
+            <p className="text-slate-500 text-[10px] font-black tracking-[0.2em] mb-4 uppercase">
+              {"> "} {item.label}
             </p>
 
-            <h2 className="text-2xl sm:text-3xl font-bold mt-1 text-green-300">
+            <h2 className={`text-4xl font-black ${item.color} tabular-nums mb-6`}>
               {item.value}
             </h2>
 
-            {/* progress style bar (unique feel vs pulse) */}
-            <div className="mt-3 h-[3px] bg-green-500/10 overflow-hidden">
-              <div className="h-full bg-green-400 bar-load" />
+            <div className="h-1 bg-white/5 overflow-hidden">
+              <div className={`h-full ${item.color.replace('text-', 'bg-')} bar-load`} style={{ opacity: 0.4 }} />
             </div>
           </div>
         ))}
       </div>
 
       {/* ===== MAIN GRID ===== */}
-      <div className="relative z-10 grid md:grid-cols-2 gap-6">
+      <div className="relative z-10 grid lg:grid-cols-2 gap-8 mb-12">
         {/* LEADERBOARD */}
-        <div className="border border-green-500/20 bg-black/60 p-5 rounded">
-          <div className="flex justify-between mb-4 items-center">
-            <h2 className="text-lg text-green-300">{"> live.rankings"}</h2>
-
+        <div className="relative p-10 bg-white/[0.02] border border-white/5"
+             style={{ clipPath: "polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%)" }}>
+          
+          <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">
+            <h2 className="text-xl font-black text-white tracking-widest uppercase">{">"} LIVE_RANKINGS</h2>
             <button
               onClick={() => navigate("/admin/leaderboard")}
-              className="text-xs text-green-400 hover:text-green-200"
+              className="text-[10px] font-black text-emerald-500/60 hover:text-emerald-400 uppercase tracking-widest transition-colors"
             >
-              view_all →
+              EXPAND_ALL_NODES_
             </button>
           </div>
 
-          <div className="space-y-2 text-xs sm:text-sm">
-            {leaderboard.slice(0, 5).map((user, i) => (
+          <div className="space-y-4">
+            {leaderboard.slice(0, 8).map((user, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center border-b border-green-500/10 pb-1"
+                className="flex justify-between items-center bg-white/[0.01] hover:bg-white/[0.03] p-3 border-l-2 border-emerald-500/20 transition-all group"
               >
-                <span className="flex gap-2">
-                  <span className="text-green-500/50">[{i + 1}]</span>
-                  {user.participantId?.name || "Unknown"}
-                </span>
-
-                <span className="text-green-300">{user.totalScore}</span>
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-xs text-slate-600 font-bold">#{(i + 1).toString().padStart(2, '0')}</span>
+                  <span className="text-sm font-black text-slate-300 group-hover:text-emerald-400 transition-colors uppercase tracking-tight">
+                    {user.participantId?.name || "ANONYMOUS_NODE"}
+                  </span>
+                </div>
+                <span className="text-emerald-400 font-black tabular-nums">{user.totalScore}</span>
               </div>
             ))}
+            {leaderboard.length === 0 && (
+              <div className="text-center py-10 text-slate-600 font-mono text-xs uppercase tracking-widest">
+                WAITING_FOR_DATA_PACKETS...
+              </div>
+            )}
           </div>
         </div>
 
         {/* SUBMISSION STREAM */}
-        <div className="border border-green-500/20 bg-black/60 p-5 rounded">
-          <div className="flex justify-between mb-4 items-center">
-            <h2 className="text-lg text-green-300">{"> event.stream"}</h2>
-
+        <div className="relative p-10 bg-white/[0.02] border border-white/5"
+             style={{ clipPath: "polygon(5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%, 0 5%)" }}>
+          
+          <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">
+            <h2 className="text-xl font-black text-white tracking-widest uppercase">{">"} EVENT_STREAM</h2>
             <button
               onClick={() => navigate("/admin/submissions")}
-              className="text-xs text-green-400 hover:text-green-200"
+              className="text-[10px] font-black text-blue-500/60 hover:text-blue-400 uppercase tracking-widest transition-colors"
             >
-              view_all →
+              MONITOR_TRAFFIC_
             </button>
           </div>
 
-          <div className="space-y-2 text-xs sm:text-sm max-h-[300px] overflow-y-auto pr-1">
-            {submissions.slice(0, 5).map((s) => (
-              <div key={s._id} className="border-b border-green-500/10 pb-2">
-                <p>
-                  <span className="text-green-500/50">{">"}</span>{" "}
-                  {s.name || s.participantId?.name}
-                </p>
+          <div className="space-y-4 max-h-[440px] overflow-y-auto pr-2 custom-scrollbar">
+            {submissions.slice(0, 10).map((s) => (
+              <div key={s._id} className="p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 transition-all group">
+                <div className="flex justify-between items-start mb-2">
+                  <p className="text-[11px] font-black text-slate-300 uppercase tracking-tight">
+                    {s.name || s.participantId?.name || "UNKNOWN_SOURCE"}
+                  </p>
+                  <span className="text-[10px] font-black text-emerald-400 tabular-nums">+{s.scoreAwarded}</span>
+                </div>
 
-                <p className="text-green-300/80">
-                  ↳ {s.problemTitle || s.problemId?.title}
-                </p>
-
-                <p className="text-green-500/60 text-[11px]">
-                  score: {s.scoreAwarded}
-                </p>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+                  <span className="text-blue-500">↳</span>
+                  <span className="truncate">{s.problemTitle || s.problemId?.title || "LOGIC_CORE_TASK"}</span>
+                </div>
               </div>
             ))}
+            {submissions.length === 0 && (
+              <div className="text-center py-10 text-slate-600 font-mono text-xs uppercase tracking-widest">
+                NO_TRAFFIC_DETECTED_
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* ===== FOOTER ===== */}
-      <div className="relative z-10 mt-10 text-[10px] sm:text-xs text-green-500/60 flex justify-between border-t border-green-500/10 pt-3">
-        <span>{"> system.status: ONLINE"}</span>
-        <span className="text-green-400">{"> packets: stable"}</span>
+      <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-600 font-black tracking-[0.2em] border-t border-white/5 pt-6 uppercase">
+        <div className="flex items-center gap-4">
+          <span className="text-emerald-500/60">SYSTEM_CORE: ONLINE</span>
+          <span className="text-blue-500/60">PACKETS: STABLE</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>REALTIME_ENCRYPTION_ACTIVE</span>
+        </div>
       </div>
     </div>
   );

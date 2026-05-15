@@ -39,9 +39,19 @@ export const submitSolution = async ({
     submittedAt
 }) => {
 
-    // ✅ Check required fields (code can be empty, but others are required)
+    // ✅ Check required fields
     if (!participantId || !problemId || !round || !language) {
         throw new Error("Missing required fields");
+    }
+
+    // 🔒 Double-submission prevention (3s window)
+    const recentSubmission = await Submission.findOne({
+        participantId,
+        problemId,
+        submittedAt: { $gt: new Date(Date.now() - 3000) }
+    });
+    if (recentSubmission) {
+        return recentSubmission; // Silently return existing instead of throwing or duplicating
     }
 
     const participant = await Participant.findById(participantId);
@@ -237,9 +247,20 @@ export const getAllSubmissions = async () => {
  * 👤 Get submissions by participant
  */
 export const getSubmissionsByParticipant = async (participantId) => {
-    return await Submission.find({ participantId })
+    const submissions = await Submission.find({ participantId })
         .populate("problemId", "title difficulty round")
         .sort({ submittedAt: -1 });
+
+    // Deduplicate by problemId to only show the latest submission per problem in history
+    const uniqueMap = new Map();
+    submissions.forEach(sub => {
+        const pId = sub.problemId?._id?.toString() || sub.problemId?.toString();
+        if (!uniqueMap.has(pId)) {
+            uniqueMap.set(pId, sub);
+        }
+    });
+
+    return Array.from(uniqueMap.values());
 };
 
 /**

@@ -140,6 +140,28 @@ class AntiCheatMonitor {
     this._setupMultiTabDetection();
     this._setupDevToolsDetection();
     this._setupTamperingDetection();
+    this._setupClipboardDetection();
+  }
+
+  // ── 11. Clipboard / Paste Detection ────────────────────────────────────────
+  _setupClipboardDetection() {
+    const onPaste = (e) => {
+      if (!this._active) return;
+      const text = e.clipboardData?.getData("text") || "";
+      this._dispatchEvent("clipboard_paste", {
+        contentLength: text.length,
+        snippet: text.slice(0, 50) + (text.length > 50 ? "..." : ""),
+        timestamp: Date.now(),
+      });
+    };
+
+    const onCopy = () => {
+      if (!this._active) return;
+      this._dispatchEvent("clipboard_copy", { timestamp: Date.now() });
+    };
+
+    this._addListener(document, "paste", onPaste);
+    this._addListener(document, "copy", onCopy);
   }
 
   // ── 1. Window Blur / Focus ─────────────────────────────────────────────────

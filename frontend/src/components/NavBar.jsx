@@ -43,12 +43,18 @@ const NavBar = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-white font-bold tracking-[0.15em] text-lg leading-none">MINDCOMPILE</span>
-              <span className="text-emerald-500/60 text-[10px] tracking-[0.3em] font-mono">v2.0_ENGINE</span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <span className="text-emerald-500/60 text-xs tracking-[0.2em] font-mono">SYSTEM_ONLINE</span>
+              </div>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center bg-white/[0.03] p-1 rounded-sm border border-white/5">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.to;
               return (
@@ -56,42 +62,45 @@ const NavBar = () => {
                   key={item.to}
                   to={item.to}
                   className={`
-                    px-4 py-2 rounded-lg text-xs font-bold tracking-widest transition-all duration-300
+                    px-6 py-2 text-xs font-black tracking-[0.2em] transition-all duration-300 relative
                     ${isActive 
                       ? "text-emerald-400 bg-emerald-500/10" 
-                      : "text-slate-400 hover:text-emerald-300 hover:bg-white/5"}
+                      : "text-slate-500 hover:text-emerald-300 hover:bg-white/5"}
                   `}
+                  style={isActive ? { clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 30%)" } : {}}
                 >
                   {item.label}
+                  {isActive && <div className="absolute bottom-0 left-0 w-full h-[2px] bg-emerald-500 shadow-[0_0_10px_#10b981]" />}
                 </Link>
               );
             })}
-
-            {isLoggedIn && (
-              <Link
-                to="/code-n-submit"
-                className="ml-4 px-4 py-2 rounded-lg bg-emerald-500 text-black text-xs font-bold tracking-widest hover:bg-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-              >
-                START_CODING
-              </Link>
-            )}
           </div>
 
           {/* Auth & Mobile Toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {isLoggedIn ? (
-              <button 
-                onClick={handleLogout} 
-                className="hidden md:block text-slate-400 hover:text-rose-400 text-xs font-bold tracking-widest transition-colors"
-              >
-                LOGOUT
-              </button>
+              <div className="flex items-center gap-6">
+                <Link
+                  to="/code-n-submit"
+                  className="px-6 py-2.5 bg-emerald-500 text-black text-xs font-black tracking-[0.1em] hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                  style={{ clipPath: "polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)" }}
+                >
+                  RUN_PROGRAM
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="hidden md:block text-slate-500 hover:text-rose-400 text-xs font-black tracking-widest transition-colors"
+                >
+                  SIG_OUT
+                </button>
+              </div>
             ) : (
               <Link 
                 to="/login" 
-                className="hidden md:block px-6 py-2 rounded-full border border-emerald-500/50 text-emerald-400 text-xs font-bold tracking-widest hover:bg-emerald-500/10 transition-all"
+                className="hidden md:block px-8 py-2.5 border-2 border-emerald-500/50 text-emerald-400 text-xs font-black tracking-[0.2em] hover:bg-emerald-500/10 transition-all"
+                style={{ clipPath: "polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)" }}
               >
-                LOGIN
+                AUTHORIZE
               </Link>
             )}
 

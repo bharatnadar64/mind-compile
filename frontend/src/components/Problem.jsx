@@ -36,7 +36,7 @@ const Problem = ({
           <h2 className="text-3xl font-black tracking-tighter text-white uppercase">
             {title || "problem_undefined"}
           </h2>
-          <span className={`px-4 py-1 text-[10px] font-black tracking-[0.2em] border rounded-lg uppercase ${getDifficultyStyles()}`}>
+          <span className={`px-4 py-1 text-xs font-black tracking-[0.2em] border rounded-lg uppercase ${getDifficultyStyles()}`}>
             {difficulty || "MEDIUM"}
           </span>
         </div>
@@ -44,15 +44,15 @@ const Problem = ({
         {/* Security Alert Tag */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-rose-500/5 border border-rose-500/20">
           <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-          <span className="text-rose-500 text-[8px] font-black tracking-widest uppercase">Encryption_Active: Copy_Restricted</span>
+          <span className="text-rose-500 text-[11px] font-black tracking-widest uppercase">Encryption_Active: Copy_Restricted</span>
         </div>
       </div>
 
       {/* Description */}
       <div className="flex-1 space-y-6">
         <div className="space-y-2">
-          <h3 className="text-[10px] font-black tracking-[0.4em] text-emerald-500 uppercase">Context_Packet</h3>
-          <div className="text-slate-400 leading-relaxed text-sm font-light whitespace-pre-wrap border-l border-white/5 pl-6">
+          <h3 className="text-xs font-black tracking-[0.4em] text-emerald-500 uppercase">Context_Packet</h3>
+          <div className="text-slate-400 leading-relaxed text-[15px] font-light whitespace-pre-wrap border-l border-white/5 pl-6">
             {description || "Awaiting system data transmission..."}
           </div>
         </div>
@@ -61,8 +61,8 @@ const Problem = ({
         <div className="grid gap-6">
           {sampleInput && (
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black tracking-[0.4em] text-blue-400 uppercase">Input_Sequence</h3>
-              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-xs text-slate-300">
+              <h3 className="text-xs font-black tracking-[0.4em] text-blue-400 uppercase">Input_Sequence</h3>
+              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-sm text-slate-300">
                 {sampleInput}
               </div>
             </div>
@@ -70,8 +70,8 @@ const Problem = ({
 
           {sampleOutput && (
             <div className="space-y-2">
-              <h3 className="text-[10px] font-black tracking-[0.4em] text-purple-400 uppercase">Return_Value</h3>
-              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-xs text-slate-300">
+              <h3 className="text-xs font-black tracking-[0.4em] text-purple-400 uppercase">Return_Value</h3>
+              <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 font-mono text-sm text-slate-300">
                 {sampleOutput}
               </div>
             </div>
@@ -80,7 +80,7 @@ const Problem = ({
       </div>
 
       {/* Verification Footer */}
-      <div className="pt-8 border-t border-white/5 flex items-center justify-between text-[8px] font-mono tracking-[0.3em] text-slate-600 uppercase">
+      <div className="pt-8 border-t border-white/5 flex items-center justify-between text-[11px] font-mono tracking-[0.3em] text-slate-600 uppercase">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5">
             <span className="w-1 h-1 rounded-full bg-emerald-500" />

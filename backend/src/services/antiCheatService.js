@@ -27,6 +27,8 @@ const EVENT_WEIGHTS = {
   excessive_focus_loss: 12,
   abnormal_burst: 18,
   extreme_absence: 100,
+  clipboard_paste: 25,
+  clipboard_copy: 5,
 };
 
 // Max events per 10-second window before spam detection kicks in
@@ -109,7 +111,7 @@ const determineAction = (riskCategory, previousCategory) => {
 // ════════════════════════════════════════════════════════════════════════════
 // START SESSION
 // ════════════════════════════════════════════════════════════════════════════
-export const startSession = async ({ participantId, round, sessionId, browserInfo }) => {
+export const startSession = async ({ participantId, round, sessionId, browserInfo, clientIp }) => {
   // Close any stale active sessions for this participant+round
   await AntiCheatSession.updateMany(
     { participantId, round, isActive: true },
@@ -127,7 +129,7 @@ export const startSession = async ({ participantId, round, sessionId, browserInf
       participantId,
       round,
       sessionId,
-      browserInfo: browserInfo || {},
+      browserInfo: { ...browserInfo, clientIp } || { clientIp },
       startedAt: new Date(),
       lastHeartbeat: new Date(),
       lastDecayAt: new Date(),

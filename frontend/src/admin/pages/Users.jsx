@@ -2,6 +2,7 @@
 import { useEffect, useState, useContext } from "react";
 import { RoundContext } from "../../context/ContextProvider";
 import { getUsers, updateUser, deleteUser } from "../services/adminApi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Users = () => {
   const { api } = useContext(RoundContext);
@@ -9,14 +10,22 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [editUserId, setEditUserId] = useState(null);
   const [form, setForm] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
-    const res = await getUsers(api);
-    setUsers(res || []);
+    try {
+      setLoading(true);
+      const res = await getUsers(api);
+      setUsers(res || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (user) => {
@@ -31,211 +40,154 @@ const Users = () => {
   };
 
   const handleDelete = async (id) => {
-    await deleteUser(api, id);
-    fetchUsers();
+    if (window.confirm("ARE_YOU_SURE_YOU_WANT_TO_TERMINATE_THIS_ENTITY?")) {
+      await deleteUser(api, id);
+      fetchUsers();
+    }
   };
 
-  return (
-    <div className="relative min-h-screen bg-black text-green-300 font-mono p-4 sm:p-6 overflow-hidden">
-      {/* ===== BACKGROUND ENGINE ===== */}
-      <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 via-black to-black opacity-80 pointer-events-none" />
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+        <p className="text-emerald-500 font-mono tracking-widest text-xs animate-pulse uppercase">Syncing_Identity_Database...</p>
+      </div>
+    );
+  }
 
+  return (
+    <div className="relative min-h-screen bg-black text-slate-300 font-mono p-4 sm:p-10 overflow-hidden">
+      {/* ===== BACKGROUND FX ===== */}
+      <div className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 blur-[120px] pointer-events-none" />
+      
       <div
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.10) 3px)",
+          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, #10b981 3px)",
         }}
       />
 
-      {/* moving ambient glow (subtle “system breathing”) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,0,0.12),transparent_50%)] animate-pulse pointer-events-none" />
-
       {/* ===== HEADER ===== */}
-      <div className="relative z-10 mb-8">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-[0.2em] text-green-200">
-          USER REGISTRY
-        </h1>
-
-        <div className="mt-2 flex items-center gap-3 text-xs sm:text-sm text-green-500/60">
-          <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse" />
-          secure identity network active
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16 border-b border-white/5 pb-10 relative z-10">
+        <div className="space-y-2">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white glitch" data-text="OCCUPANT_REGISTRY">
+            OCCUPANT_REGISTRY
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-emerald-500/60 text-[10px] font-black uppercase tracking-[0.4em]">AUTHORIZED_IDENTITY_NETWORK</p>
+          </div>
+        </div>
+        
+        <div className="text-right">
+          <span className="text-[10px] font-mono text-slate-500 tracking-widest uppercase">ACTIVE_ENTITIES</span>
+          <p className="text-2xl font-black text-white tabular-nums">{users.length.toString().padStart(3, '0')}</p>
         </div>
       </div>
 
       {/* ===== USER GRID ===== */}
-      <div className="relative z-10 grid gap-4 sm:gap-5">
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {users.map((u, idx) => (
           <div
             key={u._id}
-            className="
-            relative group
-            border border-green-500/20
-            bg-black/60
-            backdrop-blur-sm
-            p-4 sm:p-5
-            pl-14 sm:pl-16
-            rounded-xl
-            transition-all duration-300
-            hover:border-green-400/50
-            hover:shadow-[0_0_25px_rgba(0,255,0,0.12)]
-            hover:-translate-y-0.5
-          "
+            className="group relative p-8 bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
+            style={{ clipPath: "polygon(0 15%, 15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%)" }}
           >
-            {/* subtle index glow */}
-            <div className="absolute -left-1 top-3 text-green-500/20 text-5xl font-bold">
-              {String(idx + 1).padStart(2, "0")}
+            {/* Index Marker */}
+            <div className="absolute top-4 right-8 text-6xl font-black text-white/[0.02] group-hover:text-emerald-500/[0.05] transition-colors pointer-events-none">
+              {(idx + 1).toString().padStart(2, '0')}
             </div>
 
-            {/* ===== VIEW MODE ===== */}
-            {editUserId !== u._id && (
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                {/* identity block */}
-                <div className="space-y-1">
-                  <p className="text-green-100 text-lg font-semibold tracking-wide group-hover:text-green-200 transition">
-                    {u.name}
-                  </p>
+            <div className="flex flex-col h-full relative z-10">
+              {editUserId !== u._id ? (
+                <>
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-14 h-14 bg-slate-900 border-2 border-emerald-500/20 flex items-center justify-center text-2xl font-black text-white"
+                         style={{ clipPath: "polygon(20% 0, 100% 0, 100% 80%, 80% 100%, 0 100%, 0 20%)" }}>
+                      {u.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-black text-white tracking-widest uppercase group-hover:text-emerald-400 transition-colors">{u.name}</h2>
+                      <p className="text-[10px] font-mono text-emerald-500/60 tracking-widest uppercase">{u.isAdmin ? "LEVEL_ADMIN_AUTH" : "LEVEL_USER_AUTH"}</p>
+                    </div>
+                  </div>
 
-                  <p className="text-green-500/70 text-sm">{u.email}</p>
+                  <div className="space-y-4 mb-10">
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-mono text-slate-600 tracking-widest uppercase">COMM_CHANNEL</span>
+                      <p className="text-xs font-black text-slate-400 truncate uppercase">{u.email}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-mono text-slate-600 tracking-widest uppercase">ORIGIN_STATION</span>
+                      <p className="text-xs font-black text-slate-400 truncate uppercase">{u.college || "INDEPENDENT_NODE"}</p>
+                    </div>
+                  </div>
 
-                  <p className="text-green-500/50 text-sm">{u.college}</p>
-
-                  <div className="mt-2 inline-flex items-center gap-2">
-                    <span
-                      className={`
-                      px-2 py-0.5 text-xs rounded
-                      border
-                      ${
-                        u.isAdmin
-                          ? "border-yellow-400/40 text-yellow-300 bg-yellow-500/10"
-                          : "border-green-500/20 text-green-400/70"
-                      }
-                    `}
+                  <div className="mt-auto flex gap-4">
+                    <button
+                      onClick={() => handleEdit(u)}
+                      className="flex-1 py-3 bg-white/[0.03] border border-white/5 text-slate-400 hover:text-white hover:border-white/20 transition-all font-black text-[10px] tracking-widest uppercase"
                     >
-                      {u.isAdmin ? "ADMIN" : "USER"}
-                    </span>
+                      MODIFY_IDENTITY_
+                    </button>
+                    <button
+                      onClick={() => handleDelete(u._id)}
+                      className="px-6 py-3 border border-rose-500/10 text-rose-500/40 hover:text-rose-500 hover:bg-rose-500/5 transition-all font-black text-[10px] tracking-widest uppercase"
+                    >
+                      PURGE_
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-6">
+                  <h3 className="text-xs font-black text-emerald-500 tracking-[0.3em] mb-4 uppercase underline underline-offset-4">IDENTITY_RECALIBRATION</h3>
+                  
+                  {[['name', 'IDENTIFIER'], ['email', 'COMM_LINK'], ['college', 'STATION']].map(([key, label]) => (
+                    <div key={key} className="space-y-2">
+                      <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{label}</label>
+                      <input
+                        value={form[key] || ""}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                        className="w-full bg-black/50 border border-white/10 p-4 text-xs text-white focus:border-emerald-500/50 focus:outline-none transition-all font-mono"
+                      />
+                    </div>
+                  ))}
+
+                  <label className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 accent-emerald-500"
+                      checked={form.isAdmin || false}
+                      onChange={(e) => setForm({ ...form, isAdmin: e.target.checked })}
+                    />
+                    <span className="text-[10px] font-black text-slate-400 group-hover:text-white transition-colors uppercase tracking-widest">GRANT_ADMIN_CLEARANCE</span>
+                  </label>
+
+                  <div className="flex gap-4 pt-4">
+                    <button onClick={handleSave} className="flex-1 py-4 bg-emerald-500 text-black font-black text-xs tracking-[0.3em] hover:bg-emerald-400 transition-all uppercase">
+                      COMMIT_SAVE
+                    </button>
+                    <button onClick={() => setEditUserId(null)} className="px-6 py-4 border border-white/10 text-slate-500 font-black text-xs tracking-[0.3em] hover:bg-white/5 transition-all uppercase">
+                      ABORT
+                    </button>
                   </div>
                 </div>
-
-                {/* actions */}
-                <div className="flex sm:flex-col gap-3 sm:items-end text-sm">
-                  <button
-                    onClick={() => handleEdit(u)}
-                    className="
-                    px-3 py-1.5 rounded-md
-                    border border-green-400/30
-                    bg-green-500/5
-                    hover:bg-green-400/10
-                    hover:border-green-300/60
-                    transition
-                    active:scale-95
-                  "
-                  >
-                    modify
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(u._id)}
-                    className="
-                    px-3 py-1.5 rounded-md
-                    border border-red-500/30
-                    text-red-400
-                    bg-red-500/5
-                    hover:bg-red-500/10
-                    hover:border-red-400/60
-                    transition
-                    active:scale-95
-                  "
-                  >
-                    remove
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ===== EDIT MODE ===== */}
-            {editUserId === u._id && (
-              <div className="space-y-3">
-                <div className="text-green-300 text-sm mb-2">
-                  editing record: {u.name}
-                </div>
-
-                {[
-                  ["name", "Name"],
-                  ["email", "Email"],
-                  ["college", "College"],
-                ].map(([key, label]) => (
-                  <input
-                    key={key}
-                    value={form[key] || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, [key]: e.target.value })
-                    }
-                    className="
-                    w-full
-                    bg-black
-                    border border-green-500/20
-                    p-2.5
-                    rounded-md
-                    text-green-200
-                    focus:outline-none
-                    focus:border-green-400/60
-                    focus:shadow-[0_0_10px_rgba(0,255,0,0.1)]
-                    transition
-                  "
-                    placeholder={label}
-                  />
-                ))}
-
-                <label className="flex items-center gap-2 text-green-300 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={form.isAdmin || false}
-                    onChange={(e) =>
-                      setForm({ ...form, isAdmin: e.target.checked })
-                    }
-                  />
-                  grant admin access
-                </label>
-
-                <div className="flex gap-3 pt-2 text-sm">
-                  <button
-                    onClick={handleSave}
-                    className="
-                    px-3 py-1.5 rounded-md
-                    bg-green-500/10
-                    border border-green-400/40
-                    hover:bg-green-400/20
-                    transition
-                  "
-                  >
-                    save
-                  </button>
-
-                  <button
-                    onClick={() => setEditUserId(null)}
-                    className="
-                    px-3 py-1.5 rounded-md
-                    text-green-400/70
-                    hover:text-green-300
-                    transition
-                  "
-                  >
-                    cancel
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* ===== FOOTER ===== */}
-      <div className="relative z-10 mt-10 text-xs text-green-500/50 border-t border-green-500/10 pt-3 flex justify-between">
-        <span>registry.status: ACTIVE</span>
-        <span className="text-green-400/70 animate-pulse">
-          syncing identities...
-        </span>
+      {/* ===== SYSTEM LOGS ===== */}
+      <div className="mt-16 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-mono text-slate-500 tracking-[0.3em] border-t border-white/5 pt-8 relative z-10">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>REGISTRY_STATUS: ENCRYPTED</span>
+          </div>
+          <span>LAST_SYNC: {new Date().toLocaleTimeString()}</span>
+        </div>
+        <div className="text-emerald-500/60 uppercase">Identity_Propagation_Stable</div>
       </div>
     </div>
   );

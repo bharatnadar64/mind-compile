@@ -1,150 +1,130 @@
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
-  const text = "CODE. COMPILE. SURVIVE. NO SECOND CHANCES.";
-  const [output, setOutput] = useState("");
-  const [i, setI] = useState(0);
-
-  useEffect(() => {
-    if (i < text.length) {
-      const t = setTimeout(() => {
-        setOutput((prev) => prev + text[i]);
-        setI(i + 1);
-      }, 40);
-      return () => clearTimeout(t);
-    }
-  }, [i]);
-
   return (
-    <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden py-20">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-glow" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Left: Content */}
-          <div className="text-center lg:text-left space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 text-[10px] font-bold tracking-[0.3em] uppercase">SYSTEMS_ACTIVE</span>
-            </div>
-            
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tighter leading-tight">
-              Master the <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 neon-text">
-                Blind Code
-              </span>
-            </h1>
-            
-            <p className="text-slate-400 text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-              Enter the arena of SIESCOMS’ flagship coding battle. No compilers. No debugging. Just pure logic and precision.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
-              <Link to="/rounds" className="neon-button px-10 py-4 text-lg">
-                INITIALIZE_ROUND
-              </Link>
-              <Link to="/rules" className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors font-bold tracking-widest text-xs">
-                VIEW_PROTOCOL
-                <span className="group-hover:translate-x-2 transition-transform">→</span>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-3 gap-8 pt-10 border-t border-white/5 max-w-md mx-auto lg:mx-0">
-              <div>
-                <div className="text-2xl font-bold text-white">3</div>
-                <div className="text-[10px] text-slate-500 tracking-widest uppercase mt-1">Phases</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">0</div>
-                <div className="text-[10px] text-slate-500 tracking-widest uppercase mt-1">Compilers</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-white">100%</div>
-                <div className="text-[10px] text-slate-500 tracking-widest uppercase mt-1">Precision</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Code Visualization */}
-          <div className="relative lg:h-[600px] flex items-center justify-center">
-            <div className="w-full glass-panel overflow-hidden border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)] group">
-              <div className="terminal-header flex justify-between">
-                <div className="flex gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500/50" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
-                </div>
-                <div className="text-[10px] text-slate-500 font-mono">kernel_monitor.vpp</div>
-              </div>
-              
-              <div className="p-8 font-mono space-y-4">
-                <div className="flex gap-4">
-                  <span className="text-slate-700">01</span>
-                  <span className="text-emerald-500">class</span>
-                  <span className="text-blue-400">MindCompile</span>
-                  <span className="text-slate-400">{"{"}</span>
-                </div>
-                <div className="flex gap-4 pl-8">
-                  <span className="text-slate-700">02</span>
-                  <span className="text-emerald-500">async function</span>
-                  <span className="text-blue-400">initialize</span>
-                  <span className="text-slate-400">() {"{"}</span>
-                </div>
-                <div className="flex gap-4 pl-16">
-                  <span className="text-slate-700">03</span>
-                  <span className="text-slate-400 text-lg sm:text-xl">
-                    {output}
-                    <span className="w-2 h-5 bg-emerald-400 inline-block align-middle ml-1 animate-pulse" />
-                  </span>
-                </div>
-                <div className="flex gap-4 pl-8">
-                  <span className="text-slate-700">04</span>
-                  <span className="text-slate-400">{"}"}</span>
-                </div>
-                <div className="flex gap-4">
-                  <span className="text-slate-700">05</span>
-                  <span className="text-slate-400">{"}"}</span>
-                </div>
-
-                {/* Status Logs */}
-                <div className="mt-8 pt-8 border-t border-white/5 space-y-2">
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-slate-500 tracking-widest uppercase">Encryption_Link</span>
-                    <span className="text-emerald-500">STABLE</span>
-                  </div>
-                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 w-[78%] animate-pulse" />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Scanline overlay */}
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent h-[10%] w-full animate-[scan_4s_linear_infinite]" />
-            </div>
-
-            {/* Floating Orbs */}
-            <div className="absolute -top-10 -right-10 w-24 h-24 glass-panel border-emerald-500/20 flex items-center justify-center animate-bounce">
-              <span className="text-emerald-400 text-2xl">01</span>
-            </div>
-            <div className="absolute -bottom-6 -left-6 w-20 h-20 glass-panel border-emerald-500/20 flex items-center justify-center animate-[pulse_4s_infinite]">
-              <span className="text-blue-400 text-xl font-mono">{"{}"}</span>
-            </div>
-          </div>
-
-        </div>
+    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 px-4 sm:px-10 lg:px-24">
+      {/* ===== ADVANCED BG FX ===== */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] animate-glow" />
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
       </div>
 
-      <style>{`
-        @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(1000%); }
-        }
-      `}</style>
-    </section>
+      <div className="relative z-10 w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
+        {/* LEFT CONTENT */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="space-y-8"
+        >
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-panel border-emerald-500/20">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-emerald-500 font-mono text-xs tracking-[0.4em] uppercase">Protocol_Active_v2.1</span>
+          </div>
+          
+          <div className="space-y-4">
+            <h1 className="text-6xl sm:text-8xl font-black tracking-tighter leading-[0.9]">
+              CODE <br />
+              <span 
+                className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 neon-text glitch"
+                data-text="IN THE DARK"
+              >
+                IN THE DARK
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg sm:text-xl max-w-lg leading-relaxed font-mono">
+              {"> "} Precision is your only survival tool. No compiler. No preview. Just you and the machine.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-6 pt-4">
+            <Link to="/rounds">
+              <button className="neon-button">
+                INITIATE_SESSION
+              </button>
+            </Link>
+            <Link to="/rules" className="group flex items-center gap-4 text-slate-500 hover:text-emerald-400 transition-colors tracking-[0.2em] font-black text-sm">
+              <span className="w-12 h-[1px] bg-slate-800 group-hover:w-16 group-hover:bg-emerald-500 transition-all" />
+              VIEW_PROTOCOL
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* RIGHT VISUAL - TERMINAL WIDGET */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="hidden lg:block relative perspective-1000"
+        >
+          <div className="cyber-card p-0 overflow-hidden border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="terminal-header">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500/50" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/50" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+              </div>
+              <span>SYSTEM_CORE_STREAM</span>
+            </div>
+            
+            <div className="p-6 font-mono text-sm space-y-4 bg-black/40">
+              <div className="flex gap-4">
+                <span className="text-emerald-500/40">01</span>
+                <span className="text-emerald-400">IMPORT {"{ memory, logic }"} FROM "CORE";</span>
+              </div>
+              <div className="flex gap-4">
+                <span className="text-emerald-500/40">02</span>
+                <span className="text-emerald-400">CONST session = NEW HackingProtocol();</span>
+              </div>
+              <div className="flex gap-4">
+                <span className="text-emerald-500/40">03</span>
+                <span className="text-emerald-400 animate-pulse">session.bypassFirewall(); // CRITICAL</span>
+              </div>
+              <div className="flex gap-4 pt-4 border-t border-white/5">
+                <span className="text-rose-500/60">WARN</span>
+                <span className="text-rose-400">BUFFER_OVERFLOW_DETECTED</span>
+              </div>
+              <div className="flex gap-4">
+                <span className="text-cyan-500/60">INFO</span>
+                <span className="text-cyan-400 italic">Encrypting data packets... [88%]</span>
+              </div>
+              
+              {/* Fake Data Stream */}
+              <div className="grid grid-cols-4 gap-2 pt-4">
+                {[...Array(12)].map((_, i) => (
+                  <div key={i} className="h-1 bg-emerald-500/10 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-emerald-500/40"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Floating UI Bits */}
+          <motion.div 
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="absolute -top-6 -right-6 glass-panel p-4 border-emerald-500/30 text-emerald-400 font-mono text-[10px] tracking-widest"
+          >
+            LATENCY: 12ms <br />
+            STATUS: NOMINAL
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Decorative Edge */}
+      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-slate-950 to-transparent" />
+    </div>
   );
 };
 

@@ -85,16 +85,19 @@ const Auth = () => {
               <div className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
             </div>
-            <div className="text-[10px] text-slate-500 font-mono ml-4 tracking-widest uppercase">
+            <div className="text-xs text-slate-500 font-mono ml-4 tracking-widest uppercase">
               {isLogin ? "auth.login" : "auth.register"}
             </div>
           </div>
 
           <div className="mb-10 text-center md:text-left">
-            <h2 className="text-3xl font-black tracking-tighter text-white mb-2">
+            <h2 
+              className="text-3xl font-black tracking-tighter text-white mb-2 glitch"
+              data-text={isLogin ? "INITIALIZE_SESSION" : "REGISTER_IDENTITY"}
+            >
               {isLogin ? "INITIALIZE_SESSION" : "REGISTER_IDENTITY"}
             </h2>
-            <p className="text-slate-500 text-xs font-mono tracking-widest">
+            <p className="text-slate-500 text-sm font-mono tracking-widest">
               Please enter your parameters to continue.
             </p>
           </div>
@@ -109,7 +112,7 @@ const Auth = () => {
                   className="space-y-5"
                 >
                   <div className="space-y-2">
-                    <label className="text-[10px] text-emerald-500 font-mono tracking-widest uppercase ml-1">Identity_Name</label>
+                    <label className="text-xs text-emerald-500 font-mono tracking-widest uppercase ml-1">Identity_Name</label>
                     <input
                       type="text"
                       name="name"
@@ -121,7 +124,7 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] text-emerald-500 font-mono tracking-widest uppercase ml-1">Host_Station</label>
+                    <label className="text-xs text-emerald-500 font-mono tracking-widest uppercase ml-1">Host_Station</label>
                     <input
                       type="text"
                       name="college"
@@ -136,7 +139,7 @@ const Auth = () => {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <label className="text-[10px] text-emerald-500 font-mono tracking-widest uppercase ml-1">Comms_Link</label>
+              <label className="text-xs text-emerald-500 font-mono tracking-widest uppercase ml-1">Comms_Link</label>
               <input
                 type="email"
                 name="email"
@@ -149,7 +152,7 @@ const Auth = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] text-emerald-500 font-mono tracking-widest uppercase ml-1">Access_Key</label>
+              <label className="text-xs text-emerald-500 font-mono tracking-widest uppercase ml-1">Access_Key</label>
               <input
                 type="password"
                 name="password"
@@ -164,7 +167,7 @@ const Auth = () => {
             <button
               type="submit"
               disabled={loading}
-              className="neon-button w-full py-4 text-xs mt-4 uppercase tracking-[0.2em] font-black"
+              className="neon-button w-full py-4 text-sm mt-4 uppercase tracking-[0.2em] font-black"
             >
               {loading ? "PROCESSING..." : isLogin ? "EXECUTE_LOGIN" : "INITIALIZE_ACCOUNT"}
             </button>
@@ -174,7 +177,7 @@ const Auth = () => {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`mt-6 p-4 rounded-xl text-[10px] font-mono tracking-widest text-center border ${
+              className={`mt-6 p-4 rounded-xl text-xs font-mono tracking-widest text-center border ${
                 message.includes("✓") 
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
                 : "bg-rose-500/10 text-rose-400 border-rose-500/20"
@@ -187,14 +190,14 @@ const Auth = () => {
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <button
               onClick={toggleMode}
-              className="text-slate-500 hover:text-emerald-400 transition-colors text-[10px] font-mono tracking-widest uppercase"
+              className="text-slate-500 hover:text-emerald-400 transition-colors text-xs font-mono tracking-widest uppercase"
             >
               {isLogin ? "Need access? Request identity →" : "Have identity? Execute login →"}
             </button>
           </div>
         </div>
         
-        <p className="mt-8 text-center text-rose-500 text-[8px] font-mono tracking-[0.4em] uppercase animate-pulse">
+        <p className="mt-8 text-center text-rose-500 text-xs font-mono tracking-[0.3em] uppercase animate-pulse">
           Unauthorized_access_is_monitored
         </p>
       </motion.div>

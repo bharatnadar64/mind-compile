@@ -29,23 +29,23 @@ const Footer = () => {
               MINDCOMPILE
             </h2>
 
-            <p className="text-green-500/70 text-sm sm:text-base leading-relaxed max-w-sm">
+            <p className="text-green-500/70 text-base leading-relaxed max-w-sm">
               A blind coding arena where execution is disabled and logic is the
               only weapon.
             </p>
 
-            <p className="text-xs text-green-500/50 tracking-widest animate-pulse">
+            <p className="text-sm text-green-500/50 tracking-widest animate-pulse">
               system.status :: ACTIVE
             </p>
           </div>
 
           {/* ===== NAVIGATION ===== */}
           <div className="space-y-5">
-            <h3 className="text-green-300 text-sm tracking-[0.3em]">
+            <h3 className="text-green-300 text-base tracking-[0.3em]">
               NAVIGATION
             </h3>
 
-            <ul className="space-y-3 text-sm sm:text-base">
+            <ul className="space-y-3 text-base">
               {["/", "/about", "/rounds", "/rules"].map((path, i) => {
                 const labels = ["Home", "About", "Rounds", "Rules"];
 
@@ -86,9 +86,9 @@ const Footer = () => {
 
           {/* ===== SYSTEM INFO ===== */}
           <div className="space-y-5">
-            <h3 className="text-green-300 text-sm tracking-[0.3em]">SYSTEM</h3>
+            <h3 className="text-green-300 text-base tracking-[0.3em]">SYSTEM</h3>
 
-            <div className="space-y-3 text-sm text-green-500/70">
+            <div className="space-y-3 text-base text-green-500/70">
               <p>event :: SIESCOMS MindCompile</p>
               <p>mode :: Blind Coding Arena</p>
               <p>rounds :: 3 stages</p>
@@ -103,8 +103,7 @@ const Footer = () => {
         {/* ===== DIVIDER ===== */}
         <div className="my-10 h-[1px] bg-green-500/20" />
 
-        {/* ===== BOTTOM BAR ===== */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-6 text-xs sm:text-sm text-green-500/60">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-green-500/60">
           <p className="tracking-wide text-center sm:text-left">
             © {new Date().getFullYear()} MINDCOMPILE // SYSTEM CORE
           </p>

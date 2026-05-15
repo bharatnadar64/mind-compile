@@ -13,7 +13,7 @@ const Rules = () => {
         {/* Header */}
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="text-emerald-400 text-[10px] font-bold tracking-[0.4em] uppercase">ACCESS_PROTOCOL</span>
+            <span className="text-emerald-400 text-xs font-bold tracking-[0.3em] uppercase">ACCESS_PROTOCOL</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">SYSTEM_RULES</h1>
           <p className="text-slate-500 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
@@ -22,89 +22,76 @@ const Rules = () => {
         </div>
 
         {/* Core Rules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="cyber-card border-emerald-500/20"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="cyber-card border-emerald-500/20 group hover:border-emerald-500/40 transition-all duration-500"
+            style={{ clipPath: "polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%)" }}
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                👤
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-black"
+                   style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}>
+                01
               </div>
-              <h2 className="text-xl font-bold text-white uppercase tracking-wider">team.config</h2>
+              <h2 className="text-xl font-black text-white uppercase tracking-[0.2em]">TEAM_CONFIG</h2>
             </div>
-            <ul className="space-y-4 font-mono text-xs tracking-widest text-slate-400">
-              <li className="flex gap-3"><span className="text-emerald-500">→</span> SOLO_PARTICIPATION_ONLY</li>
-              <li className="flex gap-3"><span className="text-emerald-500">→</span> UNIQUE_IDENTIFIER_MANDATORY</li>
-              <li className="flex gap-3 text-rose-500"><span className="text-rose-500">⚠</span> COLLABORATION_DETECTED = LOCKOUT</li>
+            <ul className="space-y-6 font-mono text-xs tracking-[0.2em] text-slate-400">
+              <li className="flex gap-4 items-start"><span className="text-emerald-500 font-black mt-1">{">>"}</span> <span>SOLO_PARTICIPATION_REQUIRED</span></li>
+              <li className="flex gap-4 items-start"><span className="text-emerald-500 font-black mt-1">{">>"}</span> <span>UNIQUE_HASH_IDENTIFIER_MANDATORY</span></li>
+              <li className="flex gap-4 items-start text-rose-500 bg-rose-500/5 p-2 border border-rose-500/10"><span className="text-rose-500 font-black mt-1">{"!!"}</span> <span>COLLABORATION_DETECTED_IMMEDIATE_LOCKOUT</span></li>
             </ul>
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="cyber-card border-blue-500/20"
+            className="cyber-card border-blue-500/20 group hover:border-blue-500/40 transition-all duration-500"
+            style={{ clipPath: "polygon(0 15%, 15% 0, 100% 0, 100% 100%, 0 100%)" }}
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                ⚙️
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-blue-400 font-black"
+                   style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}>
+                02
               </div>
-              <h2 className="text-xl font-bold text-white uppercase tracking-wider">exec.protocol</h2>
+              <h2 className="text-xl font-black text-white uppercase tracking-[0.2em]">EXEC_PROTOCOL</h2>
             </div>
-            <ul className="space-y-4 font-mono text-xs tracking-widest text-slate-400">
-              <li className="flex gap-3"><span className="text-blue-500">→</span> NO_COMPILER_ACCESS</li>
-              <li className="flex gap-3"><span className="text-blue-500">→</span> NO_EXTERNAL_LIBRARIES</li>
-              <li className="flex gap-3 text-amber-500"><span className="text-amber-500">!</span> TIME_COMPRESSION_ACTIVE</li>
+            <ul className="space-y-6 font-mono text-xs tracking-[0.2em] text-slate-400">
+              <li className="flex gap-4 items-start"><span className="text-blue-500 font-black mt-1">{">>"}</span> <span>EXTERNAL_COMPILER_ACCESS_RESTRICTED</span></li>
+              <li className="flex gap-4 items-start"><span className="text-blue-500 font-black mt-1">{">>"}</span> <span>VANILLA_SOURCE_CODE_ONLY</span></li>
+              <li className="flex gap-4 items-start text-amber-500 bg-amber-500/5 p-2 border border-amber-500/10"><span className="text-amber-500 font-black mt-1">{"!!"}</span> <span>TIME_COMPRESSION_MODULE_ACTIVE</span></li>
             </ul>
           </motion.div>
         </div>
 
         {/* Phase Breakdown */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white mb-8 px-4 border-l-4 border-emerald-500">COMPETITION_PHASES</h2>
+        <div className="space-y-6 mb-16">
+          <h2 className="text-2xl font-black text-white mb-10 px-6 border-l-4 border-emerald-500 tracking-[0.2em] uppercase">DEPLOYMENT_PHASES</h2>
           {[
-            {
-              id: "01",
-              title: "WARM_START",
-              pts: "10",
-              desc: "Simple logical puzzles to calibrate your mental compiler.",
-              color: "text-emerald-400"
-            },
-            {
-              id: "02",
-              title: "CORE_LOGIC",
-              pts: "20",
-              desc: "Medium difficulty algorithms. No execution permitted.",
-              color: "text-blue-400"
-            },
-            {
-              id: "03",
-              title: "FINAL_SEQUENCE",
-              pts: "30",
-              desc: "Hard problem. Single attempt. Precision is the only survival factor.",
-              color: "text-purple-400"
-            }
+            { id: "01", title: "WARM_START", pts: "10", desc: "Logic calibration phase. Primary system checks.", color: "text-emerald-400" },
+            { id: "02", title: "CORE_LOGIC", pts: "20", desc: "Algorithmic synthesis. Zero execution permitted.", color: "text-blue-400" },
+            { id: "03", title: "FINAL_SEQUENCE", pts: "30", desc: "Hard logic constraints. Single attempt authorized.", color: "text-rose-400" }
           ].map((phase, idx) => (
             <motion.div
               key={phase.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + idx * 0.1 }}
-              className="glass-panel p-8 relative overflow-hidden group hover:border-white/20 transition-all"
+              className="relative p-10 bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group"
+              style={{ clipPath: "polygon(0 0, 97% 0, 100% 25%, 100% 100%, 3% 100%, 0 75%)" }}
             >
-              <div className="absolute top-0 right-0 p-4 text-4xl font-black text-white/5 group-hover:text-white/10 transition-colors">
+              <div className="absolute top-0 right-0 p-6 text-6xl font-black text-white/[0.02] group-hover:text-white/[0.05] transition-colors font-mono">
                 {phase.id}
               </div>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-2">
-                  <h3 className={`text-xl font-bold tracking-widest ${phase.color}`}>{phase.title}</h3>
-                  <p className="text-slate-500 text-sm font-light max-w-md">{phase.desc}</p>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+                <div className="space-y-4">
+                  <h3 className={`text-2xl font-black tracking-[0.3em] ${phase.color} uppercase`}>{phase.title}</h3>
+                  <p className="text-slate-500 text-sm font-mono tracking-wide max-w-lg leading-relaxed">{phase.desc}</p>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-3xl font-bold text-white">{phase.pts}</span>
-                  <span className="text-[8px] font-mono tracking-[0.3em] text-slate-600">MAX_PTS_ALLOCATED</span>
+                <div className="flex flex-col items-center md:items-end bg-white/[0.03] border border-white/5 p-4 rounded-sm min-w-[140px]">
+                  <span className="text-4xl font-black text-white tabular-nums">{phase.pts}</span>
+                  <span className="text-[9px] font-mono tracking-[0.3em] text-slate-600 uppercase mt-2">MAX_ALLOCATION</span>
                 </div>
               </div>
             </motion.div>
@@ -115,8 +102,8 @@ const Rules = () => {
         <div className="mt-12 p-6 rounded-2xl bg-rose-500/5 border border-rose-500/20 flex items-start gap-4">
           <div className="text-rose-500 text-xl pt-1">⚠</div>
           <div className="space-y-1">
-            <h4 className="text-rose-500 font-bold text-sm tracking-widest">DISQUALIFICATION_WARNING</h4>
-            <p className="text-rose-500/70 text-xs leading-relaxed font-mono tracking-tight">
+            <h4 className="text-rose-500 font-bold text-base tracking-widest">DISQUALIFICATION_WARNING</h4>
+            <p className="text-rose-500/70 text-sm leading-relaxed font-mono tracking-tight">
               Anti-cheat heuristics are active. Attempting to switch tabs, resize windows, or open developer tools will trigger an immediate session lockout. No second chances.
             </p>
           </div>

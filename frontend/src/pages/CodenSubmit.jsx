@@ -299,38 +299,44 @@ const CodenSubmit = () => {
         className="w-full lg:w-3/5 flex flex-col gap-6 h-[calc(100vh-120px)] lg:h-[85vh]"
       >
         {/* Workspace Toolbar */}
-        <div className="glass-panel px-6 py-4 border-white/5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <select
-              value={language}
-              onChange={(e) => {
-                setLanguage(e.target.value);
-                localStorage.setItem("preferredLanguage", e.target.value);
-              }}
-              className="bg-slate-900 border border-white/10 rounded-lg px-4 py-2 text-xs font-mono text-white focus:outline-none focus:border-emerald-500/50 transition-all"
-            >
-              <option value="g++-15">C++ v15</option>
-              <option value="python-3.14">Python v3.14</option>
-              <option value="openjdk-25">Java v25</option>
-            </select>
+        <div className="glass-panel px-6 py-4 border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ clipPath: "polygon(0 0, 98% 0, 100% 30%, 100% 100%, 2% 100%, 0 70%)" }}>
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-mono text-slate-500 tracking-[0.2em] mb-1 uppercase">ENV_PARAMETER</span>
+              <select
+                value={language}
+                onChange={(e) => {
+                  setLanguage(e.target.value);
+                  localStorage.setItem("preferredLanguage", e.target.value);
+                }}
+                className="bg-slate-900 border border-white/10 rounded-sm px-4 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 transition-all"
+              >
+                <option value="g++-15">CPP_v15_NODE</option>
+                <option value="python-3.14">PY_v3.14_NODE</option>
+                <option value="openjdk-25">JAVA_v25_NODE</option>
+              </select>
+            </div>
+
+            <div className="h-10 w-px bg-white/5" />
 
             <button
               onClick={handleRun}
               disabled={executionCount <= 0 || running || isFrozen}
-              className={`px-4 py-2 rounded-lg border text-[10px] font-black tracking-widest transition-all
+              className={`px-8 py-2 text-xs font-black tracking-widest transition-all
                 ${executionCount > 0 && !isFrozen 
-                  ? "border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10" 
-                  : "border-white/5 text-slate-600 cursor-not-allowed"}
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20" 
+                  : "bg-white/5 text-slate-700 border border-white/5 cursor-not-allowed"}
               `}
+              style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}
             >
-              {running ? "RUNNING..." : `EXECUTE (${executionCount})`}
+              {running ? "EXECUTING..." : `RUN_TEST [${executionCount}]`}
             </button>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8 w-full sm:w-auto">
             <div className="flex flex-col items-end">
-              <span className="text-[8px] font-mono tracking-widest text-slate-500 uppercase">Remaining_Time</span>
-              <span className={`text-xl font-black tracking-tighter tabular-nums ${timeLeft < 60 ? 'text-rose-500 animate-pulse' : 'text-white'}`}>
+              <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">TIME_TILL_EXPIRY</span>
+              <span className={`text-2xl font-black tracking-tighter tabular-nums leading-none mt-1 ${timeLeft < 60 ? 'text-rose-500 animate-pulse' : 'text-white'}`}>
                 {formatTime(timeLeft)}
               </span>
             </div>
@@ -338,46 +344,47 @@ const CodenSubmit = () => {
             <button
               onClick={() => handleSubmit(false)}
               disabled={submitting || !code.trim() || isFrozen}
-              className={`px-8 py-2 rounded-lg text-[10px] font-black tracking-widest transition-all uppercase
+              className={`px-10 py-3 text-xs font-black tracking-widest transition-all uppercase
                 ${!submitting && code.trim() && !isFrozen
-                  ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/20 hover:scale-105"
+                  ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-400"
                   : "bg-slate-800 text-slate-600 cursor-not-allowed"}
               `}
+              style={{ clipPath: "polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)" }}
             >
-              {submitting ? "UPLOADING..." : "SUBMIT_DATA"}
+              {submitting ? "UPLOADING..." : "COMMIT_ENTRY"}
             </button>
           </div>
         </div>
 
         {/* Editor Section */}
-        <div className={`flex-[3] glass-panel border-white/5 overflow-hidden relative group ${isFrozen ? "opacity-60" : ""}`}>
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:100%_4px] opacity-20" />
+        <div className={`flex-[3] cyber-card p-0 border-white/10 relative group ${isFrozen ? "opacity-60" : ""}`}>
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.01)_1px,transparent_1px)] bg-[size:100%_8px] opacity-20" />
           
           <AnimatePresence>
             {isFrozen && (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/80 backdrop-blur-md"
+                className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 backdrop-blur-md"
               >
                 <div className="text-center space-y-4">
-                  <div className="text-4xl">❄️</div>
-                  <h3 className="text-rose-500 font-black tracking-[0.3em] uppercase">Session_Frozen</h3>
-                  <p className="text-slate-500 text-xs max-w-xs font-mono">High risk behavior detected. Manual proctor intervention required for restoration.</p>
+                  <div className="text-5xl">🔒</div>
+                  <h3 className="text-rose-500 text-2xl font-black tracking-[0.3em] uppercase">SYSTEM_LOCKED</h3>
+                  <p className="text-slate-500 text-sm max-w-xs font-mono leading-relaxed">Behavioral integrity failure detected. Node connection terminated by AI proctor.</p>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="h-full relative z-10">
+          <div className="h-full relative z-10 overflow-hidden">
             <CodeScreen code={code} setCode={setCode} />
           </div>
         </div>
 
         {/* Output Section */}
-        <div className="flex-1 glass-panel border-white/5 overflow-hidden">
-          <div className="terminal-header py-2">
-            <span className="text-[10px] font-mono tracking-widest text-slate-500">SYSTEM_OUTPUT</span>
+        <div className="flex-1 cyber-card p-0 border-white/10 overflow-hidden bg-black/20">
+          <div className="terminal-header py-3">
+            <span className="text-[10px] font-mono tracking-[0.3em] text-emerald-500/60 uppercase">NODE_OUTPUT_FEED</span>
           </div>
           <div className="h-full">
             <Output output={output} />
@@ -386,38 +393,41 @@ const CodenSubmit = () => {
       </motion.div>
 
       {/* Proctoring Status Bar */}
-      <div className="fixed bottom-0 left-0 w-full z-[100] px-6 py-2 glass-panel rounded-none border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-mono tracking-widest text-emerald-500/80 uppercase">AI_Proctor_Live</span>
-          </div>
-          <div className="h-4 w-px bg-white/10" />
+      <div className="fixed bottom-0 left-0 w-full z-[100] px-6 py-4 glass-panel rounded-none border-t border-emerald-500/20 flex flex-col md:flex-row items-center justify-between gap-4 overflow-hidden">
+        <div className="flex items-center gap-10">
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Trust_Index:</span>
-            <div className="w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-xs font-black font-mono tracking-[0.3em] text-emerald-500 uppercase">PROCTOR_ACTIVE</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">TRUST_INDEX:</span>
+            <div className="w-48 h-1 bg-slate-900 border border-white/5 rounded-full overflow-hidden">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: `${trustScore}%` }}
-                className={`h-full ${trustScore > 70 ? 'bg-emerald-500' : trustScore > 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                className={`h-full transition-all duration-1000 ${trustScore > 70 ? 'bg-emerald-500 shadow-[0_0_10px_#10b981]' : trustScore > 40 ? 'bg-amber-500 shadow-[0_0_10px_#f59e0b]' : 'bg-rose-500 shadow-[0_0_10px_#f43f5e]'}`}
               />
             </div>
-            <span className="text-[10px] font-mono text-white">{trustScore}%</span>
+            <span className="text-xs font-mono font-bold text-white tabular-nums">{trustScore}%</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Threat_Level:</span>
-            <span className={`text-[10px] font-black tracking-widest px-2 py-0.5 rounded ${
-              riskCategory === "SAFE" ? "text-emerald-400 bg-emerald-400/10" :
-              riskCategory === "SUSPICIOUS" ? "text-amber-400 bg-amber-400/10" : "text-rose-400 bg-rose-400/10"
+        <div className="flex items-center gap-10">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">RISK_LEVEL:</span>
+            <span className={`text-[10px] font-black tracking-[0.3em] px-3 py-1 rounded-sm border ${
+              riskCategory === "SAFE" ? "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" :
+              riskCategory === "SUSPICIOUS" ? "text-amber-400 border-amber-500/40 bg-amber-500/10" : "text-rose-400 border-rose-500/40 bg-rose-500/10"
             }`}>
               {riskCategory}
             </span>
           </div>
-          <div className="text-[10px] font-mono text-slate-600">
-            SESSION_ID: {sessionId?.slice(0, 12).toUpperCase()}
+          <div className="text-[10px] font-mono text-slate-700 tracking-widest hidden lg:block">
+            NODE_SESSION: {sessionId?.slice(0, 16).toUpperCase()}
           </div>
         </div>
       </div>

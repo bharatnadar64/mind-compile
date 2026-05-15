@@ -12,11 +12,11 @@ const Output = ({ output }) => {
       <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
         <div className="flex items-center gap-3">
           <div className={`w-1.5 h-1.5 rounded-full ${hasError ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" : output ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-slate-700"}`} />
-          <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-500">
+          <span className="text-xs font-black tracking-[0.3em] uppercase text-slate-500">
             {hasError ? "Security_Alert" : "System_Response"}
           </span>
         </div>
-        <span className="text-[8px] font-mono text-slate-700 tracking-widest uppercase">
+        <span className="text-[11px] font-mono text-slate-700 tracking-widest uppercase">
           {output ? "Stream_Active" : "Awaiting_Packets"}
         </span>
       </div>
@@ -26,18 +26,18 @@ const Output = ({ output }) => {
         {output ? (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase ${hasError ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-400"}`}>
+              <span className={`text-xs font-black px-2 py-0.5 rounded uppercase ${hasError ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-400"}`}>
                 {hasError ? "ERROR" : "STDOUT"}
               </span>
             </div>
-            <pre className={`text-sm leading-relaxed font-mono whitespace-pre-wrap ${hasError ? "text-rose-400/90" : "text-slate-300"}`}>
+            <pre className={`text-[15px] leading-relaxed font-mono whitespace-pre-wrap ${hasError ? "text-rose-400/90" : "text-slate-300"}`}>
               {output}
               <span className={`inline-block w-2 h-4 ml-1 align-middle animate-pulse ${hasError ? "bg-rose-500" : "bg-emerald-500"}`} />
             </pre>
           </div>
         ) : (
           <div className="h-full flex items-center justify-center">
-            <p className="text-[10px] font-mono tracking-[0.4em] text-slate-700 uppercase animate-pulse">
+            <p className="text-xs font-mono tracking-[0.4em] text-slate-700 uppercase animate-pulse">
               Listening_for_incoming_data...
             </p>
           </div>
@@ -45,7 +45,7 @@ const Output = ({ output }) => {
       </div>
 
       {/* Footer Accent */}
-      <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[8px] font-mono text-slate-800 uppercase tracking-widest">
+      <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-[11px] font-mono text-slate-800 uppercase tracking-widest">
         <span>Packet_Integrity: 100%</span>
         <span>MC_OS_RUNTIME</span>
       </div>

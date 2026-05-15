@@ -43,267 +43,229 @@ const AdminRounds = () => {
     fetchRounds();
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="min-h-screen bg-black text-green-400 font-mono p-6">
-        <p className="animate-pulse">{"> loading system.rounds ..."}</p>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+        <p className="text-emerald-500 font-mono tracking-widest text-xs animate-pulse">DECRYPTING_PHASE_DATA...</p>
       </div>
     );
+  }
 
   return (
-    <div className="relative min-h-screen bg-black text-green-300 font-mono p-4 sm:p-6 overflow-hidden">
+    <div className="relative min-h-screen bg-black text-slate-300 font-mono p-4 sm:p-10 overflow-hidden">
       {/* ===== BACKGROUND FX ===== */}
-      <div className="absolute inset-0 bg-green-500/10 blur-3xl opacity-20 pointer-events-none animate-pulse" />
-
+      <div className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 blur-[120px] pointer-events-none" />
+      
       <div
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.10) 3px)",
+          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, #10b981 3px)",
         }}
       />
 
       {/* ===== HEADER ===== */}
-      <div className="relative z-10 mb-8">
-        <h1 className="text-2xl sm:text-4xl font-bold tracking-wide text-green-200 drop-shadow-[0_0_12px_rgba(0,255,0,0.6)] animate-[fadeIn_0.6s_ease-out]">
-          Round Configuration
-        </h1>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16 border-b border-white/5 pb-10 relative z-10">
+        <div className="space-y-2">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white glitch" data-text="PHASE_CALIBRATION">
+            PHASE_CALIBRATION
+          </h1>
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-emerald-500/60 text-[10px] font-black uppercase tracking-[0.4em]">DEPLOYMENT_PROTOCOL_v4.2</p>
+          </div>
+        </div>
 
-        <p className="text-green-400/70 text-xs sm:text-sm mt-2 animate-[fadeIn_1s_ease-out]">
-          Manage system rules, scoring logic, and execution limits
-        </p>
+        <button
+          onClick={() =>
+            setCreatingRound({
+              roundNumber: "",
+              name: "",
+              timeLimit: "",
+              executionAllowed: true,
+              maxExecutions: "",
+              baseScore: "",
+              bonusFirst: "",
+              bonusCleanCode: "",
+            })
+          }
+          className="px-10 py-4 bg-emerald-500 text-black font-black text-xs tracking-[0.3em] hover:bg-emerald-400 transition-all uppercase shadow-[0_0_30px_rgba(16,185,129,0.2)]"
+          style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}
+        >
+          [+] INITIALIZE_NEW_PHASE
+        </button>
       </div>
 
-      {/* ===== CREATE BUTTON ===== */}
-      <button
-        onClick={() =>
-          setCreatingRound({
-            roundNumber: "",
-            name: "",
-            timeLimit: "",
-            executionAllowed: true,
-            maxExecutions: "",
-            baseScore: "",
-            bonusFirst: "",
-            bonusCleanCode: "",
-          })
-        }
-        className="
-        mb-6 px-4 py-2 text-sm sm:text-base
-        border border-green-400/40
-        bg-green-500/5
-        hover:bg-green-500/15
-        active:scale-[0.98]
-        transition-all duration-200
-        rounded
-        shadow-[0_0_15px_rgba(0,255,0,0.08)]
-      "
-      >
-        + Create New Round
-      </button>
-
       {/* ===== ROUND LIST ===== */}
-      <div className="relative z-10 space-y-4">
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {rounds.map((r, idx) => (
           <div
             key={r._id}
-            className="
-            border border-green-500/20
-            bg-black/60
-            p-4 sm:p-5
-            rounded
-            hover:border-green-400/40
-            transition-all duration-300
-            hover:shadow-[0_0_25px_rgba(0,255,0,0.08)]
-            animate-[fadeIn_0.4s_ease-out]
-          "
+            className="group relative p-1 bg-white/[0.01] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
+            style={{ clipPath: "polygon(0 0, 92% 0, 100% 10%, 100% 100%, 8% 100%, 0 90%)" }}
           >
-            <div className="flex justify-between items-start gap-4 flex-wrap">
-              {/* LEFT INFO */}
-              <div className="space-y-1">
-                <p className="text-green-200 text-sm sm:text-base font-semibold">
-                  {idx + 1}. Round {r.roundNumber} — {r.name}
-                </p>
-
-                <div className="text-green-400/80 text-xs sm:text-sm space-y-[2px]">
-                  <p>⏱ Time Limit: {r.timeLimit} min</p>
-                  <p>💠 Base Score: {r.baseScore}</p>
-                  <p>
-                    ⚙ Execution:{" "}
-                    <span className="text-green-300">
-                      {r.executionAllowed
-                        ? `${r.maxExecutions} attempts`
-                        : "Disabled"}
-                    </span>
-                  </p>
-                </div>
+            <div className="bg-slate-950 p-8 h-full" style={{ clipPath: "polygon(0 0, 92% 0, 100% 10%, 100% 100%, 8% 100%, 0 90%)" }}>
+              <div className="absolute top-4 right-8 text-6xl font-black text-white/[0.02] group-hover:text-emerald-500/[0.05] transition-colors pointer-events-none">
+                {r.roundNumber.toString().padStart(2, '0')}
               </div>
 
-              {/* ACTIONS */}
-              <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm">
-                <button
-                  onClick={() => setEditingRound({ ...r })}
-                  className="
-                  text-yellow-300
-                  hover:text-yellow-200
-                  transition
-                  active:scale-95
-                "
-                >
-                  Edit
-                </button>
+              <div className="flex flex-col h-full relative z-10">
+                <div className="mb-10">
+                  <span className="text-[9px] font-bold text-emerald-500 tracking-[0.3em] mb-2 block uppercase">PHASE_IDENTIFIER</span>
+                  <h2 className="text-2xl font-black text-white tracking-tight group-hover:text-emerald-400 transition-colors uppercase">
+                    {r.name || "UNNAMED_UNIT"}
+                  </h2>
+                </div>
 
-                <button
-                  onClick={() => handleDelete(r._id)}
-                  className="
-                  text-red-400
-                  hover:text-red-300
-                  transition
-                  active:scale-95
-                "
-                >
-                  Delete
-                </button>
+                <div className="grid grid-cols-2 gap-8 mb-12">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono text-slate-500 tracking-widest uppercase">TEMPORAL_LIMIT</span>
+                    <p className="text-sm font-black text-slate-300 tabular-nums">{r.timeLimit}M_ALLOC</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono text-slate-500 tracking-widest uppercase">BASE_YIELD</span>
+                    <p className="text-sm font-black text-slate-300 tabular-nums">{r.baseScore}PTS_VAL</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono text-slate-500 tracking-widest uppercase">REMOTE_EXEC</span>
+                    <p className={`text-sm font-black ${r.executionAllowed ? 'text-emerald-400' : 'text-rose-500'}`}>
+                      {r.executionAllowed ? `AUTH [${r.maxExecutions}]` : "TERMINATED"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono text-slate-500 tracking-widest uppercase">NODE_STATUS</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]" />
+                      <p className="text-sm font-black text-slate-300 uppercase">ACTIVE</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex gap-4">
+                  <button
+                    onClick={() => setEditingRound({ ...r })}
+                    className="flex-1 py-4 bg-white/[0.03] border border-white/5 text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all font-black text-[10px] tracking-widest uppercase"
+                  >
+                    MODIFY_PARAMS_
+                  </button>
+                  <button
+                    onClick={() => handleDelete(r._id)}
+                    className="px-6 py-4 border border-rose-500/10 text-rose-500/40 hover:text-rose-500 hover:bg-rose-500/5 transition-all font-black text-[10px] tracking-widest uppercase"
+                  >
+                    PURGE_
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* ===== EDIT PANEL ===== */}
+      {/* ===== EDIT PANEL (MODAL) ===== */}
       {editingRound && (
-        <div
-          className="
-        relative z-10 mt-10
-        border border-yellow-500/30
-        bg-black/80
-        p-4 sm:p-5
-        rounded
-        animate-[fadeIn_0.3s_ease-out]
-      "
-        >
-          <h2 className="text-yellow-200 mb-4 text-sm sm:text-base">
-            Editing Round {editingRound.roundNumber}
-          </h2>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-emerald-500/30 p-10"
+               style={{ clipPath: "polygon(0 0, 97% 0, 100% 5%, 100% 100%, 3% 100%, 0 95%)" }}>
+            
+            <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+              <h2 className="text-2xl font-black text-emerald-400 tracking-widest uppercase">
+                {">"} RECONFIGURE_PHASE_0{editingRound.roundNumber}
+              </h2>
+              <button onClick={() => setEditingRound(null)} className="text-slate-500 hover:text-white transition-colors text-xs font-mono tracking-widest">[ ABORT_ESC ]</button>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-3 text-sm">
-            {["name", "timeLimit", "baseScore", "maxExecutions"].map(
-              (field) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {["name", "timeLimit", "baseScore", "maxExecutions"].map((field) => (
+                <div key={field} className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{field.toUpperCase()}_STRING</label>
+                  <input
+                    className="bg-black/50 border border-white/10 p-5 w-full text-white focus:border-emerald-500/50 focus:outline-none transition-all font-mono text-sm"
+                    value={editingRound[field]}
+                    onChange={(e) =>
+                      setEditingRound({
+                        ...editingRound,
+                        [field]: isNaN(e.target.value) || e.target.value === "" ? e.target.value : Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 p-6 bg-white/[0.02] border border-white/5">
+              <label className="flex items-center gap-4 cursor-pointer group">
                 <input
-                  key={field}
-                  className="
-                bg-black
-                border border-green-500/30
-                p-2
-                rounded
-                focus:outline-none
-                focus:ring-1
-                focus:ring-green-400
-                text-green-200
-              "
-                  value={editingRound[field]}
+                  type="checkbox"
+                  className="w-6 h-6 accent-emerald-500 bg-black border-white/10"
+                  checked={editingRound.executionAllowed}
                   onChange={(e) =>
                     setEditingRound({
                       ...editingRound,
-                      [field]: Number(e.target.value) || e.target.value,
+                      executionAllowed: e.target.checked,
                     })
                   }
-                  placeholder={field}
                 />
-              ),
-            )}
-          </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-black text-slate-300 group-hover:text-emerald-400 transition-colors uppercase tracking-widest">
+                    AUTHORIZE_REMOTE_EXECUTION
+                  </span>
+                  <span className="text-[9px] font-mono text-slate-600 uppercase tracking-widest">Enables code testing nodes for this phase</span>
+                </div>
+              </label>
+            </div>
 
-          <label className="flex items-center gap-2 mt-4 text-sm text-green-300">
-            <input
-              type="checkbox"
-              checked={editingRound.executionAllowed}
-              onChange={(e) =>
-                setEditingRound({
-                  ...editingRound,
-                  executionAllowed: e.target.checked,
-                })
-              }
-            />
-            Allow execution attempts
-          </label>
-
-          <div className="flex gap-4 mt-5 text-sm">
-            <button
-              onClick={handleUpdate}
-              className="text-green-300 hover:text-green-200 transition"
-            >
-              Save Changes
-            </button>
-
-            <button
-              onClick={() => setEditingRound(null)}
-              className="text-gray-400 hover:text-gray-300 transition"
-            >
-              Cancel
-            </button>
+            <div className="mt-12 flex gap-6">
+              <button onClick={handleUpdate} className="flex-1 py-5 bg-emerald-500 text-black font-black text-sm tracking-[0.3em] hover:bg-emerald-400 transition-all uppercase shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                COMMIT_DATA_PACKET
+              </button>
+              <button onClick={() => setEditingRound(null)} className="px-10 py-5 border border-white/10 text-slate-500 font-black text-xs tracking-[0.3em] hover:bg-white/5 transition-all uppercase">
+                DISCARD
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ===== CREATE PANEL ===== */}
+      {/* ===== CREATE PANEL (MODAL) ===== */}
       {creatingRound && (
-        <div
-          className="
-        relative z-10 mt-10
-        border border-green-500/30
-        bg-black/80
-        p-4 sm:p-5
-        rounded
-        animate-[fadeIn_0.3s_ease-out]
-      "
-        >
-          <h2 className="mb-4 text-green-200 text-sm sm:text-base">
-            Create New Round
-          </h2>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-blue-500/30 p-10"
+               style={{ clipPath: "polygon(3% 0, 100% 0, 100% 95%, 97% 100%, 0 100%, 0 5%)" }}>
+            
+            <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+              <h2 className="text-2xl font-black text-blue-400 tracking-widest uppercase">
+                {">"} INITIALIZE_NEW_PHASE
+              </h2>
+              <button onClick={() => setCreatingRound(null)} className="text-slate-500 hover:text-white transition-colors text-xs font-mono tracking-widest">[ ABORT_ESC ]</button>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-3 text-sm">
-            {Object.keys(creatingRound).map((field) => (
-              <input
-                key={field}
-                className="
-                bg-black
-                border border-green-500/30
-                p-2
-                rounded
-                text-green-200
-                focus:outline-none
-                focus:ring-1
-                focus:ring-green-400
-              "
-                placeholder={field}
-                value={creatingRound[field]}
-                onChange={(e) =>
-                  setCreatingRound({
-                    ...creatingRound,
-                    [field]: isNaN(e.target.value)
-                      ? e.target.value
-                      : Number(e.target.value),
-                  })
-                }
-              />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {Object.keys(creatingRound).map((field) => (
+                <div key={field} className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{field.toUpperCase()}_PARAM</label>
+                  <input
+                    className="bg-black/50 border border-white/10 p-5 w-full text-white focus:border-blue-500/50 focus:outline-none transition-all font-mono text-sm"
+                    placeholder={`ENTER_${field.toUpperCase()}`}
+                    value={creatingRound[field]}
+                    onChange={(e) =>
+                      setCreatingRound({
+                        ...creatingRound,
+                        [field]: isNaN(e.target.value) || e.target.value === "" ? e.target.value : Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
 
-          <div className="flex gap-4 mt-5 text-sm">
-            <button
-              onClick={handleCreate}
-              className="text-green-300 hover:text-green-200 transition"
-            >
-              Create
-            </button>
-
-            <button
-              onClick={() => setCreatingRound(null)}
-              className="text-gray-400 hover:text-gray-300 transition"
-            >
-              Cancel
-            </button>
+            <div className="mt-12 flex gap-6">
+              <button onClick={handleCreate} className="flex-1 py-5 bg-blue-500 text-black font-black text-sm tracking-[0.3em] hover:bg-blue-400 transition-all uppercase shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                GENERATE_PHASE_STRUCTURE
+              </button>
+              <button onClick={() => setCreatingRound(null)} className="px-10 py-5 border border-white/10 text-slate-500 font-black text-xs tracking-[0.3em] hover:bg-white/5 transition-all uppercase">
+                ABORT
+              </button>
+            </div>
           </div>
         </div>
       )}

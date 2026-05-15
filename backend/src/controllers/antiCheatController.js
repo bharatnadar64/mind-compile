@@ -27,7 +27,8 @@ export const startSessionController = async (req, res) => {
       return res.status(400).json({ error: "round and sessionId are required" });
     }
 
-    const session = await startSession({ participantId, round, sessionId, browserInfo });
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const session = await startSession({ participantId, round, sessionId, browserInfo, clientIp });
     res.status(201).json({
       sessionId: session.sessionId,
       suspicionScore: 0,
@@ -63,18 +64,20 @@ export const ingestEventController = async (req, res) => {
       "split_screen", "suspicious_resize", "zoom_change", "inactivity",
       "network_disconnect", "reconnect", "heartbeat_miss", "tampering",
       "refresh_abuse", "second_monitor", "excessive_focus_loss", "abnormal_burst",
-      "extreme_absence",
+      "extreme_absence", "clipboard_paste", "clipboard_copy"
     ];
     if (!ALLOWED_EVENTS.includes(eventType)) {
       return res.status(400).json({ error: "Invalid event type" });
     }
+
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     const result = await ingestEvent({
       participantId,
       sessionId,
       round,
       eventType,
-      metadata: metadata || {},
+      metadata: { ...metadata, clientIp } || { clientIp },
       browserInfo: browserInfo || {},
       clientTimestamp: clientTimestamp || Date.now(),
     });
@@ -154,6 +157,12 @@ export const getLiveDataController = async (req, res) => {
 
     res.json({ activeSessions, recentLogs, summary });
   } catch (err) {
+    // If it's a network reset, log it but don't blow up with a full stack trace every time
+    if (err.name === 'MongoNetworkError' || err.code === 'ECONNRESET') {
+      console.warn("[AntiCheat] Database network hiccup detected (ECONNRESET). Retrying on next poll.");
+      return res.status(503).json({ error: "Temporary database network issue", retry: true });
+    }
+    
     console.error("[AntiCheat] getLiveData error:", err);
     res.status(500).json({ error: err.message });
   }
