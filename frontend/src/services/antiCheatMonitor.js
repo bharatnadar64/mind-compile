@@ -457,22 +457,31 @@ class AntiCheatMonitor {
   // ── 9. DevTools Detection (5 independent techniques) ──────────────────────
   _setupDevToolsDetection() {
     let devToolsDetectedCount = 0;
+    let devToolsCurrentlyOpen = false;
 
     const reportDevTools = (technique) => {
       if (!this._active) return;
       devToolsDetectedCount++;
-      if (devToolsDetectedCount === 1 || devToolsDetectedCount % 3 === 0) {
-        // Report on first detection and every 3rd subsequent detection
+      // Report on first detection, on state-change (closed→open), and every 3rd
+      if (devToolsDetectedCount === 1 || !devToolsCurrentlyOpen || devToolsDetectedCount % 3 === 0) {
+        devToolsCurrentlyOpen = true;
         this._dispatchEvent("devtools", { technique, count: devToolsDetectedCount }, true);
       }
     };
+
+    const markClosed = () => { devToolsCurrentlyOpen = false; };
 
     const checkDevTools = () => {
       if (!this._active) return;
       let detected = false;
 
-      // Technique 1: outer/inner window dimension difference
-      const threshold = 160;
+      // ────────────────────────────────────────────────────────────────────
+      // Technique 1: outer/inner dimension difference (docked side or bottom)
+      // When DevTools is docked, outerWidth stays the same but innerWidth shrinks
+      // (side dock) or outerHeight stays but innerHeight shrinks (bottom dock).
+      // Threshold 100px catches most docked panels.
+      // ────────────────────────────────────────────────────────────────────
+      const threshold = 100;
       const wDiff = window.outerWidth - window.innerWidth;
       const hDiff = window.outerHeight - window.innerHeight;
       if (wDiff > threshold || hDiff > threshold) {
@@ -480,44 +489,91 @@ class AntiCheatMonitor {
         reportDevTools("dimension_heuristic");
       }
 
-      // Technique 2: Firebug legacy check
-      if (typeof window.console !== "undefined" && window.console.firebug) {
-        detected = true;
-        reportDevTools("firebug");
+      // ────────────────────────────────────────────────────────────────────
+      // Technique 2: debugger statement timing
+      // A debugger statement pauses execution when DevTools is open, causing
+      // measurable delay. Without DevTools, it's a no-op (<2ms).
+      // ────────────────────────────────────────────────────────────────────
+      if (!detected) {
+        try {
+          const t1 = performance.now();
+          // Using Function constructor to avoid source-map/breakpoint issues
+          (function() { debugger; })();
+          const elapsed = performance.now() - t1;
+          if (elapsed > 50) {
+            detected = true;
+            reportDevTools("debugger_timing");
+          }
+        } catch {}
       }
 
-      // Technique 3: getter trick
+      // ────────────────────────────────────────────────────────────────────
+      // Technique 3: console.log getter trap (Image element)
+      // When DevTools console panel is open, console.log inspects the object
+      // which triggers the getter. When closed, no getter call happens.
+      // ────────────────────────────────────────────────────────────────────
       if (!detected) {
         const el = new Image();
+        let getterTriggered = false;
         Object.defineProperty(el, "id", {
           get() {
-            detected = true;
-            reportDevTools("getter_trick");
+            getterTriggered = true;
             return "";
           },
           configurable: true,
         });
+        // Clear console to force re-evaluation
+        console.log("%c", "", el);
+        console.clear();
+        if (getterTriggered) {
+          detected = true;
+          reportDevTools("getter_trap");
+        }
+      }
+
+      // ────────────────────────────────────────────────────────────────────
+      // Technique 4: console.table toString trap
+      // console.table triggers toString/valueOf on objects when DevTools is
+      // open. We pass a specially-crafted object to detect this.
+      // ────────────────────────────────────────────────────────────────────
+      if (!detected) {
+        let toStringTriggered = false;
+        const probe = { toString() { toStringTriggered = true; return ""; } };
+        console.log(probe);
+        console.clear();
+        if (toStringTriggered) {
+          detected = true;
+          reportDevTools("toString_trap");
+        }
+      }
+
+      // ────────────────────────────────────────────────────────────────────
+      // Technique 5: Date-based debugger timing (fallback)
+      // Uses Date.now() instead of performance.now() as a cross-browser
+      // fallback for the debugger-pause measurement.
+      // ────────────────────────────────────────────────────────────────────
+      if (!detected) {
         try {
-          console.log(el); // triggers getter only when DevTools console is open
+          const d1 = Date.now();
+          (function() { debugger; })();
+          const delta = Date.now() - d1;
+          if (delta > 100) {
+            detected = true;
+            reportDevTools("date_debugger_timing");
+          }
         } catch {}
       }
 
-      // Technique 4: toString override check (safer than debugger/profile)
+      // If none of the techniques detected DevTools, mark as closed
       if (!detected) {
-        const check = /./;
-        check.toString = function() {
-          detected = true;
-          reportDevTools("toString_check");
-          return "ac";
-        };
-        // Some browsers trigger toString on certain console operations
+        markClosed();
       }
     };
 
     const devToolsId = setInterval(checkDevTools, DEVTOOLS_CHECK_INTERVAL_MS);
     this._intervals.push(devToolsId);
-    // Initial check
-    setTimeout(checkDevTools, 500);
+    // Initial check after a short delay to let the page settle
+    setTimeout(checkDevTools, 1000);
   }
 
   // ── 10. Tampering Detection ────────────────────────────────────────────────

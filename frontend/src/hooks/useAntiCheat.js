@@ -30,12 +30,15 @@ const useAntiCheat = ({
   round,
   api,
   participantId,
+  onDisqualify,
+  onAutoSubmit,
   onFreeze,
   timeLimit,
 }) => {
   const startedRef = useRef(false);
   const [sessionId, setSessionId] = useState(null);
   const sessionIdRef = useRef(null);
+  const [sessionReady, setSessionReady] = useState(false);
 
   // Stats from backend
   const [suspicionScore, setSuspicionScore] = useState(0);
@@ -60,6 +63,7 @@ const useAntiCheat = ({
   const stopMonitoring = useCallback(async (reason = "submitted") => {
     if (!startedRef.current) return;
     startedRef.current = false;
+    setSessionReady(false);
     antiCheatMonitor.stop(reason);
     try {
       const currentId = sessionIdRef.current;
@@ -87,8 +91,11 @@ const useAntiCheat = ({
     sessionIdRef.current = sessId;
     startedRef.current = true;
 
-    // Start backend session
-    const initBackend = async () => {
+    // Track if this effect was cleaned up before async work completed
+    let cancelled = false;
+
+    // Start backend session FIRST, then start frontend monitor
+    const initSession = async () => {
       try {
         await api.post("/api/anticheat/session/start", {
           sessionId: sessId,
@@ -97,53 +104,64 @@ const useAntiCheat = ({
         });
       } catch (err) {
         console.error("[AntiCheat] Session start failed:", err);
+        // Don't start monitoring if session creation failed
+        return;
       }
-    };
 
-    initBackend();
+      // If the effect was cleaned up while we were awaiting, don't start monitoring
+      if (cancelled) return;
 
-    // Start frontend monitor
-    antiCheatMonitor.start({
-      sessionId: sessId,
-      round: round || 1,
-      timeLimit,
-      api,
-      onEvent: (eventType, metadata, res) => {
-        if (res) {
-          setSuspicionScore(res.suspicionScore);
-          setRiskCategory(res.riskCategory);
-          setCheatProbability(res.cheatProbability || 0);
-          setTrustScore(res.trustScore || 100);
-          setExecutionsRestricted(res.executionsRestricted || false);
-          
-          if (res.warningMessage) {
-            setWarningMessage(res.warningMessage);
-            setWarningLevel(res.riskCategory);
-            setWarningVisible(true);
-          }
+      // Mark session as ready — this gates heartbeats
+      setSessionReady(true);
 
-          if (res.isFrozen) {
-            setIsFrozen(true);
-            if (onFreeze) onFreeze();
-          }
-          
-          if (res.isDisqualified) {
-            setIsDisqualified(true);
-            if (onDisqualify) onDisqualify();
-            if (onAutoSubmit) onAutoSubmit();
+      // NOW start the frontend monitor (it sends events to the backend,
+      // so the session must exist first)
+      antiCheatMonitor.start({
+        sessionId: sessId,
+        round: round || 1,
+        timeLimit,
+        api,
+        onEvent: (eventType, metadata, res) => {
+          if (res) {
+            setSuspicionScore(res.suspicionScore);
+            setRiskCategory(res.riskCategory);
+            setCheatProbability(res.cheatProbability || 0);
+            setTrustScore(res.trustScore || 100);
+            setExecutionsRestricted(res.executionsRestricted || false);
+            
+            if (res.warningMessage) {
+              setWarningMessage(res.warningMessage);
+              setWarningLevel(res.riskCategory);
+              setWarningVisible(true);
+            }
+
+            if (res.isFrozen) {
+              setIsFrozen(true);
+              if (onFreeze) onFreeze();
+            }
+            
+            if (res.isDisqualified) {
+              setIsDisqualified(true);
+              if (onDisqualify) onDisqualify();
+              if (onAutoSubmit) onAutoSubmit();
+            }
           }
         }
-      }
-    });
+      });
+    };
+
+    initSession();
 
     return () => {
+      cancelled = true;
       stopMonitoring("unmount");
     };
   }, [active, api, round, timeLimit, onDisqualify, onAutoSubmit, onFreeze, stopMonitoring]);
 
   // ── Heartbeat Loop ───────────────────────────────────────────────────────
+  // Only starts AFTER sessionReady is true (backend confirmed session exists)
   useEffect(() => {
-    if (!active || !startedRef.current || !sessionId) return;
+    if (!active || !sessionReady || !sessionId) return;
 
     const heartbeatInterval = setInterval(async () => {
       try {
@@ -172,7 +190,7 @@ const useAntiCheat = ({
     }, 10000);
 
     return () => clearInterval(heartbeatInterval);
-  }, [active, sessionId, api, isDisqualified, onDisqualify, onAutoSubmit]);
+  }, [active, sessionReady, sessionId, api, isDisqualified, onDisqualify, onAutoSubmit]);
 
   return {
     suspicionScore,
