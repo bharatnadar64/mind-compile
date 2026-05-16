@@ -30,8 +30,8 @@
     left: 0;
     bottom: 0;
     right: 0;
-    background: 
-      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+    background:
+      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
       linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
     z-index: 9999;
     background-size: 100% 3px, 3px 100%;
@@ -42,23 +42,20 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-slate-900/40 border border-white/10 shadow-2xl;
-    backdrop-filter: blur(40px);
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.05), transparent),
-                rgba(15, 23, 42, 0.4);
+    @apply bg-slate-900/40 backdrop-blur-2xl border border-white/10 shadow-2xl;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent),
+      rgba(15, 23, 42, 0.4);
   }
 
   .cyber-card {
     @apply bg-slate-900/40 border border-white/10 shadow-2xl rounded-lg p-6 transition-all duration-500 relative overflow-hidden;
     backdrop-filter: blur(40px);
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.05), transparent),
-                rgba(15, 23, 42, 0.4);
-    clip-path: polygon(
-      0 15px, 15px 0, 
-      calc(100% - 15px) 0, 100% 15px, 
-      100% calc(100% - 15px), calc(100% - 15px) 100%, 
-      15px 100%, 0 calc(100% - 15px)
-    );
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent),
+      rgba(15, 23, 42, 0.4);
+    clip-path: polygon(0 15px, 15px 0,
+        calc(100% - 15px) 0, 100% 15px,
+        100% calc(100% - 15px), calc(100% - 15px) 100%,
+        15px 100%, 0 calc(100% - 15px));
   }
 
   .cyber-card::before {
@@ -123,39 +120,93 @@
 }
 
 @keyframes scan-beam {
-  0% { top: -100%; }
-  100% { top: 100%; }
+  0% {
+    top: -100%;
+  }
+
+  100% {
+    top: 100%;
+  }
 }
 
 @keyframes glitch-anim {
-  0% { clip: rect(31px, 9999px, 94px, 0); transform: skew(0.85deg); }
-  20% { clip: rect(70px, 9999px, 71px, 0); transform: skew(0.58deg); }
-  40% { clip: rect(20px, 9999px, 50px, 0); transform: skew(0.12deg); }
-  60% { clip: rect(80px, 9999px, 10px, 0); transform: skew(0.95deg); }
-  80% { clip: rect(40px, 9999px, 30px, 0); transform: skew(0.33deg); }
-  100% { clip: rect(67px, 9999px, 62px, 0); transform: skew(0.12deg); }
+  0% {
+    clip: rect(31px, 9999px, 94px, 0);
+    transform: skew(0.85deg);
+  }
+
+  20% {
+    clip: rect(70px, 9999px, 71px, 0);
+    transform: skew(0.58deg);
+  }
+
+  40% {
+    clip: rect(20px, 9999px, 50px, 0);
+    transform: skew(0.12deg);
+  }
+
+  60% {
+    clip: rect(80px, 9999px, 10px, 0);
+    transform: skew(0.95deg);
+  }
+
+  80% {
+    clip: rect(40px, 9999px, 30px, 0);
+    transform: skew(0.33deg);
+  }
+
+  100% {
+    clip: rect(67px, 9999px, 62px, 0);
+    transform: skew(0.12deg);
+  }
 }
 
 @keyframes glitch-anim2 {
-  0% { clip: rect(65px, 9999px, 100px, 0); transform: skew(0.13deg); }
-  20% { clip: rect(2px, 9999px, 82px, 0); transform: skew(0.45deg); }
-  40% { clip: rect(90px, 9999px, 40px, 0); transform: skew(0.77deg); }
-  60% { clip: rect(10px, 9999px, 60px, 0); transform: skew(0.22deg); }
-  80% { clip: rect(50px, 9999px, 10px, 0); transform: skew(0.88deg); }
-  100% { clip: rect(30px, 9999px, 90px, 0); transform: skew(0.66deg); }
+  0% {
+    clip: rect(65px, 9999px, 100px, 0);
+    transform: skew(0.13deg);
+  }
+
+  20% {
+    clip: rect(2px, 9999px, 82px, 0);
+    transform: skew(0.45deg);
+  }
+
+  40% {
+    clip: rect(90px, 9999px, 40px, 0);
+    transform: skew(0.77deg);
+  }
+
+  60% {
+    clip: rect(10px, 9999px, 60px, 0);
+    transform: skew(0.22deg);
+  }
+
+  80% {
+    clip: rect(50px, 9999px, 10px, 0);
+    transform: skew(0.88deg);
+  }
+
+  100% {
+    clip: rect(30px, 9999px, 90px, 0);
+    transform: skew(0.66deg);
+  }
 }
 
 /* CUSTOM SCROLLBAR */
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--terminal-bg);
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(16, 185, 129, 0.3);
   border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(16, 185, 129, 0.6);
 }
