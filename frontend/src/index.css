@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@reference "tailwindcss";
 
 /* ===== CYBER-NOIR DESIGN SYSTEM 10/10 ===== */
 :root {
@@ -43,13 +42,17 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-slate-900/40 backdrop-blur-2xl border border-white/10 shadow-2xl;
+    @apply bg-slate-900/40 border border-white/10 shadow-2xl;
+    backdrop-filter: blur(40px);
     background: radial-gradient(circle at top left, rgba(255,255,255,0.05), transparent),
                 rgba(15, 23, 42, 0.4);
   }
 
   .cyber-card {
-    @apply glass-panel rounded-lg p-6 transition-all duration-500 relative overflow-hidden;
+    @apply bg-slate-900/40 border border-white/10 shadow-2xl rounded-lg p-6 transition-all duration-500 relative overflow-hidden;
+    backdrop-filter: blur(40px);
+    background: radial-gradient(circle at top left, rgba(255,255,255,0.05), transparent),
+                rgba(15, 23, 42, 0.4);
     clip-path: polygon(
       0 15px, 15px 0, 
       calc(100% - 15px) 0, 100% 15px, 
