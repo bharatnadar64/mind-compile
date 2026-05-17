@@ -100,7 +100,7 @@ const AdminRounds = () => {
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {rounds.map((r, idx) => (
           <div
-            key={r._id}
+            key={`${r._id}-${idx}`}
             className="group relative p-1 bg-white/[0.01] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
             style={{ clipPath: "polygon(0 0, 92% 0, 100% 10%, 100% 100%, 8% 100%, 0 90%)" }}
           >
@@ -117,7 +117,7 @@ const AdminRounds = () => {
                   </h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8 mb-12">
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-12">
                   <div className="space-y-1">
                     <span className="text-[9px] font-mono text-slate-500 tracking-widest uppercase">TEMPORAL_LIMIT</span>
                     <p className="text-sm font-black text-slate-300 tabular-nums">{r.timeLimit}M_ALLOC</p>
@@ -164,7 +164,7 @@ const AdminRounds = () => {
       {/* ===== EDIT PANEL (MODAL) ===== */}
       {editingRound && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-emerald-500/30 p-10"
+          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-emerald-500/30 p-6 sm:p-10 max-h-[90vh] overflow-y-auto custom-scrollbar"
                style={{ clipPath: "polygon(0 0, 97% 0, 100% 5%, 100% 100%, 3% 100%, 0 95%)" }}>
             
             <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
@@ -229,7 +229,7 @@ const AdminRounds = () => {
       {/* ===== CREATE PANEL (MODAL) ===== */}
       {creatingRound && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-blue-500/30 p-10"
+          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-blue-500/30 p-6 sm:p-10 max-h-[90vh] overflow-y-auto custom-scrollbar"
                style={{ clipPath: "polygon(3% 0, 100% 0, 100% 95%, 97% 100%, 0 100%, 0 5%)" }}>
             
             <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">

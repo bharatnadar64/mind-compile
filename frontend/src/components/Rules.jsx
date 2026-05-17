@@ -78,13 +78,13 @@ const Rules = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + idx * 0.1 }}
-              className="relative p-10 bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group"
+              className="relative p-6 md:p-10 bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group"
               style={{ clipPath: "polygon(0 0, 97% 0, 100% 25%, 100% 100%, 3% 100%, 0 75%)" }}
             >
               <div className="absolute top-0 right-0 p-6 text-6xl font-black text-white/[0.02] group-hover:text-white/[0.05] transition-colors font-mono">
                 {phase.id}
               </div>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-10">
                 <div className="space-y-4">
                   <h3 className={`text-2xl font-black tracking-[0.3em] ${phase.color} uppercase`}>{phase.title}</h3>
                   <p className="text-slate-500 text-sm font-mono tracking-wide max-w-lg leading-relaxed">{phase.desc}</p>

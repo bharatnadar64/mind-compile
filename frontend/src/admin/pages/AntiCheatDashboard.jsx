@@ -276,8 +276,8 @@ const AntiCheatDashboard = () => {
       {/* ── LIVE SESSIONS TABLE ──────────────────────────────────────────── */}
       {activeTab === "live" && (
         <div className="relative z-10">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs sm:text-sm border-collapse">
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-xs sm:text-sm border-collapse min-w-[1000px]">
               <thead>
                 <tr className="border-b border-green-500/20 text-green-500/50">
                   {["Participant", "Round", "Score", "Risk", "Probability", "Trust", "Duration", "Flags", "Actions"].map((h) => (
@@ -374,8 +374,8 @@ const AntiCheatDashboard = () => {
               {loadingParticipants ? "Syncing..." : "[Refresh List]"}
             </button>
           </div>
-          <div className="overflow-x-auto border border-green-500/10 rounded bg-black/40">
-            <table className="w-full text-xs sm:text-sm border-collapse">
+          <div className="overflow-x-auto border border-green-500/10 rounded bg-black/40 custom-scrollbar">
+            <table className="w-full text-xs sm:text-sm border-collapse min-w-[800px]">
               <thead>
                 <tr className="border-b border-green-500/20 text-green-500/50 text-left">
                   <th className="py-2 px-3 font-normal">Name / Email</th>

@@ -77,7 +77,7 @@ const Profile = () => {
       <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Profile Header Card */}
-        <div className="cyber-card p-10 mb-12 border-emerald-500/10 relative overflow-hidden group">
+        <div className="cyber-card p-6 sm:p-10 mb-12 border-emerald-500/10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl -mr-32 -mt-32" />
           
           <div className="flex flex-col md:flex-row items-center md:items-start gap-12 relative z-10">
@@ -101,8 +101,8 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1 text-center md:text-left space-y-8">
               <div className="space-y-2">
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                  <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-white glitch" data-text={userInfo.name.toUpperCase()}>
+                <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-white glitch text-center md:text-left break-all" data-text={userInfo.name.toUpperCase()}>
                     {userInfo.name.toUpperCase()}
                   </h1>
                   {userInfo.isDisqualified && (
@@ -138,8 +138,8 @@ const Profile = () => {
           </div>
 
           <div className="glass-panel overflow-hidden border-white/5">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left text-sm border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-white/5 bg-white/[0.02]">
                     <th className="px-8 py-5 font-mono text-xs text-slate-500 tracking-widest uppercase">Phase</th>

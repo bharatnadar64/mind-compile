@@ -142,7 +142,7 @@ const AdminProblems = () => {
         {problems.map((p, idx) => (
           <div
             key={p._id}
-            className="group relative p-8 bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
+            className="group relative p-6 md:p-8 bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
             style={{ clipPath: "polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%)" }}
           >
             {/* Index indicator */}
@@ -211,7 +211,7 @@ const AdminProblems = () => {
       {/* ===== EDIT PANEL ===== */}
       {editingProblem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-emerald-500/30 p-8 overflow-y-auto max-h-[90vh]"
+          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-emerald-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh]"
                style={{ clipPath: "polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%)" }}>
             
             <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
@@ -317,7 +317,7 @@ const AdminProblems = () => {
       {/* ===== CREATE PANEL ===== */}
       {creatingProblem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-blue-500/30 p-8 overflow-y-auto max-h-[90vh]"
+          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-blue-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh]"
                style={{ clipPath: "polygon(0 3%, 3% 0, 100% 0, 100% 97%, 97% 100%, 0 100%)" }}>
             
             <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">

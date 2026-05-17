@@ -124,7 +124,7 @@ const UserLeaderboard = () => {
         <div className="space-y-4 relative z-10">
           <div className="flex items-center justify-between px-6 py-2 text-[10px] font-mono tracking-[0.3em] text-slate-500 uppercase border-b border-white/5 mb-4">
             <span>NODE_ID</span>
-            <div className="flex gap-20">
+            <div className="flex gap-4 sm:gap-20">
               <span>SCORE</span>
               <span className="hidden md:block">INTEGRITY_CHECK</span>
             </div>
@@ -154,9 +154,9 @@ const UserLeaderboard = () => {
                     style={{ width: `${progress}%` }}
                   />
 
-                  <div className="relative flex items-center justify-between gap-8 z-10">
-                    <div className="flex items-center gap-10">
-                      <span className="font-mono text-xl font-black text-slate-700 w-12 tabular-nums">{(actualIndex + 1).toString().padStart(2, '0')}</span>
+                  <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-8 z-10">
+                    <div className="flex items-center gap-4 sm:gap-10">
+                      <span className="font-mono text-xl font-black text-slate-700 w-8 sm:w-12 tabular-nums">{(actualIndex + 1).toString().padStart(2, '0')}</span>
                       <div className="flex flex-col">
                         <span className={`text-lg font-black tracking-tight ${isCurrentUser ? "text-emerald-400" : "text-white"}`}>
                           {user.participantId?.name.toUpperCase()} {isCurrentUser && <span className="ml-2 text-[10px] text-emerald-500 animate-pulse font-mono">[ROOT_ACCESS]</span>}
@@ -165,7 +165,7 @@ const UserLeaderboard = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-16">
+                    <div className="flex items-center gap-4 sm:gap-16 mt-4 sm:mt-0 self-end sm:self-auto">
                       <div className="flex flex-col items-end">
                         <span className="text-2xl font-black text-white group-hover:text-emerald-400 transition-colors tabular-nums">{user.totalScore}</span>
                         <span className="text-[9px] text-slate-700 font-mono tracking-[0.3em] uppercase">PTS_SYNCED</span>

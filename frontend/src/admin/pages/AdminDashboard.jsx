@@ -128,7 +128,7 @@ const AdminDashboard = () => {
       {/* ===== MAIN GRID ===== */}
       <div className="relative z-10 grid lg:grid-cols-2 gap-8 mb-12">
         {/* LEADERBOARD */}
-        <div className="relative p-10 bg-white/[0.02] border border-white/5"
+        <div className="relative p-6 sm:p-10 bg-white/[0.02] border border-white/5"
              style={{ clipPath: "polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%)" }}>
           
           <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">
@@ -165,7 +165,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* SUBMISSION STREAM */}
-        <div className="relative p-10 bg-white/[0.02] border border-white/5"
+        <div className="relative p-6 sm:p-10 bg-white/[0.02] border border-white/5"
              style={{ clipPath: "polygon(5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%, 0 5%)" }}>
           
           <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">

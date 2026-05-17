@@ -42,7 +42,7 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-slate-900/40 backdrop-blur-2xl border border-white/10 shadow-2xl;
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/10 shadow-2xl;
     background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), transparent),
       rgba(15, 23, 42, 0.4);
   }

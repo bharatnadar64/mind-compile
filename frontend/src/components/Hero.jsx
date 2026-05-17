@@ -28,7 +28,7 @@ const Hero = () => {
           </div>
           
           <div className="space-y-4">
-            <h1 className="text-6xl sm:text-8xl font-black tracking-tighter leading-[0.9]">
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9]">
               CODE <br />
               <span 
                 className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 neon-text glitch"

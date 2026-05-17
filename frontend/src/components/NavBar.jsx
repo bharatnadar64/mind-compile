@@ -27,7 +27,7 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-[100] transition-all duration-300">
+    <nav className="border-b border-white/10 bg-[#020617] md:bg-slate-950/80 md:backdrop-blur-xl sticky top-0 z-[100] transition-all duration-300">
       {/* Glow highlight */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent blur-sm" />
 
@@ -82,7 +82,7 @@ const NavBar = () => {
               <div className="flex items-center gap-6">
                 <Link
                   to="/code-n-submit"
-                  className="px-6 py-2.5 bg-emerald-500 text-black text-xs font-black tracking-[0.1em] hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                  className="hidden md:block px-6 py-2.5 bg-emerald-500 text-black text-xs font-black tracking-[0.1em] hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                   style={{ clipPath: "polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)" }}
                 >
                   RUN_PROGRAM
@@ -122,7 +122,7 @@ const NavBar = () => {
         fixed inset-0 top-20 z-40 md:hidden transition-all duration-500 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}
       `}>
-        <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-2xl px-6 py-8 flex flex-col gap-4">
+        <div className="absolute inset-0 bg-[#020617] px-6 py-8 flex flex-col gap-4 z-50 overflow-y-auto">
           {menuItems.map((item) => (
             <Link
               key={item.to}

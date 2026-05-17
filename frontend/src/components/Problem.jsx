@@ -32,8 +32,8 @@ const Problem = ({
     >
       {/* Header Section */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-3xl font-black tracking-tighter text-white uppercase">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-white uppercase break-all sm:break-normal">
             {title || "problem_undefined"}
           </h2>
           <span className={`px-4 py-1 text-xs font-black tracking-[0.2em] border rounded-lg uppercase ${getDifficultyStyles()}`}>
@@ -80,8 +80,8 @@ const Problem = ({
       </div>
 
       {/* Verification Footer */}
-      <div className="pt-8 border-t border-white/5 flex items-center justify-between text-[11px] font-mono tracking-[0.3em] text-slate-600 uppercase">
-        <div className="flex items-center gap-4">
+      <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] sm:tracking-[0.3em] text-slate-600 uppercase">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="flex items-center gap-1.5">
             <span className="w-1 h-1 rounded-full bg-emerald-500" />
             Integrity_Level: 100

@@ -56,7 +56,7 @@ const Rounds = () => {
             
             return (
               <motion.div
-                key={round._id}
+                key={`${round._id}-${idx}`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
@@ -72,8 +72,8 @@ const Rounds = () => {
                 `}>
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     
-                    <div className="flex items-center gap-8">
-                      <div className={`w-20 h-20 flex items-center justify-center border-2 transition-all duration-500 font-mono
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                      <div className={`w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 flex items-center justify-center border-2 transition-all duration-500 font-mono
                         ${isUnlocked ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "bg-white/5 border-white/10 text-slate-700"}
                       `} style={{ clipPath: "polygon(20% 0, 100% 0, 100% 80%, 80% 100%, 0 100%, 0 20%)" }}>
                         <span className="text-3xl font-black">{round.roundNumber.toString().padStart(2, '0')}</span>
@@ -113,7 +113,7 @@ const Rounds = () => {
                         await fetchProblem(round.roundNumber);
                         navigate("/code-n-submit");
                       }}
-                      className={isUnlocked ? "neon-button scale-90 md:scale-100" : "px-8 py-4 border border-white/5 text-slate-700 font-black text-sm tracking-widest bg-white/5 cursor-not-allowed"}
+                      className={isUnlocked ? "neon-button scale-95 sm:scale-100 w-full md:w-auto" : "px-8 py-4 border border-white/5 text-slate-700 font-black text-sm tracking-widest bg-white/5 cursor-not-allowed w-full md:w-auto"}
                       style={!isUnlocked ? { clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" } : {}}
                     >
                       {isUnlocked ? "INIT_DECODE" : "AUTH_REQUIRED"}
