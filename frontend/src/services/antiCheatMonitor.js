@@ -65,16 +65,16 @@ class AntiCheatMonitor {
         console.warn("[AntiCheat] Admin detected. Monitoring disabled.");
         return;
       }
-    } catch {}
+    } catch { }
 
     if (this._active) this.stop(); // Clean up any prior session
 
     this._active = true;
     this._sessionId = sessionId;
     this._round = round;
-    this._timeLimitMinutes = timeLimit || 30; 
+    this._timeLimitMinutes = timeLimit || 30;
     this._api = api;
-    this._onEvent = onEvent || (() => {});
+    this._onEvent = onEvent || (() => { });
 
     this._writeIntegritySeal();
     this._setupAllDetectors();
@@ -202,7 +202,7 @@ class AntiCheatMonitor {
       } else {
         if (this._hiddenAt) {
           const duration = Date.now() - this._hiddenAt;
-          
+
           // 1. Extreme Absence Disqualification (1/4th of allotted time)
           const quarterTimeMs = (this._timeLimitMinutes * 60 * 1000) / 4;
           if (duration >= quarterTimeMs && quarterTimeMs > 0) {
@@ -212,7 +212,7 @@ class AntiCheatMonitor {
               reason: "quarter_time_absence",
               timestamp: Date.now(),
             });
-          } 
+          }
           // 2. Focus Loss Warning (Lowered to 20 seconds)
           else if (duration > 20000) {
             this._dispatchEvent("excessive_focus_loss", {
@@ -221,7 +221,7 @@ class AntiCheatMonitor {
               timestamp: Date.now(),
             });
           }
-          
+
           this._hiddenAt = null;
         }
       }
@@ -273,7 +273,7 @@ class AntiCheatMonitor {
 
         // Second monitor heuristic: window is positioned off-screen or far
         if (window.screenX < -100 || window.screenY < -100 ||
-            window.screenX > sw + 100) {
+          window.screenX > sw + 100) {
           this._dispatchEvent("second_monitor", {
             screenX: window.screenX, screenY: window.screenY,
             screenWidth: sw, screenHeight: sh,
@@ -281,19 +281,32 @@ class AntiCheatMonitor {
           return;
         }
 
-        // Suspicious resize: significant window shrink
-        const widthDelta = Math.abs(ww - this._lastWindowWidth);
-        const heightDelta = Math.abs(wh - this._lastWindowHeight);
-        if (widthDelta > 200 || heightDelta > 200) {
-          this._dispatchEvent("suspicious_resize", {
-            from: { w: this._lastWindowWidth, h: this._lastWindowHeight },
-            to: { w: ww, h: wh },
-            delta: { w: widthDelta, h: heightDelta },
-          });
+        // Check if this resize might be due to DevTools opening
+        // DevTools typically causes innerWidth shrinkage while outerWidth stays same
+        const innerWidthDelta = Math.abs(window.innerWidth - this._lastInnerWidth);
+        const outerWidthDelta = Math.abs(ww - this._lastWindowWidth);
+        const isLikelyDevTools = (innerWidthDelta > 100 && outerWidthDelta < 50) ||
+          (innerWidthDelta > 100 && window.innerHeight > window.outerHeight - 100);
+
+        // If this looks like DevTools, trigger immediate check and skip suspicious_resize
+        if (isLikelyDevTools && this._triggerDevToolsCheck) {
+          this._triggerDevToolsCheck();
+        } else {
+          // Suspicious resize: significant window shrink (but not from DevTools)
+          const widthDelta = Math.abs(ww - this._lastWindowWidth);
+          const heightDelta = Math.abs(wh - this._lastWindowHeight);
+          if (widthDelta > 200 || heightDelta > 200) {
+            this._dispatchEvent("suspicious_resize", {
+              from: { w: this._lastWindowWidth, h: this._lastWindowHeight },
+              to: { w: ww, h: wh },
+              delta: { w: widthDelta, h: heightDelta },
+            });
+          }
         }
 
         this._lastWindowWidth = ww;
         this._lastWindowHeight = wh;
+        this._lastInnerWidth = window.innerWidth;
       }, RESIZE_DEBOUNCE_MS);
     };
 
@@ -520,13 +533,13 @@ class AntiCheatMonitor {
         try {
           const t1 = performance.now();
           // Using Function constructor to avoid source-map/breakpoint issues
-          (function() { debugger; })();
+          (function () { debugger; })();
           const elapsed = performance.now() - t1;
           if (elapsed > 50) {
             detected = true;
             reportDevTools("debugger_timing");
           }
-        } catch {}
+        } catch { }
       }
 
       // ────────────────────────────────────────────────────────────────────
@@ -577,13 +590,13 @@ class AntiCheatMonitor {
       if (!detected) {
         try {
           const d1 = Date.now();
-          (function() { debugger; })();
+          (function () { debugger; })();
           const delta = Date.now() - d1;
           if (delta > 100) {
             detected = true;
             reportDevTools("date_debugger_timing");
           }
-        } catch {}
+        } catch { }
       }
 
       // If none of the techniques detected DevTools, mark as closed
@@ -596,6 +609,9 @@ class AntiCheatMonitor {
     this._intervals.push(devToolsId);
     // Initial check after a short delay to let the page settle
     setTimeout(checkDevTools, 1000);
+
+    // Expose for immediate checking from resize detection
+    this._triggerDevToolsCheck = checkDevTools;
   }
 
   // ── 10. Tampering Detection ────────────────────────────────────────────────
@@ -628,7 +644,7 @@ class AntiCheatMonitor {
           if (fn && !fn.includes("[native code]") && !fn.includes("AntiCheat")) {
             this._dispatchEvent("tampering", { reason: `${name}_overridden`, fn: fn.slice(0, 50) }, true);
           }
-        } catch {}
+        } catch { }
       });
     };
 
@@ -723,7 +739,7 @@ class AntiCheatMonitor {
         const tabs = JSON.parse(raw) || {};
         const now = Date.now();
         tabCount = Object.values(tabs).filter((ts) => now - ts < 20000).length;
-      } catch {}
+      } catch { }
 
       // Check integrity seal
       const seal = localStorage.getItem(`ac_seal_${this._round}`);
@@ -740,7 +756,7 @@ class AntiCheatMonitor {
         if (res.data) {
           this._onEvent("heartbeat", {}, res.data);
         }
-      } catch {}
+      } catch { }
     }, HEARTBEAT_INTERVAL_MS);
 
     this._intervals.push(heartbeatId);

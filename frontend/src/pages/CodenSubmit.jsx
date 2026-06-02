@@ -1,5 +1,11 @@
 // @ts-nocheck
-import React, { useContext, useEffect, useState, useRef, useCallback } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import Problem from "../components/Problem.jsx";
 import CodeScreen from "../components/CodeScreen.jsx";
@@ -16,6 +22,7 @@ const CodenSubmit = () => {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [navigationAttempted, setNavigationAttempted] = useState(false);
+  const [showProblem, setShowProblem] = useState(true);
 
   const {
     api,
@@ -86,7 +93,9 @@ const CodenSubmit = () => {
     if (!problem?.round) return;
     const fetchRoundConfig = async () => {
       try {
-        const res = await api.get(`/api/rounds/number/${Number(problem.round)}`);
+        const res = await api.get(
+          `/api/rounds/number/${Number(problem.round)}`,
+        );
         setRoundConfig(res.data);
       } catch (err) {
         console.error("Failed to fetch round config:", err);
@@ -107,7 +116,9 @@ const CodenSubmit = () => {
         return;
       }
       const roundNumber = Number(currentRound || savedRound);
-      const activeRound = rounds.find((r) => Number(r.roundNumber) === roundNumber);
+      const activeRound = rounds.find(
+        (r) => Number(r.roundNumber) === roundNumber,
+      );
       if (!activeRound || !activeRound.unlocked) {
         navigate("/rounds");
       }
@@ -120,7 +131,9 @@ const CodenSubmit = () => {
       e.preventDefault();
       window.history.forward();
       if (code && code.trim() && !autoSubmitted.current) {
-        const confirmed = window.confirm("You have unsaved code. Do you want to submit and go back?");
+        const confirmed = window.confirm(
+          "You have unsaved code. Do you want to submit and go back?",
+        );
         if (confirmed) setNavigationAttempted(true);
       }
     };
@@ -146,7 +159,9 @@ const CodenSubmit = () => {
         if (res.status === 201) {
           autoSubmitted.current = true;
           await unlockNextRound(problem.round);
-          localStorage.removeItem(`timer_${localStorage.getItem("participantId")}_${problem.round}`);
+          localStorage.removeItem(
+            `timer_${localStorage.getItem("participantId")}_${problem.round}`,
+          );
           localStorage.removeItem("currentRound");
           setCode("");
           setOutput("");
@@ -160,7 +175,19 @@ const CodenSubmit = () => {
       }
     };
     submitAndNavigate();
-  }, [navigationAttempted, api, isDisqualified, language, navigate, problem, setCode, setOutput, startTime, submitting, unlockNextRound]);
+  }, [
+    navigationAttempted,
+    api,
+    isDisqualified,
+    language,
+    navigate,
+    problem,
+    setCode,
+    setOutput,
+    startTime,
+    submitting,
+    unlockNextRound,
+  ]);
 
   useEffect(() => {
     if (!problem) return;
@@ -220,22 +247,58 @@ const CodenSubmit = () => {
     setRunning(true);
     setOutput("");
     try {
-      const res = await api.post("/api/code/run", { code, language, input: problem.input?.[0] || "" });
-      setOutput(res.data.output || "No output");
+      console.log("🚀 Sending request to /api/code/run with:", {
+        code,
+        language,
+        input: problem.input?.[0] || "",
+      });
+      const res = await api.post("/api/code/run", {
+        code,
+        language,
+        input: problem.input?.[0] || "",
+      });
+      console.log("📡 Response received:", res);
+      console.log("📦 Response data:", res.data);
+
+      const output =
+        res.data?.output || res.data?.result?.output || "No output";
+      const hasError = res.data?.error || res.data?.status === "error";
+
+      if (hasError) {
+        console.error("❌ Error from backend:", res.data?.error);
+        setOutput(
+          res.data?.error?.message ||
+            JSON.stringify(res.data?.error) ||
+            "Execution error",
+        );
+      } else {
+        console.log("✅ Output received:", output);
+        setOutput(output);
+      }
+
       setExecutionCount((prev) => {
         const next = Math.max(prev - 1, 0);
-        localStorage.setItem(`run_remaining_${localStorage.getItem("participantId")}_${problem?.round}`, String(next));
+        localStorage.setItem(
+          `run_remaining_${localStorage.getItem("participantId")}_${problem?.round}`,
+          String(next),
+        );
         return next;
       });
-    } catch {
-      setOutput("Execution failed ❌");
+    } catch (err) {
+      console.error("🔴 Request failed:", err);
+      console.error("Error details:", err.response?.data);
+      setOutput(
+        err.response?.data?.error || err.message || "Execution failed ❌",
+      );
     }
     setRunning(false);
   };
 
   const handleSubmit = async (auto = false) => {
     if (submitting) return;
-    stopMonitoring(auto ? (isDisqualified ? "disqualified" : "timeout") : "submitted");
+    stopMonitoring(
+      auto ? (isDisqualified ? "disqualified" : "timeout") : "submitted",
+    );
     setSubmitting(true);
     try {
       const res = await api.post("/api/submission", {
@@ -250,7 +313,9 @@ const CodenSubmit = () => {
       if (res.status === 201) {
         autoSubmitted.current = true;
         await unlockNextRound(problem.round);
-        localStorage.removeItem(`timer_${localStorage.getItem("participantId")}_${problem.round}`);
+        localStorage.removeItem(
+          `timer_${localStorage.getItem("participantId")}_${problem.round}`,
+        );
         localStorage.removeItem("currentRound");
         setCode("");
         setOutput("");
@@ -266,170 +331,255 @@ const CodenSubmit = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 gap-4">
         <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-        <p className="text-emerald-500 font-mono tracking-widest text-xs animate-pulse uppercase">Syncing_Problem_Data...</p>
+        <p className="text-emerald-500 font-mono tracking-widest text-xs animate-pulse uppercase">
+          Syncing_Problem_Data...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-300 pt-20 pb-10 px-4 sm:px-6 relative overflow-hidden flex flex-col lg:flex-row gap-6">
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-emerald-500/5 blur-[120px] pointer-events-none" />
-
-      {/* Left: Problem Description */}
-      <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="w-full lg:w-2/5 flex flex-col gap-6 h-[calc(100vh-120px)] lg:h-[85vh]"
-      >
-        <div className="glass-panel h-full overflow-y-auto border-white/5 shadow-2xl custom-scrollbar">
-          <Problem
-            title={problem.title}
-            difficulty={problem.difficulty}
-            description={problem.description}
-            sampleInput={problem.input?.[0]}
-            sampleOutput={problem.expectedOutput?.[0]}
-          />
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-300 flex flex-col overflow-hidden h-screen">
+      {/* Top Navigation Bar */}
+      <div className="h-14 bg-slate-900/90 border-b border-emerald-500/20 backdrop-blur-md flex items-center justify-between px-4 sticky top-0 z-40 flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <h1 className="text-sm font-black text-emerald-400 tracking-tight truncate">
+            {problem.title}
+          </h1>
+          <span
+            className={`px-2 py-0.5 rounded text-[10px] font-black flex-shrink-0 ${
+              problem.difficulty === "Easy"
+                ? "bg-green-500/20 text-green-400"
+                : problem.difficulty === "Medium"
+                  ? "bg-yellow-500/20 text-yellow-400"
+                  : "bg-red-500/20 text-red-400"
+            }`}
+          >
+            {problem.difficulty}
+          </span>
         </div>
-      </motion.div>
 
-      {/* Right: Workspace */}
-      <motion.div 
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="w-full lg:w-3/5 flex flex-col gap-6 h-[calc(100vh-120px)] lg:h-[85vh]"
-      >
-        {/* Workspace Toolbar */}
-        <div className="glass-panel px-6 py-4 border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6" style={{ clipPath: "polygon(0 0, 98% 0, 100% 30%, 100% 100%, 2% 100%, 0 70%)" }}>
-          <div className="flex items-center gap-6">
-            <div className="flex flex-col">
-              <span className="text-[10px] font-mono text-slate-500 tracking-[0.2em] mb-1 uppercase">ENV_PARAMETER</span>
-              <select
-                value={language}
-                onChange={(e) => {
-                  setLanguage(e.target.value);
-                  localStorage.setItem("preferredLanguage", e.target.value);
-                }}
-                className="bg-slate-900 border border-white/10 rounded-sm px-4 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 transition-all"
-              >
-                <option value="g++-15">CPP_v15_NODE</option>
-                <option value="python-3.14">PY_v3.14_NODE</option>
-                <option value="openjdk-25">JAVA_v25_NODE</option>
-              </select>
-            </div>
+        {/* Center: Trust Index */}
+        <div className="flex items-center gap-2 flex-shrink-0 mx-4">
+          <span className="text-[9px] font-mono whitespace-nowrap text-slate-400">
+            Trust:
+          </span>
+          <div className="w-20 h-1 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+            <div
+              className={`h-full transition-all ${trustScore > 70 ? "bg-green-500 shadow-lg shadow-green-500/50" : trustScore > 40 ? "bg-yellow-500 shadow-lg shadow-yellow-500/50" : "bg-red-500 shadow-lg shadow-red-500/50"}`}
+              style={{ width: `${trustScore}%` }}
+            />
+          </div>
+          <span className="w-8 text-right text-[9px] font-bold text-emerald-400 tabular-nums">
+            {trustScore}%
+          </span>
+        </div>
 
-            <div className="h-10 w-px bg-white/5" />
+        <div className="flex items-center gap-3">
+          {/* Language Selector */}
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+              Lang
+            </span>
+            <select
+              value={language}
+              onChange={(e) => {
+                setLanguage(e.target.value);
+                localStorage.setItem("preferredLanguage", e.target.value);
+              }}
+              className="bg-slate-800 border border-emerald-500/30 rounded px-2 py-1 text-[10px] font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+            >
+              <option value="python-3.14">Python</option>
+              <option value="g++-15">C++</option>
+              <option value="openjdk-25">Java</option>
+            </select>
+          </div>
 
+          {/* Timer */}
+          <div className="text-center">
+            <p
+              className={`text-lg font-black tabular-nums ${timeLeft < 60 ? "text-red-500 animate-pulse" : "text-emerald-400"}`}
+            >
+              {formatTime(timeLeft)}
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-2">
             <button
               onClick={handleRun}
               disabled={executionCount <= 0 || running || isFrozen}
-              className={`px-8 py-2 text-xs font-black tracking-widest transition-all
-                ${executionCount > 0 && !isFrozen 
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20" 
-                  : "bg-white/5 text-slate-700 border border-white/5 cursor-not-allowed"}
-              `}
-              style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}
+              title={`Run tests (${executionCount} remaining)`}
+              className={`px-3 py-1.5 rounded font-black text-[10px] uppercase tracking-widest transition-all ${
+                executionCount > 0 && !isFrozen
+                  ? "bg-blue-600 hover:bg-blue-500 text-white"
+                  : "bg-slate-700 text-slate-500 cursor-not-allowed"
+              }`}
             >
-              {running ? "EXECUTING..." : `RUN_TEST [${executionCount}]`}
+              Run
             </button>
-          </div>
-
-          <div className="flex items-center gap-8 w-full sm:w-auto">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">TIME_TILL_EXPIRY</span>
-              <span className={`text-2xl font-black tracking-tighter tabular-nums leading-none mt-1 ${timeLeft < 60 ? 'text-rose-500 animate-pulse' : 'text-white'}`}>
-                {formatTime(timeLeft)}
-              </span>
-            </div>
-
             <button
               onClick={() => handleSubmit(false)}
               disabled={submitting || !code.trim() || isFrozen}
-              className={`px-10 py-3 text-xs font-black tracking-widest transition-all uppercase
-                ${!submitting && code.trim() && !isFrozen
-                  ? "bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 hover:bg-emerald-400"
-                  : "bg-slate-800 text-slate-600 cursor-not-allowed"}
-              `}
-              style={{ clipPath: "polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%)" }}
+              className={`px-4 py-1.5 rounded font-black text-[10px] uppercase tracking-widest transition-all ${
+                !submitting && code.trim() && !isFrozen
+                  ? "bg-emerald-600 hover:bg-emerald-500 text-black"
+                  : "bg-slate-700 text-slate-500 cursor-not-allowed"
+              }`}
             >
-              {submitting ? "UPLOADING..." : "COMMIT_ENTRY"}
+              {submitting ? "..." : "Submit"}
             </button>
           </div>
+
+          {/* Toggle Problem Panel */}
+          <button
+            onClick={() => setShowProblem(!showProblem)}
+            className="lg:hidden px-2 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 transition-colors text-xs"
+            title="Toggle problem panel"
+          >
+            {showProblem ? "✕" : "≡"}
+          </button>
         </div>
+      </div>
 
-        {/* Editor Section */}
-        <div className={`flex-[3] cyber-card p-0 border-white/10 relative group ${isFrozen ? "opacity-60" : ""}`}>
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[linear-gradient(rgba(16,185,129,0.01)_1px,transparent_1px)] bg-[size:100%_8px] opacity-20" />
-          
-          <AnimatePresence>
-            {isFrozen && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 backdrop-blur-md"
-              >
-                <div className="text-center space-y-4">
-                  <div className="text-5xl">🔒</div>
-                  <h3 className="text-rose-500 text-2xl font-black tracking-[0.3em] uppercase">SYSTEM_LOCKED</h3>
-                  <p className="text-slate-500 text-sm max-w-xs font-mono leading-relaxed">Behavioral integrity failure detected. Node connection terminated by AI proctor.</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="h-full relative z-10 overflow-hidden">
-            <CodeScreen code={code} setCode={setCode} />
-          </div>
-        </div>
-
-        {/* Output Section */}
-        <div className="flex-1 cyber-card p-0 border-white/10 overflow-hidden bg-black/20">
-          <div className="terminal-header py-3">
-            <span className="text-[10px] font-mono tracking-[0.3em] text-emerald-500/60 uppercase">NODE_OUTPUT_FEED</span>
-          </div>
-          <div className="h-full">
-            <Output output={output} />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Proctoring Status Bar */}
-      <div className="fixed bottom-0 left-0 w-full z-[100] px-6 py-4 glass-panel rounded-none border-t border-emerald-500/20 flex flex-col md:flex-row items-center justify-between gap-4 overflow-hidden">
-        <div className="flex items-center gap-10">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs font-black font-mono tracking-[0.3em] text-emerald-500 uppercase">PROCTOR_ACTIVE</span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">TRUST_INDEX:</span>
-            <div className="w-48 h-1 bg-slate-900 border border-white/5 rounded-full overflow-hidden">
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${trustScore}%` }}
-                className={`h-full transition-all duration-1000 ${trustScore > 70 ? 'bg-emerald-500 shadow-[0_0_10px_#10b981]' : trustScore > 40 ? 'bg-amber-500 shadow-[0_0_10px_#f59e0b]' : 'bg-rose-500 shadow-[0_0_10px_#f43f5e]'}`}
-              />
+      {/* Main Content - Desktop: 3 column, Mobile: 1 column */}
+      <div className="flex-1 overflow-hidden flex gap-0">
+        {/* Left: Problem Panel (Desktop: 25%, Mobile: Hidden) */}
+        {(showProblem || typeof window === "undefined") && (
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.2 }}
+            className="hidden lg:flex lg:w-1/4 flex-col border-r border-emerald-500/10 bg-slate-900/40 overflow-hidden"
+          >
+            {/* Problem Content */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <div className="p-3 space-y-3">
+                <Problem
+                  title={problem.title}
+                  difficulty={problem.difficulty}
+                  description={problem.description}
+                  sampleInput={problem.input?.[0]}
+                  sampleOutput={problem.expectedOutput?.[0]}
+                />
+              </div>
             </div>
-            <span className="text-xs font-mono font-bold text-white tabular-nums">{trustScore}%</span>
+
+            {/* Problem Footer */}
+            <div className="border-t border-emerald-500/10 bg-slate-900/80 px-3 py-2 text-[10px] text-slate-500 font-mono flex-shrink-0">
+              <div className="flex justify-between items-center gap-2">
+                <span>Executions: {executionCount}/3</span>
+                <span
+                  className={`px-2 py-0.5 rounded text-[9px] font-black ${
+                    riskCategory === "SAFE"
+                      ? "bg-green-500/20 text-green-400"
+                      : riskCategory === "SUSPICIOUS"
+                        ? "bg-yellow-500/20 text-yellow-400"
+                        : "bg-red-500/20 text-red-400"
+                  }`}
+                >
+                  {riskCategory}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Right: Code Editor & Output (Desktop: 75%, Mobile: 100%) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex-1 lg:w-3/4 flex flex-col overflow-hidden"
+        >
+          {/* Code Editor Section - 80% */}
+          <div
+            className={`flex-[5] flex flex-col border-b border-emerald-500/20 relative overflow-hidden ${isFrozen ? "opacity-50" : ""}`}
+          >
+            {/* Editor Header */}
+            <div className="h-10 bg-slate-900/90 border-b border-emerald-500/10 flex items-center px-4 flex-shrink-0 gap-2 justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                  Code Editor
+                </span>
+                <span className="text-[9px] text-slate-600">
+                  {code.split("\n").length} lines
+                </span>
+              </div>
+              <span className="text-[9px] text-slate-600 hidden sm:inline">
+                {language}
+              </span>
+            </div>
+
+            {/* Frozen Overlay */}
+            <AnimatePresence>
+              {isFrozen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/95 backdrop-blur-sm"
+                >
+                  <div className="text-center space-y-3">
+                    <div className="text-5xl animate-bounce">🔒</div>
+                    <h3 className="text-lg font-black text-red-500 tracking-widest">
+                      SYSTEM LOCKED
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      Suspicious behavior detected
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Code Screen */}
+            <div className="flex-1 overflow-hidden">
+              <CodeScreen code={code} setCode={setCode} />
+            </div>
           </div>
+
+          {/* Output Section - 30% */}
+          <div className="flex-1 flex flex-col bg-black/80 border-t border-emerald-500/20 overflow-hidden">
+            {/* Output Header */}
+            <div className="h-10 bg-slate-900/90 border-b border-emerald-500/10 flex items-center px-4 flex-shrink-0 gap-2 justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-1.5 h-1.5 rounded-full ${output ? "bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" : "bg-slate-600"}`}
+                />
+                <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                  Output Terminal
+                </span>
+              </div>
+              {output && (
+                <span className="text-[9px] text-emerald-500 font-mono">
+                  ✓ Ready
+                </span>
+              )}
+            </div>
+
+            {/* Output Content */}
+            <div className="flex-1 overflow-hidden min-h-0">
+              <Output output={output} />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom Status Bar */}
+      <div className="h-10 bg-slate-900/90 border-t border-emerald-500/20 px-4 flex items-center justify-between text-[9px] font-mono text-slate-500 gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="relative flex h-1 w-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1 w-1 bg-emerald-500"></span>
+          </span>
+          <span className="text-emerald-500 whitespace-nowrap">
+            PROCTOR_ACTIVE
+          </span>
         </div>
 
-        <div className="flex items-center gap-10">
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-mono tracking-[0.2em] text-slate-500 uppercase">RISK_LEVEL:</span>
-            <span className={`text-[10px] font-black tracking-[0.3em] px-3 py-1 rounded-sm border ${
-              riskCategory === "SAFE" ? "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" :
-              riskCategory === "SUSPICIOUS" ? "text-amber-400 border-amber-500/40 bg-amber-500/10" : "text-rose-400 border-rose-500/40 bg-rose-500/10"
-            }`}>
-              {riskCategory}
-            </span>
-          </div>
-          <div className="text-[10px] font-mono text-slate-700 tracking-widest hidden lg:block">
-            NODE_SESSION: {sessionId?.slice(0, 16).toUpperCase()}
-          </div>
-        </div>
+        <span className="text-slate-700 hidden md:inline whitespace-nowrap">
+          {sessionId?.slice(0, 10).toUpperCase()}
+        </span>
       </div>
 
       <AntiCheatWarning
