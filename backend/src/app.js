@@ -13,6 +13,8 @@ import antiCheatRouter from './routes/antiCheatRoutes.js';
 
 const app = express();
 
+
+app.set('trust proxy', 1); // Trust first proxy for rate limiting behind proxies
 // Middleware
 app.use(
     cors({
