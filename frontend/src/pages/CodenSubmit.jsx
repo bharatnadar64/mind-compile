@@ -126,10 +126,15 @@ const CodenSubmit = () => {
     verifyRoundAccess();
   }, [currentRound, rounds, loadRounds, navigate]);
 
+  // Push a guard history entry and block all back/forward navigation
   useEffect(() => {
+    // Push an extra entry so pressing back hits our guard first
+    window.history.pushState({ guard: true }, "", window.location.href);
+
     const handlePopState = (e) => {
-      e.preventDefault();
-      window.history.forward();
+      // Always push back to prevent leaving the page
+      window.history.pushState({ guard: true }, "", window.location.href);
+
       if (code && code.trim() && !autoSubmitted.current) {
         const confirmed = window.confirm(
           "You have unsaved code. Do you want to submit and go back?",
@@ -137,8 +142,18 @@ const CodenSubmit = () => {
         if (confirmed) setNavigationAttempted(true);
       }
     };
+
+    const handleHashChange = (e) => {
+      e.preventDefault();
+      window.location.hash = "";
+    };
+
     window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
   }, [code]);
 
   useEffect(() => {
@@ -146,6 +161,7 @@ const CodenSubmit = () => {
     const submitAndNavigate = async () => {
       if (submitting) return;
       setSubmitting(true);
+      let navigated = false;
       try {
         const res = await api.post("/api/submission", {
           problemId: problem._id,
@@ -166,12 +182,16 @@ const CodenSubmit = () => {
           setCode("");
           setOutput("");
           setNavigationAttempted(false);
-          if (!isDisqualified) navigate("/rounds");
+          if (!isDisqualified) {
+            navigated = true;
+            navigate("/rounds");
+          }
         }
       } catch (err) {
         setOutput(err.response?.data?.error || "Submission failed ❌");
+      } finally {
         setNavigationAttempted(false);
-        setSubmitting(false);
+        if (!navigated) setSubmitting(false);
       }
     };
     submitAndNavigate();
@@ -300,6 +320,7 @@ const CodenSubmit = () => {
       auto ? (isDisqualified ? "disqualified" : "timeout") : "submitted",
     );
     setSubmitting(true);
+    let navigated = false;
     try {
       const res = await api.post("/api/submission", {
         problemId: problem._id,
@@ -319,11 +340,15 @@ const CodenSubmit = () => {
         localStorage.removeItem("currentRound");
         setCode("");
         setOutput("");
-        if (!isDisqualified) navigate("/rounds");
+        if (!isDisqualified) {
+          navigated = true;
+          navigate("/rounds");
+        }
       }
     } catch (err) {
       setOutput(err.response?.data?.error || "Submission failed ❌");
-      setSubmitting(false);
+    } finally {
+      if (!navigated) setSubmitting(false);
     }
   };
 

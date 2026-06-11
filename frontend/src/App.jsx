@@ -101,6 +101,7 @@ function App() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isCodenSubmitPage = location.pathname === "/code-n-submit";
   const isLoggedIn = !!localStorage.getItem("token");
 
   return (
@@ -121,8 +122,8 @@ function App() {
         </div>
       </div>
 
-      {/* 🔥 NAVBAR SWITCH */}
-      {isAdminRoute ? <AdminNavbar /> : <NavBar />}
+      {/* 🔥 NAVBAR SWITCH — hidden on code-n-submit */}
+      {!isCodenSubmitPage && (isAdminRoute ? <AdminNavbar /> : <NavBar />)}
 
       <main className="relative z-[2]">
         <Routes>
@@ -194,8 +195,8 @@ function App() {
         </Routes>
       </main>
 
-      {/* 🔥 Hide footer on admin */}
-      {!isAdminRoute && <Footer />}
+      {/* 🔥 Hide footer on admin and code-n-submit */}
+      {!isAdminRoute && !isCodenSubmitPage && <Footer />}
     </div>
   );
 }

@@ -31,13 +31,13 @@ export const startSessionController = async (req, res) => {
     const session = await startSession({ participantId, round, sessionId, browserInfo, clientIp });
     res.status(201).json({
       sessionId: session.sessionId,
-      suspicionScore: 0,
-      riskCategory: "SAFE",
-      cheatProbability: 0,
-      trustScore: 100,
-      isFrozen: false,
-      isDisqualified: false,
-      executionsRestricted: false,
+      suspicionScore: session.suspicionScore || 0,
+      riskCategory: session.riskCategory || "SAFE",
+      cheatProbability: session.cheatProbability || 0,
+      trustScore: session.trustScore ?? 100,
+      isFrozen: session.isFrozen || false,
+      isDisqualified: session.isDisqualified || false,
+      executionsRestricted: session.executionsRestricted || false,
     });
   } catch (err) {
     console.error("[AntiCheat] startSession error:", err);

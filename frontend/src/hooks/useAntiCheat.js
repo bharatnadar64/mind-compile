@@ -96,12 +96,14 @@ const useAntiCheat = ({
 
     // Start backend session FIRST, then start frontend monitor
     const initSession = async () => {
+      let sessionData;
       try {
-        await api.post("/api/anticheat/session/start", {
+        const response = await api.post("/api/anticheat/session/start", {
           sessionId: sessId,
           round: round || 1,
           browserInfo: antiCheatMonitor._getBrowserInfo ? antiCheatMonitor._getBrowserInfo() : {}, 
         });
+        sessionData = response.data;
       } catch (err) {
         console.error("[AntiCheat] Session start failed:", err);
         // Don't start monitoring if session creation failed
@@ -110,6 +112,23 @@ const useAntiCheat = ({
 
       // If the effect was cleaned up while we were awaiting, don't start monitoring
       if (cancelled) return;
+
+      // Apply carried-over state from backend (prevents reload bypass)
+      if (sessionData) {
+        setSuspicionScore(sessionData.suspicionScore || 0);
+        setRiskCategory(sessionData.riskCategory || "SAFE");
+        setCheatProbability(sessionData.cheatProbability || 0);
+        setTrustScore(sessionData.trustScore ?? 100);
+        setExecutionsRestricted(sessionData.executionsRestricted || false);
+        if (sessionData.isFrozen) {
+          setIsFrozen(true);
+          if (onFreeze) onFreeze();
+        }
+        if (sessionData.isDisqualified) {
+          setIsDisqualified(true);
+          if (onDisqualify) onDisqualify();
+        }
+      }
 
       // Mark session as ready — this gates heartbeats
       setSessionReady(true);

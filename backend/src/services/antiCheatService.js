@@ -112,6 +112,22 @@ const determineAction = (riskCategory, previousCategory) => {
 // START SESSION
 // ════════════════════════════════════════════════════════════════════════════
 export const startSession = async ({ participantId, round, sessionId, browserInfo, clientIp }) => {
+  // Find the most recent session for this participant+round to carry over state
+  const previousSession = await AntiCheatSession.findOne(
+    { participantId, round },
+    {
+      suspicionScore: 1, riskCategory: 1, cheatProbability: 1, trustScore: 1,
+      isFrozen: 1, isDisqualified: 1, executionsRestricted: 1,
+      eventCounts: 1, totalEvents: 1, violationSummary: 1,
+      warningCount: 1, pointsDeducted: 1, tamperingDetected: 1, tamperingCount: 1,
+    }
+  ).sort({ createdAt: -1 }).lean();
+
+  // Also check if participant is globally disqualified
+  const participant = await Participant.findById(participantId, "isDisqualified disqualifiedRounds").lean();
+  const isGloballyDisqualified = participant?.isDisqualified ||
+    (participant?.disqualifiedRounds || []).includes(round);
+
   // Close any stale active sessions for this participant+round
   await AntiCheatSession.updateMany(
     { participantId, round, isActive: true },
@@ -124,6 +140,27 @@ export const startSession = async ({ participantId, round, sessionId, browserInf
     }
   );
 
+  // Carry over state from previous session (prevents reload bypass)
+  const carryOver = previousSession ? {
+    suspicionScore: previousSession.suspicionScore || 0,
+    riskCategory: previousSession.riskCategory || "SAFE",
+    cheatProbability: previousSession.cheatProbability || 0,
+    trustScore: previousSession.trustScore ?? 100,
+    isFrozen: previousSession.isFrozen || isGloballyDisqualified || false,
+    isDisqualified: previousSession.isDisqualified || isGloballyDisqualified || false,
+    executionsRestricted: previousSession.executionsRestricted || false,
+    eventCounts: previousSession.eventCounts || {},
+    totalEvents: previousSession.totalEvents || 0,
+    violationSummary: previousSession.violationSummary || {},
+    warningCount: previousSession.warningCount || 0,
+    pointsDeducted: previousSession.pointsDeducted || 0,
+    tamperingDetected: previousSession.tamperingDetected || false,
+    tamperingCount: previousSession.tamperingCount || 0,
+  } : {
+    isDisqualified: isGloballyDisqualified || false,
+    isFrozen: isGloballyDisqualified || false,
+  };
+
   try {
     const session = await AntiCheatSession.create({
       participantId,
@@ -135,6 +172,7 @@ export const startSession = async ({ participantId, round, sessionId, browserInf
       lastDecayAt: new Date(),
       lastEventAt: new Date(),
       eventRateBucketResetAt: new Date(),
+      ...carryOver,
     });
     return session;
   } catch (err) {
