@@ -28,17 +28,17 @@ const Hero = () => {
           </div>
           
           <div className="space-y-4">
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9]">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-mono font-black tracking-tighter leading-[1.1] sm:leading-[0.9]">
               CODE <br />
               <span 
-                className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 neon-text glitch"
+                className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 neon-text glitch terminal-cursor"
                 data-text="IN THE DARK"
               >
                 IN THE DARK
               </span>
             </h1>
-            <p className="text-slate-400 text-lg sm:text-xl max-w-lg leading-relaxed font-mono">
-              {"> "} Precision is your only survival tool. No compiler. No preview. Just you and the machine.
+            <p className="text-emerald-500/70 text-base sm:text-lg lg:text-xl max-w-lg leading-relaxed font-mono mt-4">
+              <span className="text-emerald-400 font-bold">{">"}</span> Precision is your only survival tool. No compiler. No preview. Just you and the machine.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
           animate={{ opacity: 1, scale: 1, rotateY: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="hidden lg:block relative perspective-1000"
+          className="hidden md:block relative perspective-1000 mt-10 lg:mt-0"
         >
           <div className="cyber-card p-0 overflow-hidden border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
             <div className="terminal-header">
@@ -75,7 +75,7 @@ const Hero = () => {
             <div className="p-6 font-mono text-sm space-y-4 bg-black/40">
               <div className="flex gap-4">
                 <span className="text-emerald-500/40">01</span>
-                <span className="text-emerald-400">IMPORT {"{ memory, logic }"} FROM "CORE";</span>
+                <span className="text-emerald-400">import <span className="text-cyan-400">{"{ memory, logic }"}</span> from <span className="text-rose-400">"CORE"</span>;</span>
               </div>
               <div className="flex gap-4">
                 <span className="text-emerald-500/40">02</span>

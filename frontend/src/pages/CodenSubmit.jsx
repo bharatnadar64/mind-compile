@@ -368,8 +368,8 @@ const CodenSubmit = () => {
       {/* Top Navigation Bar */}
       <div className="h-14 bg-slate-900/90 border-b border-emerald-500/20 backdrop-blur-md flex items-center justify-between px-4 sticky top-0 z-40 flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <h1 className="text-sm font-black text-emerald-400 tracking-tight truncate">
-            {problem.title}
+          <h1 className="text-sm font-mono font-black text-emerald-400 tracking-tight truncate">
+            {"> ./" + problem.title.toLowerCase().replace(/\s+/g, '_')}
           </h1>
           <span
             className={`px-2 py-0.5 rounded text-[10px] font-black flex-shrink-0 ${
@@ -435,24 +435,24 @@ const CodenSubmit = () => {
               onClick={handleRun}
               disabled={executionCount <= 0 || running || isFrozen}
               title={`Run tests (${executionCount} remaining)`}
-              className={`px-3 py-1.5 rounded font-black text-[10px] uppercase tracking-widest transition-all ${
+              className={`px-3 py-1.5 rounded font-mono font-black text-[10px] uppercase tracking-widest transition-all ${
                 executionCount > 0 && !isFrozen
-                  ? "bg-blue-600 hover:bg-blue-500 text-white"
-                  : "bg-slate-700 text-slate-500 cursor-not-allowed"
+                  ? "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/50"
+                  : "bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed"
               }`}
             >
-              Run
+              ./run_test
             </button>
             <button
               onClick={() => handleSubmit(false)}
               disabled={submitting || !code.trim() || isFrozen}
-              className={`px-4 py-1.5 rounded font-black text-[10px] uppercase tracking-widest transition-all ${
+              className={`px-4 py-1.5 rounded font-mono font-black text-[10px] uppercase tracking-widest transition-all ${
                 !submitting && code.trim() && !isFrozen
-                  ? "bg-emerald-600 hover:bg-emerald-500 text-black"
-                  : "bg-slate-700 text-slate-500 cursor-not-allowed"
+                  ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                  : "bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed"
               }`}
             >
-              {submitting ? "..." : "Submit"}
+              {submitting ? "..." : "./submit"}
             </button>
           </div>
 

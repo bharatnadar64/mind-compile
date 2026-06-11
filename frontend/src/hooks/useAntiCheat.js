@@ -8,7 +8,7 @@ const generateUUID = () => {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   );
 };
@@ -84,7 +84,7 @@ const useAntiCheat = ({
     }
 
     if (startedRef.current) return;
-    
+
     // Use a local variable to prevent race conditions during the async init
     const sessId = generateUUID();
     setSessionId(sessId);
@@ -101,7 +101,7 @@ const useAntiCheat = ({
         const response = await api.post("/api/anticheat/session/start", {
           sessionId: sessId,
           round: round || 1,
-          browserInfo: antiCheatMonitor._getBrowserInfo ? antiCheatMonitor._getBrowserInfo() : {}, 
+          browserInfo: antiCheatMonitor._getBrowserInfo ? antiCheatMonitor._getBrowserInfo() : {},
         });
         sessionData = response.data;
       } catch (err) {
@@ -147,7 +147,7 @@ const useAntiCheat = ({
             setCheatProbability(res.cheatProbability || 0);
             setTrustScore(res.trustScore || 100);
             setExecutionsRestricted(res.executionsRestricted || false);
-            
+
             if (res.warningMessage) {
               setWarningMessage(res.warningMessage);
               setWarningLevel(res.riskCategory);
@@ -158,7 +158,7 @@ const useAntiCheat = ({
               setIsFrozen(true);
               if (onFreeze) onFreeze();
             }
-            
+
             if (res.isDisqualified) {
               setIsDisqualified(true);
               if (onDisqualify) onDisqualify();
@@ -196,7 +196,7 @@ const useAntiCheat = ({
           setCheatProbability(res.data.cheatProbability || 0);
           setTrustScore(res.data.trustScore || 100);
           setExecutionsRestricted(res.data.executionsRestricted || false);
-          
+
           if (res.data.isFrozen) setIsFrozen(true);
 
           if (res.data.isDisqualified && !isDisqualified) {

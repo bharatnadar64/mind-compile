@@ -58,16 +58,15 @@ const UserLeaderboard = () => {
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-emerald-500 font-mono text-xs tracking-[0.3em]">
+            <div className="flex items-center gap-2 text-emerald-500 font-mono text-xs tracking-[0.3em] uppercase">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              LIVE_RANKING_FEED
+              {"// LIVE_RANKING_FEED"}
             </div>
             <h1 
-              className="text-4xl sm:text-6xl font-bold tracking-tighter text-white glitch"
-              data-text={typedText}
+              className="text-3xl sm:text-4xl md:text-5xl font-mono font-black tracking-widest text-emerald-400 glitch"
+              data-text={`> htop -u ${typedText}`}
             >
-              {typedText}
-              <span className="text-emerald-500 animate-pulse">_</span>
+              {"> htop -u "}{typedText}<span className="terminal-cursor"></span>
             </h1>
           </div>
 

@@ -21,10 +21,10 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div className="space-y-6 lg:pr-12">
               <h1
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-widest text-white glitch"
-                data-text="About MindCompile"
+                className="text-3xl sm:text-4xl lg:text-5xl font-mono font-black tracking-widest text-emerald-400 glitch"
+                data-text="> ./info --about"
               >
-                About MindCompile
+                {"> ./info --about"}<span className="terminal-cursor"></span>
               </h1>
 
               <p className="text-slate-400 text-sm sm:text-base lg:text-lg leading-relaxed">
@@ -49,15 +49,15 @@ const About = () => {
             {/* ───── Event In-Charge ───── */}
             <div className="space-y-6 lg:pl-12">
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-widest text-white glitch"
-                data-text="Event In-Charge"
+                className="text-2xl sm:text-3xl lg:text-4xl font-mono font-black tracking-widest text-emerald-400 glitch"
+                data-text="> ./team --lead"
               >
-                Event In-Charge
+                {"> ./team --lead"}
               </h2>
 
               <div className="cyber-card relative overflow-hidden group">
                 {/* Accent glow bar */}
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-emerald-500/20 via-emerald-400 to-emerald-500/20 opacity-80 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex items-start gap-4">
                   {/* Initials badge */}
@@ -96,24 +96,23 @@ const About = () => {
           </div>
 
           {/* ───── The Team ───── */}
-          <div className="space-y-10">
+          <div className="space-y-10 pt-10 border-t border-emerald-500/10">
             <div className="text-center space-y-2">
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-widest text-white glitch"
-                data-text="The Team"
+                className="text-3xl sm:text-4xl lg:text-5xl font-mono font-black tracking-widest text-emerald-400 glitch"
+                data-text="> ./team --all"
               >
-                The Team
+                {"> ./team --all"}
               </h2>
-              <p className="text-slate-600 text-xs sm:text-sm tracking-[0.2em] uppercase">
-                The engineers powering MindCompile
+              <p className="text-emerald-500/50 text-xs sm:text-sm tracking-[0.2em] font-mono uppercase">
+                // System Architects & Engineers
               </p>
-              <div className="mx-auto w-24 h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent mt-3" />
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {/* Bharat Nadar */}
-              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-emerald-500/30">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-emerald-500/50 hover:bg-emerald-500/[0.02]">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-emerald-500/20 via-emerald-400 to-emerald-500/20 opacity-60 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl font-black tracking-wider shadow-lg shadow-emerald-500/10">
@@ -156,8 +155,8 @@ const About = () => {
               </div>
 
               {/* Sreedharsan Nadar */}
-              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-cyan-500/30">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-cyan-500/50 hover:bg-cyan-500/[0.02]">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-cyan-500/20 via-cyan-400 to-cyan-500/20 opacity-60 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl font-black tracking-wider shadow-lg shadow-cyan-500/10">
@@ -200,8 +199,8 @@ const About = () => {
               </div>
 
               {/* Pranna Nadar */}
-              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-violet-500/30">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="cyber-card relative overflow-hidden group transition-all duration-300 hover:border-violet-500/50 hover:bg-violet-500/[0.02]">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-violet-500/20 via-violet-400 to-violet-500/20 opacity-60 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 text-xl font-black tracking-wider shadow-lg shadow-violet-500/10">

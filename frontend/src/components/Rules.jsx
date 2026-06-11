@@ -12,11 +12,16 @@ const Rules = () => {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="text-emerald-400 text-xs font-bold tracking-[0.3em] uppercase">ACCESS_PROTOCOL</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+            <span className="text-emerald-400 text-xs font-mono font-bold tracking-[0.3em] uppercase">{"// ACCESS_PROTOCOL"}</span>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">SYSTEM_RULES</h1>
-          <p className="text-slate-500 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
+          <h1 
+            className="text-4xl sm:text-5xl md:text-6xl font-mono font-black tracking-widest text-emerald-400 glitch"
+            data-text="> cat rules.txt"
+          >
+            {"> cat rules.txt"}<span className="terminal-cursor"></span>
+          </h1>
+          <p className="text-emerald-500/60 text-sm sm:text-base max-w-lg mx-auto font-mono tracking-widest leading-relaxed">
             Every byte matters. Understand the constraints of the system before initialization.
           </p>
         </div>

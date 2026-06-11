@@ -56,12 +56,16 @@ const Auth = () => {
           }
         }, 800);
       } else {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(form.password)) {
+            throw new Error("Weak password. Must be 8+ chars, with upper, lower, number, and special char (@$!%*?&).");
+        }
         await api.post("/api/user/register", form);
         setMessage("✓ REGISTRATION_SUCCESSFUL");
         setTimeout(() => setIsLogin(true), 1500);
       }
     } catch (err) {
-      setMessage(err.response?.data?.error || "✗ AUTH_FAILURE");
+      setMessage(err.response?.data?.error || err.message || "✗ AUTH_FAILURE");
     } finally {
       setLoading(false);
     }
@@ -92,13 +96,13 @@ const Auth = () => {
 
           <div className="mb-10 text-center md:text-left">
             <h2 
-              className="text-3xl font-black tracking-tighter text-white mb-2 glitch"
-              data-text={isLogin ? "INITIALIZE_SESSION" : "REGISTER_IDENTITY"}
+              className="text-2xl sm:text-3xl font-mono font-black tracking-widest text-emerald-400 mb-4 glitch"
+              data-text={isLogin ? "> sudo login" : "> sudo useradd"}
             >
-              {isLogin ? "INITIALIZE_SESSION" : "REGISTER_IDENTITY"}
+              {isLogin ? "> sudo login" : "> sudo useradd"}<span className="terminal-cursor"></span>
             </h2>
-            <p className="text-slate-500 text-sm font-mono tracking-widest">
-              Please enter your parameters to continue.
+            <p className="text-emerald-500/50 text-xs sm:text-sm font-mono tracking-[0.2em] uppercase">
+              // Enter credentials to proceed
             </p>
           </div>
 
@@ -116,11 +120,11 @@ const Auth = () => {
                     <input
                       type="text"
                       name="name"
-                      placeholder="e.g. John Doe"
+                      placeholder="> type identity..."
                       value={form.name}
                       onChange={handleChange}
                       required={!isLogin}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all"
+                      className="w-full bg-[#020617] border border-white/10 rounded-xl px-5 py-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-500/30 focus:outline-none focus:border-emerald-500 focus:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
                     />
                   </div>
                   <div className="space-y-2">
@@ -128,10 +132,10 @@ const Auth = () => {
                     <input
                       type="text"
                       name="college"
-                      placeholder="e.g. SIESGST"
+                      placeholder="> type host station..."
                       value={form.college}
                       onChange={handleChange}
-                      className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all"
+                      className="w-full bg-[#020617] border border-white/10 rounded-xl px-5 py-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-500/30 focus:outline-none focus:border-emerald-500 focus:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
                     />
                   </div>
                 </motion.div>
@@ -143,11 +147,11 @@ const Auth = () => {
               <input
                 type="email"
                 name="email"
-                placeholder="user@domain.com"
+                placeholder="> type comms address..."
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all"
+                className="w-full bg-[#020617] border border-white/10 rounded-xl px-5 py-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-500/30 focus:outline-none focus:border-emerald-500 focus:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
               />
             </div>
 
@@ -156,11 +160,11 @@ const Auth = () => {
               <input
                 type="password"
                 name="password"
-                placeholder="••••••••"
+                placeholder="> type secret key..."
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all"
+                className="w-full bg-[#020617] border border-white/10 rounded-xl px-5 py-3 text-sm font-mono text-emerald-400 placeholder:text-emerald-500/30 focus:outline-none focus:border-emerald-500 focus:shadow-[0_0_15px_rgba(16,185,129,0.2)] transition-all"
               />
             </div>
 

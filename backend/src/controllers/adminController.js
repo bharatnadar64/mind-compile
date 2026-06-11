@@ -4,6 +4,8 @@ import Leaderboard from "../models/LeaderBoard.js";
 import { getLeaderboard } from "../services/leaderboardService.js";
 import { getAllSubmissions as getAllSubmissionsService } from "../services/submissionService.js";
 import Participant from "../models/Participant.js";
+import AntiCheatSession from "../models/AntiCheatSession.js";
+import CheatLog from "../models/CheatLog.js";
 import bcrypt from "bcryptjs";
 
 // 📊 Leaderboard
@@ -159,8 +161,18 @@ export const updateUser = async (req, res) => {
 // 📌 DELETE USER
 export const deleteUser = async (req, res) => {
     try {
-        await Participant.findByIdAndDelete(req.params.userId);
-        res.json({ message: "User deleted" });
+        const userId = req.params.userId;
+        
+        // Cascade delete from all related collections
+        await Promise.all([
+            Submission.deleteMany({ participantId: userId }),
+            Leaderboard.deleteMany({ participantId: userId }),
+            AntiCheatSession.deleteMany({ participantId: userId }),
+            CheatLog.deleteMany({ participantId: userId }),
+            Participant.findByIdAndDelete(userId)
+        ]);
+
+        res.json({ message: "User and all associated data completely deleted" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

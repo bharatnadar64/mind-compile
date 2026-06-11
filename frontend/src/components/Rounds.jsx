@@ -40,11 +40,16 @@ const Rounds = () => {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <span className="text-emerald-400 text-xs font-bold tracking-[0.3em] uppercase">MISSION_PROTOCOL</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+            <span className="text-emerald-400 text-xs font-mono font-bold tracking-[0.3em] uppercase">{"// MISSION_PROTOCOL"}</span>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white">SELECT_PHASE</h1>
-          <p className="text-slate-500 text-sm sm:text-base max-w-lg mx-auto font-light leading-relaxed">
+          <h1 
+            className="text-4xl sm:text-5xl md:text-6xl font-mono font-black tracking-widest text-emerald-400 glitch"
+            data-text="> ./select_phase"
+          >
+            {"> ./select_phase"}<span className="terminal-cursor"></span>
+          </h1>
+          <p className="text-emerald-500/60 text-sm sm:text-base max-w-lg mx-auto font-mono tracking-widest leading-relaxed">
             Choose your deployment zone. Each phase increases in complexity and risk. Precision is mandatory.
           </p>
         </div>

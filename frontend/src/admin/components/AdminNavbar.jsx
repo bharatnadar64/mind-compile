@@ -13,7 +13,7 @@ const AdminNavbar = () => {
   };
 
   return (
-    <div className="relative bg-black border-b border-red-500/40 font-mono text-red-400 overflow-hidden">
+    <div className="relative bg-black border-b border-cyan-500/40 font-mono text-cyan-400 overflow-hidden">
       {/* ===== INLINE FX (self-contained) ===== */}
       <style>{`
       @keyframes blink { 50% { opacity: 0; } }
@@ -38,17 +38,17 @@ const AdminNavbar = () => {
       {/* ===== BACKGROUND FX ===== */}
 
       {/* glow */}
-      <div className="absolute inset-0 bg-red-500/5 blur-2xl opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 bg-cyan-500/5 blur-2xl opacity-30 pointer-events-none" />
 
       {/* grid overlay */}
-      <div className="absolute inset-0 opacity-[0.06] pointer-events-none bg-[linear-gradient(red_1px,transparent_1px),linear-gradient(90deg,red_1px,transparent_1px)] bg-[size:36px_36px]" />
+      <div className="absolute inset-0 opacity-[0.06] pointer-events-none bg-[linear-gradient(#06b6d4_1px,transparent_1px),linear-gradient(90deg,#06b6d4_1px,transparent_1px)] bg-[size:36px_36px]" />
 
       {/* scanlines */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.14) 3px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6,182,212,0.14) 3px)",
         }}
       />
 
@@ -58,14 +58,14 @@ const AdminNavbar = () => {
       {/* ===== CONTENT ===== */}
       <div className="relative flex flex-wrap items-center justify-between gap-4 p-3 sm:p-4">
         {/* System label */}
-        <div className="text-red-500 font-bold tracking-widest drop-shadow-[0_0_12px_rgba(255,0,0,0.8)] flex items-center gap-2 flicker text-xs sm:text-sm md:text-base">
+        <div className="text-cyan-500 font-black font-mono tracking-widest drop-shadow-[0_0_12px_rgba(6,182,212,0.8)] flex items-center gap-2 flicker text-xs sm:text-sm md:text-base uppercase">
           <span>{">"}</span>
-          <span>ADMIN://ROOT</span>
-          <span className="blink">_</span>
+          <span>root@admin:~#</span>
+          <span className="blink text-cyan-500">█</span>
         </div>
 
         {/* Links */}
-        <div className="flex flex-wrap gap-4 sm:gap-5 text-xs sm:text-sm md:text-base">
+        <div className="flex flex-wrap gap-3 sm:gap-5 text-xs sm:text-sm md:text-base font-mono font-black uppercase tracking-widest">
           {[
             { to: "/admin", label: "Dashboard" },
             { to: "/admin/leaderboard", label: "Leaderboard" },
@@ -80,19 +80,19 @@ const AdminNavbar = () => {
               to={item.to}
               className="
               relative group transition-all duration-200
-              text-red-400 hover:text-red-300 glitch
+              text-cyan-500 hover:text-cyan-400 glitch
             "
             >
-              <span className="mr-1">{">"}</span>
+              <span className="mr-1 text-cyan-500/50">{">"}</span>
               {item.label}
 
               {/* glitch ghost */}
-              <span className="absolute left-0 top-0 opacity-0 group-hover:opacity-40 text-red-300 blur-[1px] translate-x-[2px]">
+              <span className="absolute left-0 top-0 opacity-0 group-hover:opacity-40 text-cyan-300 blur-[1px] translate-x-[2px]">
                 {item.label}
               </span>
 
               {/* underline beam */}
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-red-400 group-hover:w-full transition-all duration-300" />
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-cyan-400 group-hover:w-full transition-all duration-300" />
             </Link>
           ))}
 
@@ -100,20 +100,20 @@ const AdminNavbar = () => {
           <button
             onClick={handleLogout}
             className="
-            ml-2 px-3 py-1 border border-red-500
-            text-red-400 hover:bg-red-500 hover:text-black
+            ml-2 px-3 py-1 border border-cyan-500/50 bg-cyan-500/10
+            text-cyan-400 hover:bg-cyan-500 hover:text-black
             transition-all duration-300
-            shadow-[0_0_12px_rgba(255,0,0,0.4)]
-            glitch
+            shadow-[0_0_12px_rgba(6,182,212,0.2)] hover:shadow-[0_0_15px_rgba(6,182,212,0.6)]
+            glitch uppercase text-xs sm:text-sm
           "
           >
-            EXIT SYSTEM
+            ./exit_sys
           </button>
         </div>
       </div>
 
       {/* ===== STATUS BAR ===== */}
-      <div className="text-[10px] sm:text-xs text-red-500/60 px-4 py-1 border-t border-red-500/10 flex justify-between">
+      <div className="text-xs sm:text-sm text-cyan-500/60 px-4 py-1 border-t border-cyan-500/10 flex justify-between">
         <span>{"> access.level: ROOT"}</span>
         <span className="animate-pulse">{"> surveillance: ACTIVE"}</span>
       </div>

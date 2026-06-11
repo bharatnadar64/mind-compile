@@ -19,6 +19,12 @@ export const registerParticipant = async (participantData) => {
         throw new Error("Email already registered");
     }
 
+    // 1.5️⃣ Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        throw new Error("Weak password. Must be 8+ chars, with upper, lower, number, and special char (@$!%*?&).");
+    }
+
     // 2️⃣ Hash the password with bcryptjs
     const saltRounds = Number(process.env.SALT)
     const salt = await bcrypt.genSalt(saltRounds);

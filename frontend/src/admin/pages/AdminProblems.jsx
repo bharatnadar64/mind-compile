@@ -90,34 +90,31 @@ const AdminProblems = () => {
     }
   };
 
-  if (loading)
-    return (
-      <div className="bg-black text-green-400 min-h-screen p-6 font-mono">
-        <p>$ loading problems...</p>
-      </div>
-    );
+    if (loading)
+      return (
+        <div className="bg-black text-cyan-500 min-h-screen p-6 font-mono flex items-center justify-center">
+          <p className="animate-pulse">{"> loading problems..."}</p>
+        </div>
+      );
 
   return (
-    <div className="relative bg-black text-green-400 min-h-screen p-4 sm:p-6 font-mono overflow-hidden">
+    <div className="relative bg-black text-cyan-500 min-h-screen p-4 sm:p-6 font-mono overflow-hidden">
       {/* ===== SUBTLE FX ===== */}
       <style>{`
-      @keyframes caret { 50% { opacity: 0; } }
-      .caret::after {
-        content: "_";
-        animation: caret 1s step-end infinite;
-      }
+      @keyframes blink { 50% { opacity: 0; } }
+      .blink { animation: blink 1s step-end infinite; }
     `}</style>
 
       {/* soft grid */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[linear-gradient(#22c55e_1px,transparent_1px),linear-gradient(90deg,#22c55e_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[linear-gradient(#06b6d4_1px,transparent_1px),linear-gradient(90deg,#06b6d4_1px,transparent_1px)] bg-[size:40px_40px]" />
 
       {/* ===== HEADER ===== */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-green-500/10 pb-8 relative z-10">
-        <div>
-          <h1 className="text-3xl font-black tracking-widest text-white glitch" data-text="PROBLEM_ENGINE_V1.0">
-            PROBLEM_ENGINE_V1.0
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-cyan-500/20 pb-8 relative z-10">
+        <div className="flex-1 space-y-2">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-mono font-black tracking-widest text-cyan-500 glitch break-words" data-text="> ./manage_problems">
+            {"> ./manage_problems"}<span className="blink text-cyan-500">█</span>
           </h1>
-          <p className="text-slate-500 text-xs mt-1 font-mono uppercase tracking-widest">CENTRAL_LOGIC_REPOSITORY</p>
+          <p className="text-cyan-500/60 text-xs font-mono uppercase tracking-widest">// CENTRAL_LOGIC_REPOSITORY</p>
         </div>
 
         <button
@@ -130,10 +127,10 @@ const AdminProblems = () => {
               testCases: [{ input: "", expectedOutput: "" }],
             })
           }
-          className="px-6 py-2 bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 font-black text-xs tracking-[0.2em] hover:bg-emerald-500/20 transition-all active:scale-95"
+          className="w-full md:w-auto px-6 py-4 bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-black text-xs tracking-[0.2em] hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all active:scale-95 uppercase"
           style={{ clipPath: "polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)" }}
         >
-          [+] INITIALIZE_NEW_PARAMETER
+          [+] ./init_new_parameter
         </button>
       </div>
 
@@ -142,22 +139,22 @@ const AdminProblems = () => {
         {problems.map((p, idx) => (
           <div
             key={p._id}
-            className="group relative p-6 md:p-8 bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all duration-500"
+            className="group relative p-6 md:p-8 bg-white/[0.02] border border-white/5 hover:border-cyan-500/30 transition-all duration-500"
             style={{ clipPath: "polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%)" }}
           >
             {/* Index indicator */}
-            <div className="absolute top-0 right-0 p-4 font-mono text-4xl font-black text-white/[0.03] group-hover:text-emerald-500/[0.05] transition-colors">
+            <div className="absolute top-0 right-0 p-4 font-mono text-4xl font-black text-white/[0.03] group-hover:text-cyan-500/[0.05] transition-colors">
               {(idx + 1).toString().padStart(2, '0')}
             </div>
 
             <div className="flex justify-between items-start mb-6">
               <div className="space-y-1">
-                <h3 className="text-xl font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-tight">
+                <h3 className="text-xl font-black text-white group-hover:text-cyan-400 transition-colors uppercase tracking-tight truncate max-w-[200px] sm:max-w-[300px]">
                   {p.title}
                 </h3>
-                <div className="flex items-center gap-4 text-[10px] font-mono tracking-widest text-slate-500">
+                <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono tracking-widest text-slate-500">
                   <span className="flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-emerald-500" /> ROUND_0{p.round}
+                    <span className="w-1 h-1 rounded-full bg-cyan-500" /> ROUND_0{p.round}
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="w-1 h-1 rounded-full bg-blue-500" /> CASES_{p.input?.length || 0}
@@ -166,12 +163,12 @@ const AdminProblems = () => {
               </div>
 
               <span
-                className={`text-[9px] font-black px-2 py-0.5 border rounded-sm tracking-[0.2em] uppercase ${
+                className={`text-[10px] font-black px-2 py-0.5 border rounded-sm tracking-[0.2em] uppercase ${
                   p.difficulty === "easy"
                     ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/5"
                     : p.difficulty === "medium"
                       ? "border-yellow-500/40 text-yellow-400 bg-yellow-500/5"
-                      : "border-rose-500/40 text-rose-400 bg-rose-500/5"
+                      : "border-blue-500/40 text-blue-400 bg-blue-500/5"
                 }`}
               >
                 {p.difficulty}
@@ -183,19 +180,19 @@ const AdminProblems = () => {
             </p>
 
             {/* actions */}
-            <div className="flex items-center justify-between border-t border-white/5 pt-6">
-              <div className="flex gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-white/5 pt-6 gap-4">
+              <div className="flex gap-6 w-full sm:w-auto">
                 <button
                   onClick={() => handleEdit(p)}
-                  className="text-[10px] font-black text-emerald-500/60 hover:text-emerald-400 uppercase tracking-widest transition-colors"
+                  className="text-xs font-black text-cyan-500/60 hover:text-cyan-400 uppercase tracking-widest transition-colors flex-1 sm:flex-none text-left"
                 >
-                  [ EDIT_LOGIC ]
+                  ./EDIT_LOGIC
                 </button>
                 <button
                   onClick={() => handleDelete(p.round)}
-                  className="text-[10px] font-black text-rose-500/60 hover:text-rose-400 uppercase tracking-widest transition-colors"
+                  className="text-xs font-black text-blue-500/60 hover:text-blue-400 uppercase tracking-widest transition-colors flex-1 sm:flex-none text-right sm:text-left"
                 >
-                  [ PURGE ]
+                  ./PURGE
                 </button>
               </div>
               <div className="flex gap-1">
@@ -211,40 +208,40 @@ const AdminProblems = () => {
       {/* ===== EDIT PANEL ===== */}
       {editingProblem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-emerald-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh]"
+          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-cyan-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh] custom-scrollbar"
                style={{ clipPath: "polygon(0 0, 97% 0, 100% 3%, 100% 100%, 3% 100%, 0 97%)" }}>
             
-            <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-              <h2 className="text-xl font-black text-emerald-400 tracking-widest uppercase">
-                {">"} EDIT_PARAMETER_SET :: ROUND_0{editingProblem.round}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/5 pb-4 gap-4">
+              <h2 className="text-lg sm:text-xl font-mono font-black text-cyan-400 tracking-widest uppercase">
+                {"> ./edit_parameter_set --round "}0{editingProblem.round}<span className="blink text-cyan-500">█</span>
               </h2>
-              <button onClick={() => setEditingProblem(null)} className="text-slate-500 hover:text-white transition-colors uppercase text-[10px] font-black tracking-widest">[ ESC ]</button>
+              <button onClick={() => setEditingProblem(null)} className="text-slate-500 hover:text-white transition-colors uppercase text-xs font-black tracking-widest">[ ESC ]</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">PARAMETER_TITLE</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">PARAMETER_TITLE</label>
                   <input
-                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-emerald-500/50 focus:outline-none transition-all font-mono"
+                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono"
                     value={editingProblem.title}
                     onChange={(e) => setEditingProblem({ ...editingProblem, title: e.target.value })}
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">LOGIC_DESCRIPTION</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">LOGIC_DESCRIPTION</label>
                   <textarea
-                    className="bg-black/50 border border-white/10 p-4 w-full h-40 text-white focus:border-emerald-500/50 focus:outline-none transition-all font-mono text-sm leading-relaxed"
+                    className="bg-black/50 border border-white/10 p-4 w-full h-40 text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono text-sm leading-relaxed custom-scrollbar"
                     value={editingProblem.description}
                     onChange={(e) => setEditingProblem({ ...editingProblem, description: e.target.value })}
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">THREAT_LEVEL</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">THREAT_LEVEL</label>
                   <select
-                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-emerald-500/50 focus:outline-none transition-all font-mono uppercase tracking-widest"
+                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono uppercase tracking-widest"
                     value={editingProblem.difficulty}
                     onChange={(e) => setEditingProblem({ ...editingProblem, difficulty: e.target.value })}
                   >
@@ -256,16 +253,16 @@ const AdminProblems = () => {
               </div>
 
               <div className="space-y-6">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">TEST_VECTOR_MODALITIES</label>
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest block">TEST_VECTOR_MODALITIES</label>
                 <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                   {editingProblem.testCases?.map((tc, i) => (
                     <div key={i} className="p-4 bg-white/[0.02] border border-white/5 relative group">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-mono text-emerald-500/60 uppercase tracking-tighter">VECTOR_{i.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] font-mono text-cyan-500/60 uppercase tracking-tighter">VECTOR_{i.toString().padStart(2, '0')}</span>
                         <button onClick={() => {
                           const updated = editingProblem.testCases.filter((_, idx) => idx !== i);
                           setEditingProblem({ ...editingProblem, testCases: updated });
-                        }} className="text-rose-500/40 hover:text-rose-500 transition-colors text-[9px] font-black uppercase tracking-widest">[ DELETE ]</button>
+                        }} className="text-blue-500/40 hover:text-blue-500 transition-colors text-[10px] font-black uppercase tracking-widest">[ DELETE ]</button>
                       </div>
                       <input
                         className="bg-black/40 border border-white/5 p-2 w-full mb-2 text-xs font-mono focus:border-emerald-500/30 outline-none"
@@ -294,7 +291,7 @@ const AdminProblems = () => {
                       const updated = [...editingProblem.testCases, { input: "", expectedOutput: "" }];
                       setEditingProblem({ ...editingProblem, testCases: updated });
                     }}
-                    className="w-full py-3 border border-dashed border-white/10 text-slate-500 hover:text-emerald-400 hover:border-emerald-500/30 transition-all text-[10px] font-black uppercase tracking-[0.2em]"
+                    className="w-full py-3 border border-dashed border-white/10 text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-xs font-black uppercase tracking-[0.2em]"
                   >
                     [+] ADD_TEST_VECTOR
                   </button>
@@ -302,12 +299,12 @@ const AdminProblems = () => {
               </div>
             </div>
 
-            <div className="mt-10 flex gap-4">
-              <button onClick={handleUpdate} className="flex-1 py-4 bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 font-black text-xs tracking-[0.3em] hover:bg-emerald-500/20 transition-all uppercase">
-                COMMIT_CHANGES_TO_DATABASE
+            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <button onClick={handleUpdate} className="flex-1 py-4 bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 font-black text-xs tracking-[0.3em] hover:bg-cyan-500/20 transition-all uppercase">
+                ./COMMIT_CHANGES_TO_DATABASE
               </button>
               <button onClick={() => setEditingProblem(null)} className="px-8 py-4 border border-white/10 text-slate-500 font-black text-xs tracking-[0.3em] hover:bg-white/5 transition-all uppercase">
-                ABORT
+                ./ABORT
               </button>
             </div>
           </div>
@@ -317,22 +314,22 @@ const AdminProblems = () => {
       {/* ===== CREATE PANEL ===== */}
       {creatingProblem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-blue-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh]"
+          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-cyan-500/30 p-6 md:p-8 overflow-y-auto max-h-[90vh] custom-scrollbar"
                style={{ clipPath: "polygon(0 3%, 3% 0, 100% 0, 100% 97%, 97% 100%, 0 100%)" }}>
             
-            <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-              <h2 className="text-xl font-black text-blue-400 tracking-widest uppercase">
-                {">"} INITIALIZE_NEW_PARAMETER
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/5 pb-4 gap-4">
+              <h2 className="text-lg sm:text-xl font-mono font-black text-cyan-400 tracking-widest uppercase">
+                {"> ./initialize_new_parameter"}<span className="blink text-cyan-500">█</span>
               </h2>
-              <button onClick={() => setCreatingProblem(null)} className="text-slate-500 hover:text-white transition-colors uppercase text-[10px] font-black tracking-widest">[ ESC ]</button>
+              <button onClick={() => setCreatingProblem(null)} className="text-slate-500 hover:text-white transition-colors uppercase text-xs font-black tracking-widest">[ ESC ]</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">ASSIGN_ROUND_ID</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">ASSIGN_ROUND_ID</label>
                   <input
-                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-blue-500/50 focus:outline-none transition-all font-mono"
+                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono"
                     type="number"
                     step="0.1"
                     value={creatingProblem.round}
@@ -342,9 +339,9 @@ const AdminProblems = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">PARAMETER_TITLE</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">PARAMETER_TITLE</label>
                   <input
-                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-blue-500/50 focus:outline-none transition-all font-mono"
+                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono"
                     value={creatingProblem.title}
                     onChange={(e) => setCreatingProblem({ ...creatingProblem, title: e.target.value })}
                     placeholder="TITLE"
@@ -352,9 +349,9 @@ const AdminProblems = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">LOGIC_DESCRIPTION</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">LOGIC_DESCRIPTION</label>
                   <textarea
-                    className="bg-black/50 border border-white/10 p-4 w-full h-40 text-white focus:border-blue-500/50 focus:outline-none transition-all font-mono text-sm leading-relaxed"
+                    className="bg-black/50 border border-white/10 p-4 w-full h-40 text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono text-sm leading-relaxed custom-scrollbar"
                     value={creatingProblem.description}
                     onChange={(e) => setCreatingProblem({ ...creatingProblem, description: e.target.value })}
                     placeholder="DESCRIPTION"
@@ -362,9 +359,9 @@ const AdminProblems = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">THREAT_LEVEL</label>
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 block">THREAT_LEVEL</label>
                   <select
-                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-blue-500/50 focus:outline-none transition-all font-mono uppercase tracking-widest"
+                    className="bg-black/50 border border-white/10 p-4 w-full text-white focus:border-cyan-500/50 focus:outline-none transition-all font-mono uppercase tracking-widest"
                     value={creatingProblem.difficulty}
                     onChange={(e) => setCreatingProblem({ ...creatingProblem, difficulty: e.target.value })}
                   >
@@ -376,16 +373,16 @@ const AdminProblems = () => {
               </div>
 
               <div className="space-y-6">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">TEST_VECTOR_MODALITIES</label>
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest block">TEST_VECTOR_MODALITIES</label>
                 <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                   {creatingProblem.testCases?.map((tc, i) => (
                     <div key={i} className="p-4 bg-white/[0.02] border border-white/5 relative group">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-mono text-blue-500/60 uppercase tracking-tighter">VECTOR_{i.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] font-mono text-cyan-500/60 uppercase tracking-tighter">VECTOR_{i.toString().padStart(2, '0')}</span>
                         <button onClick={() => {
                           const updated = creatingProblem.testCases.filter((_, idx) => idx !== i);
                           setCreatingProblem({ ...creatingProblem, testCases: updated });
-                        }} className="text-rose-500/40 hover:text-rose-500 transition-colors text-[9px] font-black uppercase tracking-widest">[ DELETE ]</button>
+                        }} className="text-blue-500/40 hover:text-blue-500 transition-colors text-[10px] font-black uppercase tracking-widest">[ DELETE ]</button>
                       </div>
                       <input
                         className="bg-black/40 border border-white/5 p-2 w-full mb-2 text-xs font-mono focus:border-blue-500/30 outline-none"
@@ -414,7 +411,7 @@ const AdminProblems = () => {
                       const updated = [...creatingProblem.testCases, { input: "", expectedOutput: "" }];
                       setCreatingProblem({ ...creatingProblem, testCases: updated });
                     }}
-                    className="w-full py-3 border border-dashed border-white/10 text-slate-500 hover:text-blue-400 hover:border-blue-500/30 transition-all text-[10px] font-black uppercase tracking-[0.2em]"
+                    className="w-full py-3 border border-dashed border-white/10 text-slate-500 hover:text-cyan-400 hover:border-cyan-500/30 transition-all text-xs font-black uppercase tracking-[0.2em]"
                   >
                     [+] ADD_TEST_VECTOR
                   </button>
@@ -422,12 +419,12 @@ const AdminProblems = () => {
               </div>
             </div>
 
-            <div className="mt-10 flex gap-4">
-              <button onClick={handleCreate} className="flex-1 py-4 bg-blue-500/10 border border-blue-500/50 text-blue-400 font-black text-xs tracking-[0.3em] hover:bg-blue-500/20 transition-all uppercase">
-                PUSH_PARAMETER_TO_CENTRAL_ARRAY
+            <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <button onClick={handleCreate} className="flex-1 py-4 bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 font-black text-xs tracking-[0.3em] hover:bg-cyan-500/20 transition-all uppercase">
+                ./PUSH_PARAMETER_TO_CENTRAL_ARRAY
               </button>
               <button onClick={() => setCreatingProblem(null)} className="px-8 py-4 border border-white/10 text-slate-500 font-black text-xs tracking-[0.3em] hover:bg-white/5 transition-all uppercase">
-                ABORT
+                ./ABORT
               </button>
             </div>
           </div>

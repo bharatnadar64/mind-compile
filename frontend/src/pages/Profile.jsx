@@ -102,8 +102,8 @@ const Profile = () => {
             <div className="flex-1 text-center md:text-left space-y-8">
               <div className="space-y-2">
                 <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-white glitch text-center md:text-left break-all" data-text={userInfo.name.toUpperCase()}>
-                    {userInfo.name.toUpperCase()}
+                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-mono font-black tracking-tighter text-emerald-400 glitch text-center md:text-left break-all" data-text={`> whoami ${userInfo.name.toUpperCase()}`}>
+                    {"> whoami "}<span className="text-white">{userInfo.name.toUpperCase()}</span><span className="terminal-cursor"></span>
                   </h1>
                   {userInfo.isDisqualified && (
                     <span className="bg-rose-500/20 text-rose-500 border border-rose-500/40 text-[10px] font-black px-3 py-1 rounded-sm animate-pulse tracking-widest">TERMINATED</span>
@@ -132,8 +132,10 @@ const Profile = () => {
 
         {/* Transmission History */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between px-4">
-            <h2 className="text-xl font-bold text-white tracking-widest uppercase border-l-4 border-emerald-500 pl-4">Transmission_History</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 gap-4">
+            <h2 className="text-lg sm:text-xl font-mono font-bold text-emerald-400 tracking-widest uppercase border-l-4 border-emerald-500 pl-4">
+              {"> tail -f history.log"}
+            </h2>
             <span className="text-xs text-slate-500 font-mono tracking-widest uppercase">{submissions.length} PACKETS_SENT</span>
           </div>
 

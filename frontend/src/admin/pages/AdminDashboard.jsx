@@ -34,7 +34,7 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="relative min-h-screen bg-black text-green-400 font-mono p-4 sm:p-6 overflow-hidden">
+    <div className="relative min-h-screen bg-black text-cyan-400 font-mono p-4 sm:p-6 overflow-hidden">
       {/* ===== INLINE FX ===== */}
       <style>{`
       @keyframes blink { 50% { opacity: 0; } }
@@ -63,11 +63,11 @@ const AdminDashboard = () => {
       {/* ===== BACKGROUND ===== */}
 
       {/* subtle red glow (system layer) */}
-      <div className="absolute inset-0 bg-red-500/5 blur-2xl opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-cyan-500/5 blur-2xl opacity-20 pointer-events-none" />
 
       {/* moving scan beam */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="scanline-move h-20 bg-gradient-to-b from-transparent via-red-500/10 to-transparent" />
+        <div className="scanline-move h-20 bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent" />
       </div>
 
       {/* static scanlines */}
@@ -75,24 +75,26 @@ const AdminDashboard = () => {
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
           background:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,0,0,0.12) 3px)",
+            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6,182,212,0.12) 3px)",
         }}
       />
 
       {/* ===== HEADER ===== */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8 relative z-10">
         <div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-widest text-white glitch" data-text="STRATEGIC_OPERATIONS">
-            STRATEGIC_OPERATIONS
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-mono font-black tracking-widest text-cyan-500 glitch" data-text="> ./sys_status --all">
+            {"> ./sys_status --all"}<span className="blink text-cyan-500">█</span>
           </h1>
-          <p className="text-rose-500 text-xs mt-1 font-mono uppercase tracking-[0.4em] font-bold">SYSTEM_CORE_LEVEL_01_AUTH</p>
+          <p className="text-cyan-500/70 text-xs sm:text-sm mt-2 font-mono uppercase tracking-[0.4em] font-bold">
+            // STRATEGIC_OPERATIONS_MONITOR
+          </p>
         </div>
 
         <div className="flex gap-4">
-          <div className="px-4 py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-[10px] tracking-widest uppercase">
+          <div className="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs tracking-widest uppercase">
             THREAT: LOW
           </div>
-          <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] tracking-widest uppercase">
+          <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs tracking-widest uppercase">
             NODES: STABLE
           </div>
         </div>
@@ -110,7 +112,7 @@ const AdminDashboard = () => {
             className="group relative p-8 bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all duration-500"
             style={{ clipPath: "polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%)" }}
           >
-            <p className="text-slate-500 text-[10px] font-black tracking-[0.2em] mb-4 uppercase">
+            <p className="text-slate-500 text-xs font-black tracking-[0.2em] mb-4 uppercase">
               {"> "} {item.label}
             </p>
 
@@ -132,12 +134,12 @@ const AdminDashboard = () => {
              style={{ clipPath: "polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%)" }}>
           
           <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">
-            <h2 className="text-xl font-black text-white tracking-widest uppercase">{">"} LIVE_RANKINGS</h2>
+            <h2 className="text-lg sm:text-xl font-black font-mono text-white tracking-widest uppercase">{"> tail live_rankings"}</h2>
             <button
               onClick={() => navigate("/admin/leaderboard")}
-              className="text-[10px] font-black text-emerald-500/60 hover:text-emerald-400 uppercase tracking-widest transition-colors"
+              className="text-xs sm:text-sm font-black text-cyan-500/60 hover:text-cyan-400 uppercase tracking-widest transition-colors"
             >
-              EXPAND_ALL_NODES_
+              [ EXPAND_ALL ]
             </button>
           </div>
 
@@ -169,12 +171,12 @@ const AdminDashboard = () => {
              style={{ clipPath: "polygon(5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%, 0 5%)" }}>
           
           <div className="flex justify-between mb-10 items-center border-b border-white/5 pb-4">
-            <h2 className="text-xl font-black text-white tracking-widest uppercase">{">"} EVENT_STREAM</h2>
+            <h2 className="text-lg sm:text-xl font-black font-mono text-white tracking-widest uppercase">{"> grep event_stream"}</h2>
             <button
               onClick={() => navigate("/admin/submissions")}
-              className="text-[10px] font-black text-blue-500/60 hover:text-blue-400 uppercase tracking-widest transition-colors"
+              className="text-xs sm:text-sm font-black text-blue-500/60 hover:text-blue-400 uppercase tracking-widest transition-colors"
             >
-              MONITOR_TRAFFIC_
+              [ MONITOR_TRAFFIC ]
             </button>
           </div>
 
@@ -182,13 +184,13 @@ const AdminDashboard = () => {
             {submissions.slice(0, 10).map((s) => (
               <div key={s._id} className="p-4 bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 transition-all group">
                 <div className="flex justify-between items-start mb-2">
-                  <p className="text-[11px] font-black text-slate-300 uppercase tracking-tight">
+                  <p className="text-xs font-black text-slate-300 uppercase tracking-tight">
                     {s.name || s.participantId?.name || "UNKNOWN_SOURCE"}
                   </p>
-                  <span className="text-[10px] font-black text-emerald-400 tabular-nums">+{s.scoreAwarded}</span>
+                  <span className="text-xs font-black text-emerald-400 tabular-nums">+{s.scoreAwarded}</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
                   <span className="text-blue-500">↳</span>
                   <span className="truncate">{s.problemTitle || s.problemId?.title || "LOGIC_CORE_TASK"}</span>
                 </div>
@@ -204,7 +206,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* ===== FOOTER ===== */}
-      <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-600 font-black tracking-[0.2em] border-t border-white/5 pt-6 uppercase">
+      <div className="relative z-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-600 font-black tracking-[0.2em] border-t border-white/5 pt-6 uppercase">
         <div className="flex items-center gap-4">
           <span className="text-emerald-500/60">SYSTEM_CORE: ONLINE</span>
           <span className="text-blue-500/60">PACKETS: STABLE</span>
